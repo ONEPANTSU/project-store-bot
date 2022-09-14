@@ -43,7 +43,8 @@ class Project:
                  price, status_id, subscribers,
                  rub_per_sub, income, comment, views):
         self.id = id
-        self.seller = self.find_seller_by_seller_id(seller_id)
+        self.seller_id = seller_id
+        self.seller = self.find_seller_by_seller_id()
         self.name = name
         self.themes = self.find_themes_by_id()
         self.price = price
@@ -54,7 +55,7 @@ class Project:
         self.comment = comment
         self.views = views
 
-    def find_seller_by_seller_id(self, seller_id):
+    def find_seller_by_seller_id(self):
         seller = ""
         #
         return seller
