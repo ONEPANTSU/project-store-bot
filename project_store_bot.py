@@ -20,11 +20,10 @@ def main_menu(message):
 
 @bot.message_handler(content_types=['text'])
 def main_menu_handler(message):
-    if (message.text == "🗄 Мои предложения"):
-        '''
-        ВИКИН КОД (вызваешь функцию из файла to_sell)
-        '''
-        bot.send_message(message.chat.id, text="VIKA...")
+    if (message.text == "🗄 Мои предложения" or
+            message.text == "Выставить проект на продажу" or
+            message.text == "Список моих предложений"):
+        to_sell.sale(message, bot)
 
 
 
