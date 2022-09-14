@@ -2,8 +2,6 @@ import telebot
 from telebot import types
 import config
 import to_buy
-from to_buy import buy_menu
-import to_buy
 
 bot = telebot.TeleBot(config.TOKEN)
 
