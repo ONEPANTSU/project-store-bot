@@ -55,6 +55,9 @@ class Project:
         self.comment = comment
         self.views = views
 
+    def det_id(self):
+        pass
+
     def find_seller_by_seller_id(self):
         seller = ""
         #
