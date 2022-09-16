@@ -35,16 +35,18 @@ class DBManager():
         (%s);
         """ % (project_val)
 
-        seller_val = str(project.seller_id) + ", '" + project.seller + "'"
+        select_current_seller = "SELECT * FROM `seller` WHERE `id` = '%s';" % (project.seller_id)
+        current_seller = self.execute_read_query(self.connection, select_current_seller)
+        if(len(current_seller) == 0):
+            seller_val = str(project.seller_id) + ", '" + project.seller + "'"
+            create_seller = """
+            INSERT INTO
+            `seller` (`id`, `telegram_name`)
+            VALUES
+            (%s);
+            """ % (seller_val)
 
-        create_seller = """
-        INSERT INTO
-        `seller` (`id`, `telegram_name`)
-        VALUES
-        (%s);
-        """ % (seller_val)
-
-        self.execute_query(self.connection, create_seller)
+            self.execute_query(self.connection, create_seller)
 
         self.execute_query(self.connection, create_project)
 
@@ -57,10 +59,19 @@ class DBManager():
         except Error as e:
             print(f"The error '{e}' occurred")
 
-# project = Project(seller_id=3, name="Channel",
-#                  price=100, status_id=0, subscribers=20,
-#                  rub_per_sub=1, income=20, comment="Super channel. Just buy it!", views=30)
-# project.seller = "@onepanstu"
-#
-# db_manager = DBManager()
-# db_manager.insert_to_db(project)
+    def execute_read_query(self, connection, query):
+        cursor = connection.cursor()
+        try:
+            cursor.execute(query)
+            result = cursor.fetchall()
+            return result
+        except Error as e:
+            print(f"The error '{e}' occurred")
+
+project = Project(seller_id=7, name="Channel",
+                    price=100, status_id=0, subscribers=20,
+                    rub_per_sub=1, income=20, comment="Super channel. Just buy it!", views=30)
+project.seller = "@onepanstu"
+
+db_manager = DBManager()
+db_manager.insert_to_db(project)
