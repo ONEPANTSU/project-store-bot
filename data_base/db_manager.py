@@ -1,6 +1,5 @@
 import mysql.connector
 from mysql.connector import Error
-from data_classes.project import Project
 from config import *
 
 class DBManager():
@@ -20,35 +19,118 @@ class DBManager():
             print("Connection to MySQL DB successful")
         except Error as e:
             print(f"The error '{e}' occurred")
-
         return connection
 
-    def insert_to_db(self, project):
+    def insert_project(self, project):
         project_val = str(project.seller_id) + ", '" + project.name + "', " +  str(project.price)  + ", " + \
                       str(project.status_id) + ", " + str(project.subscribers) + ", " + str(project.rub_per_sub) + ", " + \
                       str(project.income) + ", '" +  project.comment + "', " + str(project.views)
-
         create_project = """
         INSERT INTO
         `project` (`seller_id`, `name`, `price`, `status_id`, `subscribers`, `rub_per_sub`, `income`, `comment`, `views`)
         VALUES
         (%s);
         """ % (project_val)
-
         select_current_seller = "SELECT * FROM `seller` WHERE `id` = '%s';" % (project.seller_id)
         current_seller = self.execute_read_query(self.connection, select_current_seller)
         if(len(current_seller) == 0):
-            seller_val = str(project.seller_id) + ", '" + project.seller + "'"
-            create_seller = """
+            self.insert_new_seller(project)
+        self.execute_query(self.connection, create_project)
+
+    def insert_status(self, status_name):
+        create_status = """
+        INSERT INTO
+        `status` (`status_name`)
+        VALUES
+        (%s);
+        """ % (status_name)
+        self.execute_query(self.connection, create_status)
+
+    def insert_theme(self, theme_name):
+        create_theme = """
+        INSERT INTO
+        `theme` (`theme_name`)
+        VALUES
+        (%s);
+        """ % (theme_name)
+        self.execute_query(self.connection, create_theme)
+
+    def insert_project_themes(self, project_id, themes_id):
+        for theme_id in themes_id:
+            project_theme_val = str(project_id) + ", " + str(theme_id)
+            create_project_theme = """
             INSERT INTO
-            `seller` (`id`, `telegram_name`)
+            `project_theme` (`project_id`, `theme_id`)
             VALUES
             (%s);
-            """ % (seller_val)
+            """ % (project_theme_val)
+            self.execute_query(self.connection, create_project_theme)
 
-            self.execute_query(self.connection, create_seller)
+    def insert_new_seller(self, project):
+        seller_val = "'" + project.seller + "'"
+        create_seller = """
+        INSERT INTO
+        `seller` (`telegram_name`)
+        VALUES
+        (%s);
+        """ % (seller_val)
+        self.execute_query(self.connection, create_seller)
 
-        self.execute_query(self.connection, create_project)
+    def get_seller_id(self, project_id):
+        get_seller_id_query = "SELECT `seller_id` FROM `project` WHERE `id` = '%s';" % (project_id)
+        seller_id = self.execute_read_query(self.connection, get_seller_id_query)
+        return seller_id
+
+    def get_projects_by_seller_id(self, seller_id):
+        get_projects_query = "SELECT * FROM `project` WHERE `seller_id` = '%s';" % (seller_id)
+        projects = self.execute_read_query(self.connection, get_projects_query)
+        return projects
+
+    def update_project(self, project_id, project):
+        project_val = str(project.seller_id) + ", '" + project.name + "', " + str(project.price) + ", " + \
+                      str(project.status_id) + ", " + str(project.subscribers) + ", " + str(project.rub_per_sub) + ", " + \
+                      str(project.income) + ", '" + project.comment + "', " + str(project.views)
+        update_project = """
+        UPDATE
+        `project` (`seller_id`, `name`, `price`, `status_id`, `subscribers`, `rub_per_sub`, `income`, `comment`, `views`)
+        SET
+        (%s)
+        WHERE `id` = `%s`;
+        """ % (project_val, str(project_id))
+        self.update_project_themes(project_id, project.themes)
+        self.execute_query(self.connection, update_project)
+
+    def update_project_themes(self, project_id, themes_id):
+        self.delete_project_theme(project_id)
+        self.insert_project_themes(project_id, themes_id)
+
+    def update_seller(self, seller_id, seller_name):
+        seller_val = "'" + seller_name + "'"
+        update_seller = """
+        UPDATE
+        `seller` (`telegram_name`)
+        SET
+        (%s)
+        WHERE `id` = `%s`;
+        """ % (seller_val, str(seller_id))
+        self.execute_query(self.connection, update_seller)
+
+    def delete_project(self, project_id):
+        self.delete_project_theme(project_id)
+        delete_project_query = "DELETE FROM `project` WHERE `id` = `%s`;" % (str(project_id))
+        seller_id = self.get_seller_id(project_id)
+        projects = self.get_projects_by_seller_id(seller_id)
+        if(len(projects) == 0):
+            self.delete_seller(seller_id)
+        self.execute_query(self.connection, delete_project_query)
+
+    def delete_seller(self, seller_id):
+        delete_seller_query = "DELETE FROM `seller` WHERE `id` = `%s`;" % (str(seller_id))
+        self.execute_query(self.connection, delete_seller_query)
+
+    def delete_project_theme(self, project_id):
+        delete_project_theme_query = "DELETE FROM `project_theme` WHERE `project_id` = `%s`;" % (str(project_id))
+        self.execute_query(self.connection, delete_project_theme_query)
 
     def execute_query(self, connection, query):
         cursor = connection.cursor()
@@ -67,11 +149,3 @@ class DBManager():
             return result
         except Error as e:
             print(f"The error '{e}' occurred")
-
-project = Project(seller_id=7, name="Channel",
-                    price=100, status_id=0, subscribers=20,
-                    rub_per_sub=1, income=20, comment="Super channel. Just buy it!", views=30)
-project.seller = "@onepanstu"
-
-db_manager = DBManager()
-db_manager.insert_to_db(project)
