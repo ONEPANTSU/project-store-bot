@@ -39,15 +39,15 @@ class Project:
     :rtype: :class:`data_classes.project.Project`
     """
 
-    def __init__(self, id, seller_id, name,
+    def __init__(self, seller_id, name,
                  price, status_id, subscribers,
                  rub_per_sub, income, comment, views):
-        self.id = id
         self.seller_id = seller_id
         self.seller = self.find_seller_by_seller_id()
         self.name = name
         self.themes = self.find_themes_by_id()
         self.price = price
+        self.status_id = status_id
         self.status = Status(status_id)
         self.subscribers = subscribers
         self.rub_per_sub = rub_per_sub
