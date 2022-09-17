@@ -23,11 +23,11 @@ class DBManager():
 
     def insert_project(self, project):
         project_val = str(project.seller_id) + ", '" + project.name + "', " +  str(project.price)  + ", " + \
-                      str(project.status_id) + ", " + str(project.subscribers) + ", " + str(project.rub_per_sub) + ", " + \
-                      str(project.income) + ", '" +  project.comment + "', " + str(project.views)
+                      str(project.status_id) + ", " + str(project.subscribers) + ", " + \
+                      str(project.income) + ", '" +  project.comment + "'"
         create_project = """
         INSERT INTO
-        `project` (`seller_id`, `name`, `price`, `status_id`, `subscribers`, `rub_per_sub`, `income`, `comment`, `views`)
+        `project` (`seller_id`, `name`, `price`, `status_id`, `subscribers`, `income`, `comment`)
         VALUES
         (%s);
         """ % (project_val)
@@ -35,7 +35,13 @@ class DBManager():
         current_seller = self.execute_read_query(self.connection, select_current_seller)
         if(len(current_seller) == 0):
             self.insert_new_seller(project)
-        self.execute_query(self.connection, create_project)
+        #self.execute_query(self.connection, create_project)
+        cursor = self.connection.cursor()
+        cursor.execute(create_project)
+        project_id = cursor.lastrowid
+        cursor.close()
+        self.insert_project_themes(project_id, project.themes_id)
+
 
     def insert_status(self, status_name):
         create_status = """
@@ -57,7 +63,7 @@ class DBManager():
 
     def insert_project_themes(self, project_id, themes_id):
         for theme_id in themes_id:
-            project_theme_val = str(project_id) + ", " + str(theme_id)
+            project_theme_val = str(project_id) + ", " + str(theme_id[0])
             create_project_theme = """
             INSERT INTO
             `project_theme` (`project_id`, `theme_id`)
@@ -76,9 +82,14 @@ class DBManager():
         """ % (seller_val)
         self.execute_query(self.connection, create_seller)
 
+    def get_seller_name(self, seller_id):
+        get_seller_name_query = "SELECT `telegram_name` FROM `seller` WHERE `id` = '%s';" % (seller_id)
+        seller_name = self.execute_read_query(self.connection, get_seller_name_query)[0][0]
+        return seller_name
+
     def get_seller_id(self, project_id):
         get_seller_id_query = "SELECT `seller_id` FROM `project` WHERE `id` = '%s';" % (project_id)
-        seller_id = self.execute_read_query(self.connection, get_seller_id_query)
+        seller_id = self.execute_read_query(self.connection, get_seller_id_query)[0][0]
         return seller_id
 
     def get_projects_by_seller_id(self, seller_id):
@@ -86,13 +97,36 @@ class DBManager():
         projects = self.execute_read_query(self.connection, get_projects_query)
         return projects
 
+    def get_project_by_id(self, project_id):
+        get_project_query = "SELECT * FROM `project` WHERE `id` = '%s';" % (project_id)
+        project = self.execute_read_query(self.connection, get_project_query)[0]
+        return project
+
+    def get_themes_names(self, themes_id):
+        themes_names = list()
+        for theme_id in themes_id:
+            get_theme_name_query = "SELECT `theme_name` FROM `theme` WHERE `id` = '%s';" % (theme_id)
+            theme_name = self.execute_read_query(self.connection, get_theme_name_query)
+            themes_names.append(theme_name[0])
+        return themes_names
+
+    def get_themes_id(self, project_id):
+        get_theme_id_query = "SELECT `theme_id` FROM `project_theme` WHERE `project_id` = '%s';" % (project_id)
+        themes_id = self.execute_read_query(self.connection, get_theme_id_query)
+        return themes_id
+
+    def get_status_name(self, status_id):
+        get_status_name_query = "SELECT `status_name` FROM `status` WHERE `id` = '%s';" % (status_id)
+        status_name = self.execute_read_query(self.connection, get_status_name_query)[0][0]
+        return status_name
+
     def update_project(self, project_id, project):
         project_val = str(project.seller_id) + ", '" + project.name + "', " + str(project.price) + ", " + \
-                      str(project.status_id) + ", " + str(project.subscribers) + ", " + str(project.rub_per_sub) + ", " + \
-                      str(project.income) + ", '" + project.comment + "', " + str(project.views)
+                      str(project.status_id) + ", " + str(project.subscribers) + ", " + \
+                      str(project.income) + ", '" + project.comment + "'"
         update_project = """
         UPDATE
-        `project` (`seller_id`, `name`, `price`, `status_id`, `subscribers`, `rub_per_sub`, `income`, `comment`, `views`)
+        `project` (`seller_id`, `name`, `price`, `status_id`, `subscribers`, `income`, `comment`)
         SET
         (%s)
         WHERE `id` = `%s`;
