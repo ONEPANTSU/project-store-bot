@@ -26,13 +26,6 @@ def main_menu(message):
 @bot.message_handler(content_types=['text'])
 def main_menu_handler(message):
     if message.text == "🗄 Мои предложения 🗄":
-
-        project = Project()
-        themes_id = {1, 2}
-        name = "NAME"
-        project.set_params("@vika", name, 4000, 0, 2000, themes_id, 50000, "this project is....")
-        project.save_new_project()
-
         show_main_sell_keyboard(message)
         bot.register_next_step_handler(message, main_sell_handler)
 
