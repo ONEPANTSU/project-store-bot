@@ -29,15 +29,15 @@ class Project:
         self.income = None
         self.comment = None
 
-    def set_params(self, seller_id, name,
+    def set_params(self, seller_name, name,
                    price, status_id, subscribers,
                    themes_id, income, comment):
         """
         This function sets values of all params to the Project's object.
         It is necessary for filling all columns in the row of data base.
 
-        :param seller_id: ID of seller table's row
-        :type seller_id: :obj: `int`
+        :param seller_name: ID of seller table's row
+        :type seller_name: :obj: `int`
 
         :param name: name of the project
         :type name: :obj: `str`
@@ -63,8 +63,11 @@ class Project:
 
         self.params_are_not_none = True
 
-        self.seller_id = seller_id
-        self.seller_name = self.db_manager.get_seller_name(seller_id)
+        if self.db_manager.is_seller_exist(seller_name):
+            self.seller_id = self.db_manager.get_seller_id_by_seller_name(seller_name)
+        else:
+            self.seller_id = -1
+        self.seller_name = seller_name
         self.name = name
         self.themes_id = themes_id
         self.themes_names = self.db_manager.get_themes_names(themes_id)

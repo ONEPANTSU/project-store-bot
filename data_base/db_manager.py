@@ -75,6 +75,10 @@ class DBManager:
         :param project: object of class Project with filled params
         :type project: :class: `data_base.project.Project`
         """
+        if project.seller_id == -1:
+            self.insert_new_seller(project)
+            project.seller_id = self.get_seller_id_by_seller_name(project.seller_name)
+
         project_val = self.get_string_project_values(project)
         create_project = """
         INSERT INTO
@@ -82,10 +86,7 @@ class DBManager:
         VALUES
         (%s);
         """ % project_val
-        select_current_seller = "SELECT * FROM `seller` WHERE `id` = '%s';" % project.seller_id
-        current_seller = self.execute_read_query(self.connection, select_current_seller)
-        if len(current_seller) == 0:
-            self.insert_new_seller(project)
+
         cursor = self.connection.cursor()
         cursor.execute(create_project)
         project_id = cursor.lastrowid
@@ -133,7 +134,7 @@ class DBManager:
         :type themes_id: :list: `int`
         """
         for theme_id in themes_id:
-            project_theme_val = str(project_id) + ", " + str(theme_id[0])
+            project_theme_val = str(project_id) + ", " + str(theme_id)
             create_project_theme = """
             INSERT INTO
             `project_theme` (`project_id`, `theme_id`)
@@ -149,7 +150,7 @@ class DBManager:
         :param project: object of class Project with filled params
         :type project: :class: `data_base.project.Project`
         """
-        seller_val = "'" + project.seller + "'"
+        seller_val = "'" + project.seller_name + "'"
         create_seller = """
         INSERT INTO
         `seller` (`telegram_name`)
@@ -164,6 +165,9 @@ class DBManager:
 
         :param project_id: id of the project
         :type project_id: :obj: `int`
+
+        :return: bool value of existing of the project with concrete id
+        :rtype: :obj:`bool`
         """
         get_project_query = "SELECT * FROM `project` WHERE `id` = '%s';" % project_id
         project = self.execute_read_query(self.connection, get_project_query)
@@ -186,7 +190,7 @@ class DBManager:
         seller_name = self.execute_read_query(self.connection, get_seller_name_query)[0][0]
         return seller_name
 
-    def get_seller_id(self, project_id):
+    def get_seller_id_by_project_id(self, project_id):
         """
         This function creates SELECT query for getting seller's id by project's id.
 
@@ -197,6 +201,37 @@ class DBManager:
         :rtype: :obj:`str`
         """
         get_seller_id_query = "SELECT `seller_id` FROM `project` WHERE `id` = '%s';" % project_id
+        seller_id = self.execute_read_query(self.connection, get_seller_id_query)[0][0]
+        return seller_id
+
+    def is_seller_exist(self, seller_name):
+        """
+        This function checks if seller exists.
+
+        :param seller_name: id of the project
+        :type seller_name: :obj: `int`
+
+        :return: bool value of existing of the seller with concrete name
+        :rtype: :obj:`bool`
+        """
+        get_seller_id_query = "SELECT `id` FROM `seller` WHERE `telegram_name` = '%s';" % seller_name
+        seller_id = self.execute_read_query(self.connection, get_seller_id_query)
+        if len(seller_id) == 0:
+            return False
+        else:
+            return True
+
+    def get_seller_id_by_seller_name(self, seller_name):
+        """
+        This function creates SELECT query for getting seller's id by seller's name.
+
+        :param seller_name: id of the project
+        :type seller_name: :obj: `int`
+
+        :return: id of the seller of concrete project
+        :rtype: :obj:`str`
+        """
+        get_seller_id_query = "SELECT `id` FROM `seller` WHERE `telegram_name` = '%s';" % seller_name
         seller_id = self.execute_read_query(self.connection, get_seller_id_query)[0][0]
         return seller_id
 
