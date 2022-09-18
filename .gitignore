@@ -1,3 +1,7 @@
 
 config.py
 
+
+data_base/__pycache__/
+
+.idea/vcs.xml

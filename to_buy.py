@@ -1,8 +1,5 @@
 from telebot import types
 
-
-
-
 def buy_menu(message, bot):
     if message.text == "💰 Поиск предложений":
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)

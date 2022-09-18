@@ -120,6 +120,11 @@ class DBManager():
         status_name = self.execute_read_query(self.connection, get_status_name_query)[0][0]
         return status_name
 
+    def get_guarantee_info(self):
+        get_guarantee_query = "SELECT * FROM `guarantee`;"
+        guarantee_info = self.execute_read_query(self.connection, get_guarantee_query)[0]
+        return guarantee_info
+
     def update_project(self, project_id, project):
         project_val = str(project.seller_id) + ", '" + project.name + "', " + str(project.price) + ", " + \
                       str(project.status_id) + ", " + str(project.subscribers) + ", " + \

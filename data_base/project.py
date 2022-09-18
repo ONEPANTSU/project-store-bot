@@ -1,5 +1,6 @@
 from data_base.db_manager import DBManager
 
+
 class Project:
     """
     Data class for project table of Data Base
@@ -26,12 +27,12 @@ class Project:
         self.income = None
         self.comment = None
 
-    def set_id(self, id):
+    def set_id(self, project_id):
         """
-        :param id: ID of project table's row
-        :type id: :obj: `int`
+        :param project_id: ID of project table's row
+        :type project_id: :obj: `int`
         """
-        self.id = id
+        self.id = project_id
 
     def set_params(self, seller_id, name,
                    price, status_id, subscribers,
@@ -52,11 +53,14 @@ class Project:
         :param subscribers: count of subscribers
         :type subscribers: :obj: `int`
 
+        :param themes_id: list of themes id
+        :type themes_id: :list: `int`
+
         :param income: income from the project (rubles)
         :type income: :obj: `int`
 
         :param comment: project description and comment
-        :type id: :obj: `str`
+        :type comment: :obj: `str`
         """
 
         self.params_are_not_none = True
@@ -73,13 +77,17 @@ class Project:
         self.income = income
         self.comment = comment
 
-    def set_params_by_id(self, id):
-        self.set_id(id)
+    def set_params_by_id(self, project_id):
+        """
+        :param project_id: ID of project table's row
+        :type project_id: :obj: `int`
+        """
+        self.set_id(project_id)
         project_sql_row = self.db_manager.get_project_by_id(self.id)
         themes_id = self.db_manager.get_themes_id(self.id)
         self.set_params(seller_id=project_sql_row[1], name=project_sql_row[2], price=project_sql_row[3],
-                            status_id=project_sql_row[4], subscribers=project_sql_row[5], income=project_sql_row[6],
-                            comment=project_sql_row[7], themes_id=themes_id)
+                        status_id=project_sql_row[4], subscribers=project_sql_row[5], income=project_sql_row[6],
+                        comment=project_sql_row[7], themes_id=themes_id)
 
     def save_new_project(self):
         if self.params_are_not_none is False:
@@ -100,3 +108,11 @@ class Project:
             print("Error: Project's id is empty")
         else:
             self.db_manager.delete_project(self.id)
+
+    def get_guarantee_name(self):
+        guarantee_name = self.db_manager.get_guarantee_info()[0]
+        return guarantee_name
+
+    def get_guarantee_reviews(self):
+        guarantee_reviews = self.db_manager.get_guarantee_info()[1]
+        return guarantee_reviews
