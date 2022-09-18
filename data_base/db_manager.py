@@ -82,6 +82,14 @@ class DBManager():
         """ % (seller_val)
         self.execute_query(self.connection, create_seller)
 
+    def is_project_exists_by_id(self, project_id):
+        get_project_query = "SELECT * FROM `project` WHERE `id` = '%s';" % (project_id)
+        project = self.execute_read_query(self.connection, get_project_query)
+        if len(project) == 0:
+            return False
+        else:
+            return True
+
     def get_seller_name(self, seller_id):
         get_seller_name_query = "SELECT `telegram_name` FROM `seller` WHERE `id` = '%s';" % (seller_id)
         seller_name = self.execute_read_query(self.connection, get_seller_name_query)[0][0]

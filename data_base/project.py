@@ -3,17 +3,19 @@ from data_base.db_manager import DBManager
 
 class Project:
     """
-    Data class for project table of Data Base
-
-    :return: Instance of the class
-    :rtype: :class:`data_classes.project.Project`
+    Data class for convenient work with Data Base's tables
     """
 
     def __init__(self):
+        """
+        Project class constructor
+
+        :return: Instance of the class
+        :rtype: :class:`data_classes.project.Project`
+        """
         self.db_manager = DBManager()
 
         self.params_are_not_none = False
-
         self.id = None
         self.seller_id = None
         self.seller_name = None
@@ -27,17 +29,13 @@ class Project:
         self.income = None
         self.comment = None
 
-    def set_id(self, project_id):
-        """
-        :param project_id: ID of project table's row
-        :type project_id: :obj: `int`
-        """
-        self.id = project_id
-
     def set_params(self, seller_id, name,
                    price, status_id, subscribers,
                    themes_id, income, comment):
         """
+        This function sets values of all params to the Project's object.
+        It is necessary for filling all columns in the row of data base.
+
         :param seller_id: ID of seller table's row
         :type seller_id: :obj: `int`
 
@@ -79,23 +77,45 @@ class Project:
 
     def set_params_by_id(self, project_id):
         """
+        This function sets values of all searched params to the Project's object.
+        The search is carried out by the id of the existing project.
+
         :param project_id: ID of project table's row
         :type project_id: :obj: `int`
         """
         self.set_id(project_id)
-        project_sql_row = self.db_manager.get_project_by_id(self.id)
-        themes_id = self.db_manager.get_themes_id(self.id)
-        self.set_params(seller_id=project_sql_row[1], name=project_sql_row[2], price=project_sql_row[3],
-                        status_id=project_sql_row[4], subscribers=project_sql_row[5], income=project_sql_row[6],
-                        comment=project_sql_row[7], themes_id=themes_id)
+        if self.db_manager.is_project_exists_by_id(self.id):
+            project_sql_row = self.db_manager.get_project_by_id(self.id)
+            themes_id = self.db_manager.get_themes_id(self.id)
+            self.set_params(seller_id=project_sql_row[1], name=project_sql_row[2], price=project_sql_row[3],
+                            status_id=project_sql_row[4], subscribers=project_sql_row[5], income=project_sql_row[6],
+                            comment=project_sql_row[7], themes_id=themes_id)
+        else:
+            print("Error: Project does not exist")
+
+    def set_id(self, project_id):
+        """
+        This function sets concrete id to the Project's object
+        It is necessary in cases of searching of existing projects
+
+        :param project_id: ID of project table's row
+        :type project_id: :obj: `int`
+        """
+        self.id = project_id
 
     def save_new_project(self):
+        """
+        This function inserts filled params of the Project's object to the new row of the data base.
+        """
         if self.params_are_not_none is False:
             print("Error: Project's params are empty")
         else:
             self.db_manager.insert_project(self)
 
     def save_changes_to_existing_project(self):
+        """
+        This function updates already existing row of data base by new params of the Project's object.
+        """
         if self.params_are_not_none is False:
             print("Error: Project's params are empty")
         elif self.id is None:
@@ -103,16 +123,35 @@ class Project:
         else:
             self.db_manager.update_project(self.id, self)
 
-    def delete_project(self):
-        if self.id is None:
-            print("Error: Project's id is empty")
-        else:
+    def delete_project_by_id(self, project_id):
+        """
+        This function deletes existing row of data base by id of the Project's object.
+
+        :param project_id: ID of project table's row
+        :type project_id: :obj: `int`
+        """
+        self.set_id(project_id)
+        if self.db_manager.is_project_exists_by_id(self.id):
             self.db_manager.delete_project(self.id)
+        else:
+            print("Error: Project does not exist")
 
     def get_guarantee_name(self):
+        """
+        This function returns telegram name of the guarantee from `guarantee` table.
+
+        :return: name of guarantee
+        :rtype: :obj:`str`
+        """
         guarantee_name = self.db_manager.get_guarantee_info()[0]
         return guarantee_name
 
     def get_guarantee_reviews(self):
+        """
+        This function returns telegram channel name with reviews of the guarantee from `guarantee` table.
+
+        :return: telegram channel name with reviews
+        :rtype: :obj:`str`
+        """
         guarantee_reviews = self.db_manager.get_guarantee_info()[1]
         return guarantee_reviews
