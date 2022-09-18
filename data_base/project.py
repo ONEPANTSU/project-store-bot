@@ -8,10 +8,10 @@ class Project:
 
     def __init__(self):
         """
-        Project class constructor
+        Project class constructor.
 
         :return: Instance of the class
-        :rtype: :class:`data_classes.project.Project`
+        :rtype: :class:`data_base.project.Project`
         """
         self.db_manager = DBManager()
 
@@ -84,7 +84,7 @@ class Project:
         :type project_id: :obj: `int`
         """
         self.set_id(project_id)
-        if self.db_manager.is_project_exists_by_id(self.id):
+        if self.db_manager.is_project_exist_by_id(self.id):
             project_sql_row = self.db_manager.get_project_by_id(self.id)
             themes_id = self.db_manager.get_themes_id(self.id)
             self.set_params(seller_id=project_sql_row[1], name=project_sql_row[2], price=project_sql_row[3],
@@ -131,7 +131,7 @@ class Project:
         :type project_id: :obj: `int`
         """
         self.set_id(project_id)
-        if self.db_manager.is_project_exists_by_id(self.id):
+        if self.db_manager.is_project_exist_by_id(self.id):
             self.db_manager.delete_project(self.id)
         else:
             print("Error: Project does not exist")
