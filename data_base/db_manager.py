@@ -63,8 +63,8 @@ class DBManager:
         :rtype: :obj:`str`
         """
         return str(project.seller_id) + ", '" + project.name + "', " + str(project.price) + ", " + \
-                      str(project.status_id) + ", " + str(project.subscribers) + ", " + \
-                      str(project.income) + ", '" + project.comment + "'"
+               str(project.status_id) + ", " + str(project.subscribers) + ", " + \
+               str(project.income) + ", '" + project.comment + "'"
 
     def insert_project(self, project):
         """
