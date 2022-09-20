@@ -116,6 +116,31 @@ class Project:
         else:
             self.db_manager.insert_project(self)
 
+    def check_is_not_none(self):
+        """
+        This function checks "params_are_not_none" variable.
+        """
+        if self.status is None and self.status_id is not None:
+            self.status = self.db_manager.get_status_name(self.status_id)
+
+        if self.seller_name is not None:
+            if self.db_manager.is_seller_exist(self.seller_name):
+                self.seller_id = self.db_manager.get_seller_id_by_seller_name(self.seller_name)
+            else:
+                self.seller_id = -1
+
+        if self.themes_names is None and self.themes_id is not None:
+            self.themes_names = self.db_manager.get_themes_names(self.themes_id)
+        elif self.themes_id is None and self.themes_names is not None:
+            self.themes_id = self.db_manager.get_themes_id_by_names(self.themes_names)
+
+        if self.name is not None and self.seller_name is not None and self.seller_id is not None and \
+                self.price is not None and self.status_id is not None and self.themes_id is not None and \
+                self.income is not None and self.comment is not None:
+            self.params_are_not_none = True
+        else:
+            self.params_are_not_none = False
+
     def save_changes_to_existing_project(self):
         """
         This function updates already existing row of data base by new params of the Project's object.
