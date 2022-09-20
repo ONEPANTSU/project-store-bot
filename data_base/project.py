@@ -6,7 +6,7 @@ class Project:
     Data class for convenient work with Data Base's tables
     """
 
-    def __init__(self):
+    def __init__(self) -> object:
         """
         Project class constructor.
 
