@@ -41,6 +41,7 @@ def main_menu_handler(message):
 project = Project()
 project.themes_names = list()
 
+
 def show_main_sell_keyboard(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     to_sell_project_button = types.KeyboardButton("Выставить проект на продажу")
@@ -61,17 +62,18 @@ def main_sell_handler(message):
 
 
 def put_up_for_sale(message):
-    bot.send_message(message.chat.id, text="🖊Заполните анкету🖊:")
+    bot.send_message(message.chat.id, text="🖊Заполните анкету🖊")
     project.seller_name = "@" + message.from_user.username
     project.status_id = 0
     message = bot.send_message(message.chat.id,
-                               text="Напишите название вашего проекта:")
+                               text="Напишите название вашего проекта")
     bot.register_next_step_handler(message, process_name_step)
+
 
 def process_name_step(message):
     project.name = message.text
     message = bot.send_message(message.chat.id,
-                            text="Напишите цену вашего проекта?")
+                               text="Напишите цену вашего проекта")
     bot.register_next_step_handler(message, process_price_step)
 
 
@@ -86,11 +88,13 @@ def process_price_step(message):
                                text="Сколько подписчиков у вашего проекта?")
     bot.register_next_step_handler(message, process_subscribers_step)
 
+
 def process_subscribers_step(message):
     subscribers = message.text
     project.subscribers = message.text
     if not subscribers.isdigit():
-        message = bot.reply_to(message, 'Укажите количество подписчиков числом. Напишите сколько подписчиков у вашего проекта:')
+        message = bot.reply_to(message,
+                               'Укажите количество подписчиков числом. Напишите сколько подписчиков у вашего проекта:')
         bot.register_next_step_handler(message, process_subscribers_step)
         return
     message = bot.send_message(message.chat.id,
@@ -149,11 +153,13 @@ def process_income_step(message):
                                text="Добавьте комментарий к обьявлению:")
     bot.register_next_step_handler(message, process_comment_step)
 
+
 def process_comment_step(message):
     project.comment = message.text
     message = bot.send_message(message.chat.id,
                                text="Ваше обьявление сохранено!")
     bot.register_next_step_handler(message, process_save_step)
+
 
 def process_save_step(message):
     message = bot.send_message(message.chat.id,
@@ -162,34 +168,70 @@ def process_save_step(message):
     print(project.name)
     project.save_new_project()
 
+
 def get_list_of_projects(message):
     pass
 
 
 """
-ИРИНА ЧАСТЬ:
+ИРИНА ЧАСТЬ: охаёёёёёёёёёёё они чан
 """
 
 
 def show_main_buy_keyboard(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    button1 = types.KeyboardButton("...1")
-    button2 = types.KeyboardButton("...2")
+    category_button = types.KeyboardButton("Выбрать категорию")
+    price_range_button = types.KeyboardButton("Выбрать ценовой диапазон")
     back_button = types.KeyboardButton("Вернуться в главное меню")
-    markup.add(button1, button2, back_button)
+    markup.add(category_button, price_range_button, back_button)
     bot.send_message(message.chat.id, '💰 Поиск предложений 💰', reply_markup=markup)
 
 
 def main_buy_handler(message):
-    if message.text == "...1":
-        pass
-        # bot.register_next_step_handler(message, )
-    elif message.text == "...2":
-        pass
-        # bot.register_next_step_handler(message, )
+    if message.text == "Выбрать категорию":
+        choose_category(message)
+    elif message.text == "Выбрать ценовой диапазон":
+        choose_price_range(message)
     elif message.text == "Вернуться в главное меню":
         show_main_keyboard(message, "📌 Главное меню 📌")
         bot.register_next_step_handler(message, main_menu_handler)
+
+
+def choose_category(message):
+    button_list = [
+        types.InlineKeyboardButton(text="Криптовалюта", callback_data="1"),
+        types.InlineKeyboardButton(text="Недвижимость", callback_data="2"),
+        types.InlineKeyboardButton(text="Маркетинг", callback_data="3"),
+        types.InlineKeyboardButton(text="Бизнес/Финансы", callback_data="4"),
+        types.InlineKeyboardButton(text="IT", callback_data="5"),
+        types.InlineKeyboardButton(text="Образование", callback_data="6"),
+        types.InlineKeyboardButton(text="Психология/Саморазвитие", callback_data="7"),
+        types.InlineKeyboardButton(text="Искусство", callback_data="8"),
+        types.InlineKeyboardButton(text="Авторский блог", callback_data="9"),
+        types.InlineKeyboardButton(text="Спорт", callback_data="10"),
+        types.InlineKeyboardButton(text="Наука", callback_data="11"),
+        types.InlineKeyboardButton(text="Технологии", callback_data="12"),
+        types.InlineKeyboardButton(text="Факты", callback_data="13"),
+        types.InlineKeyboardButton(text="Здоровье", callback_data="14"),
+        types.InlineKeyboardButton(text="Фитнес", callback_data="15")
+    ]
+    # сборка клавиатуры из кнопок `InlineKeyboardButton`
+    reply_markup = types.InlineKeyboardMarkup(build_menu(button_list, n_cols=2))
+    # отправка клавиатуры в чат
+    bot.send_message(message.chat.id, text="Список категорий", reply_markup=reply_markup)
+
+
+def build_menu(buttons, n_cols, header_buttons=None, footer_buttons=None):
+    menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
+    if header_buttons:
+        menu.insert(0, [header_buttons])
+    if footer_buttons:
+        menu.append([footer_buttons])
+    return menu
+
+
+def choose_price_range(message):
+    pass
 
 
 bot.polling(non_stop=True)
