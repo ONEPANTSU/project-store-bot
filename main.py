@@ -1,6 +1,7 @@
 from telebot import types
 import telebot
 import config
+from data_base.db_manager import DBManager
 from data_base.project import Project
 
 bot = telebot.TeleBot(config.TOKEN)
@@ -38,6 +39,7 @@ def main_menu_handler(message):
 ВИКИНА ЧАСТЬ: всё будет супер!!!!!!
 """
 project = Project()
+project.themes_names = list()
 
 def show_main_sell_keyboard(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -93,25 +95,47 @@ def process_subscribers_step(message):
         return
     message = bot.send_message(message.chat.id,
                                text="Укажите тему или темы вашего проекта:")
-    bot.register_next_step_handler(message, process_themes_id_step)
+    process_themes_step(message)
 
-def process_themes_id_step(message):
-    #choose_themes(message)
-    project.themes_id = message.text
+def process_themes_step(message):
+    choose_themes()
     message = bot.send_message(message.chat.id,
                                text="Какой доход у вашего проекта?")
     bot.register_next_step_handler(message, process_income_step)
 
-# def choose_themes_menu(message):
-#     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-#     theme_button_1 = types.KeyboardButton("Криптовалюта")
-#     theme_button_2 = types.KeyboardButton("Выставить проект на продажу")
-#     theme_button_3 = types.KeyboardButton("Выставить проект на продажу")
-#     theme_button_4 = types.KeyboardButton("Выставить проект на продажу")
-#     markup.add()
-#     bot.send_message(message.chat.id, '🗄 Ваши проекты 🗄', reply_markup=markup)
+def choose_themes_menu1(message, text):
+     markup = types.ReplyKeyboardMarkup()
+     theme_button_1 = types.KeyboardButton("Криптовалюта")
+     theme_button_2 = types.KeyboardButton("Недвижимость")
+     theme_button_3 = types.KeyboardButton("Маркетинг")
+     theme_button_4 = types.KeyboardButton("Бизнес/Финансы")
+     markup.add(theme_button_1, theme_button_2, theme_button_3, theme_button_4)
+     bot.send_message(message.chat.id, text=text, reply_markup=markup)
 
-#def choose_themes(message):
+def choose_themes(message):
+    text = 'Список тем'
+    choose_themes_menu1(message, text)
+    themes_name = message.text
+    project.themes_names.append(themes_name)
+    project.themes_id = DBManager().get_themes_id_by_names(project.themes_names)
+    message = bot.send_message(message.chat.id,
+                               'Хотите добавить ещё одну тему?')
+    bot.register_next_step_handler(message, choose_themes_menu2)
+    
+def choose_themes_menu2(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    yes_button = types.KeyboardButton("Да")
+    no_button = types.KeyboardButton("Нет")
+    markup.add(yes_button, no_button)
+    bot.send_message(message.chat.id, '🆗', reply_markup=markup)
+
+def choose_themes_menu3(message):
+    if message.text == "Да":
+        choose_themes_menu1(message)
+        bot.register_next_step_handler(message, process_income_step)
+
+    elif message.text == "Нет":
+        process_income_step(message)
 
 
 def process_income_step(message):
@@ -135,6 +159,7 @@ def process_save_step(message):
     message = bot.send_message(message.chat.id,
                                text="Вы вернулись в главное меню")
     main_menu_handler(message)
+    print(project.name)
     project.save_new_project()
 
 def get_list_of_projects(message):
