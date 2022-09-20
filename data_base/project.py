@@ -90,7 +90,7 @@ class Project:
         if self.db_manager.is_project_exist_by_id(self.id):
             project_sql_row = self.db_manager.get_project_by_id(self.id)
             themes_id = self.db_manager.get_themes_id(self.id)
-            self.set_params(seller_id=project_sql_row[1], name=project_sql_row[2], price=project_sql_row[3],
+            self.set_params(name=project_sql_row[2], price=project_sql_row[3],
                             status_id=project_sql_row[4], subscribers=project_sql_row[5], income=project_sql_row[6],
                             comment=project_sql_row[7], themes_id=themes_id)
         else:
