@@ -280,6 +280,23 @@ class DBManager:
             themes_names.append(theme_name[0])
         return themes_names
 
+    def get_themes_id_by_names(self, themes_names):
+        """
+        This function creates SELECT query for getting themes's id
+        from `theme` table by themes's names.
+
+        :param themes_names: list with themes's names
+        :type themes_names: :list:`str`
+
+        :return: list with themes's id
+        :rtype: :list:`int`
+        """
+        themes_id = list()
+        for theme in themes_names:
+            get_theme_id_query = "SELECT `id` FROM `theme` WHERE `theme_name` = '%s';" % theme
+            themes_id.append(self.execute_read_query(self.connection, get_theme_id_query)[0][0])
+        return themes_id
+
     def get_themes_id(self, project_id):
         """
         This function creates SELECT query for getting themes's id
