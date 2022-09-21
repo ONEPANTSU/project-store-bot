@@ -39,6 +39,7 @@ def main_menu_handler(message):
 ВИКИНА ЧАСТЬ: всё будет супер!!!!!!
 """
 
+
 def show_main_sell_keyboard(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     to_sell_project_button = types.KeyboardButton("Выставить проект на продажу")

@@ -339,7 +339,11 @@ class DBManager:
         """
         get_themes_query = "SELECT * FROM `theme`;"
         themes_info = self.execute_read_query(self.connection, get_themes_query)
-        return themes_info
+        return_dict = {}
+        for i in range(len(themes_info)):
+            return_dict[themes_info[i][0]] = themes_info[i][1]
+
+        return return_dict
 
     def get_status_name(self, status_id):
         """
