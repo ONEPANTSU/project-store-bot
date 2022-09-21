@@ -249,6 +249,20 @@ class DBManager:
         projects = self.execute_read_query(self.connection, get_projects_query)
         return projects
 
+    def get_project_id_by_theme_id(self, theme_id):
+        """
+        This function creates SELECT query for getting project's id by theme's id.
+
+        :param theme_id: id of the theme
+        :type theme_id: :obj: `int`
+
+        :return: list of the projects with the concrete theme
+        :rtype: :list::list:`str`
+        """
+        get_projects_id_query = "SELECT `project_id` FROM `project_theme` WHERE `theme_id` = '%s';" % theme_id
+        projects_id = self.execute_read_query(self.connection, get_projects_id_query)
+        return projects_id
+
     def get_project_by_id(self, project_id):
         """
         This function creates SELECT query for getting project's info by project's id.
