@@ -342,6 +342,7 @@ class DBManager:
         themes_id = self.execute_read_query(self.connection, get_theme_id_query)
         return themes_id
 
+
     def get_all_themes(self):
         """
         This function creates SELECT query for getting dictionary with all themes

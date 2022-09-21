@@ -35,6 +35,13 @@ def main_menu_handler(message):
         bot.register_next_step_handler(message, main_buy_handler)
 
 
+def return_to_main_menu_keyboard(message, text):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    main_menu_button = types.KeyboardButton("Вернуться в главное меню")
+    markup.add(main_menu_button)
+    bot.send_message(message.chat.id, text=text, reply_markup=markup)
+
+
 """
 ВИКИНА ЧАСТЬ: всё будет супер!!!!!!
 """
@@ -188,7 +195,7 @@ def show_main_buy_keyboard(message):
 
 def main_buy_handler(message):
     if message.text == "Выбрать тематику":
-        choose_category(message)
+        choose_theme_for_buy(message)
     elif message.text == "Выбрать ценовой диапазон":
         choose_price_range(message)
     elif message.text == "Вернуться в главное меню":
@@ -197,7 +204,7 @@ def main_buy_handler(message):
 
 
 # Действия после нажатия кнопки "Выбрать тематику"
-def choose_category(message):
+def choose_theme_for_buy(message):
     # С помощью функции get_all_themes() присваиваем в themes - словарь с темами и их айди
     themes = DBManager().get_all_themes()
     button_list = []
@@ -209,6 +216,9 @@ def choose_category(message):
     reply_markup = types.InlineKeyboardMarkup(build_menu(button_list, n_cols=2))
     # отправка клавиатуры в чат
     bot.send_message(message.chat.id, text="Выберите интересные тематики", reply_markup=reply_markup)
+    if message.text == "Вернуться в главное меню":
+        show_main_keyboard(message, "📌 Главное меню 📌")
+        bot.register_next_step_handler(message, main_menu_handler)
 
 
 # Функция построения меню в сообщении
@@ -224,7 +234,8 @@ def build_menu(buttons, n_cols, header_buttons=None, footer_buttons=None):
 @bot.callback_query_handler(func=lambda call: True)
 def theme_handler(call):
     theme_id = int(call.data[5:])
-    bot.send_message(call.message.chat.id, 'Data: {}'.format(str(call.data)))
+    proj = DBManager().get_projects_by_theme_id(theme_id)
+    bot.send_message(call.message.chat.id, 'Data: {}'.format(proj))
     bot.answer_callback_query(call.id)
 
 
