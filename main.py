@@ -39,6 +39,7 @@ def main_menu_handler(message):
 ВИКИНА ЧАСТЬ: всё будет супер!!!!!!
 """
 
+
 def show_main_sell_keyboard(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     to_sell_project_button = types.KeyboardButton("Выставить проект на продажу")
@@ -98,14 +99,13 @@ def process_subscribers_step(message, project):
         return
     message = bot.send_message(message.chat.id,
                                text="Укажите тему или темы вашего проекта:")
-    process_themes_step(message, project)
-
-
-def process_themes_step(message, project):
     choose_themes(message, project)
-    message = bot.send_message(message.chat.id,
-                               text="Какой доход у вашего проекта?")
-    bot.register_next_step_handler(message, process_income_step)
+
+
+def choose_themes(message, project):
+    text = 'Список тем'
+    choose_themes_menu1(message, text)
+    bot.register_next_step_handler(message, choose_themes_menu2, project)
 
 
 def choose_themes_menu1(message, text):
@@ -118,32 +118,27 @@ def choose_themes_menu1(message, text):
     bot.send_message(message.chat.id, text=text, reply_markup=markup)
 
 
-def choose_themes(message, project):
-    text = 'Список тем'
-    choose_themes_menu1(message, text)
+def choose_themes_menu2(message, project):
     themes_name = message.text
     project.themes_names.append(themes_name)
     project.themes_id = DBManager().get_themes_id_by_names(project.themes_names)
-    message = bot.send_message(message.chat.id,
-                               'Хотите добавить ещё одну тему?')
-    bot.register_next_step_handler(message, choose_themes_menu2)
-
-
-def choose_themes_menu2(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     yes_button = types.KeyboardButton("Да")
     no_button = types.KeyboardButton("Нет")
     markup.add(yes_button, no_button)
-    bot.send_message(message.chat.id, '🆗', reply_markup=markup)
+    bot.send_message(message.chat.id, 'Хотите выбрать ещё тему?', reply_markup=markup)
+    bot.register_next_step_handler(message, choose_themes_menu3, project)
 
 
 def choose_themes_menu3(message, project):
     if message.text == "Да":
-        choose_themes_menu1(message)
-        bot.register_next_step_handler(message, process_income_step, project)
+        choose_themes(message, project)
+        #bot.register_next_step_handler(message, process_income_step, project)
 
     elif message.text == "Нет":
-        process_income_step(message)
+        message = bot.send_message(message.chat.id,
+                                   text="Какой доход у вашего проекта?")
+        bot.register_next_step_handler(message, process_income_step, project)
 
 
 def process_income_step(message, project):
