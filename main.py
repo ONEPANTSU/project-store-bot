@@ -185,7 +185,7 @@ def get_list_of_projects(message):
 
 def show_main_buy_keyboard(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    category_button = types.KeyboardButton("Выбрать категорию")
+    category_button = types.KeyboardButton("Выбрать тематику")
     price_range_button = types.KeyboardButton("Выбрать ценовой диапазон")
     back_button = types.KeyboardButton("Вернуться в главное меню")
     markup.add(category_button, price_range_button, back_button)
@@ -193,7 +193,7 @@ def show_main_buy_keyboard(message):
 
 
 def main_buy_handler(message):
-    if message.text == "Выбрать категорию":
+    if message.text == "Выбрать тематику":
         choose_category(message)
     elif message.text == "Выбрать ценовой диапазон":
         choose_price_range(message)
@@ -202,30 +202,22 @@ def main_buy_handler(message):
         bot.register_next_step_handler(message, main_menu_handler)
 
 
+# Действия после нажатия кнопки "Выбрать тематику"
 def choose_category(message):
-    button_list = [
-        types.InlineKeyboardButton(text="Криптовалюта", callback_data="1"),
-        types.InlineKeyboardButton(text="Недвижимость", callback_data="2"),
-        types.InlineKeyboardButton(text="Маркетинг", callback_data="3"),
-        types.InlineKeyboardButton(text="Бизнес/Финансы", callback_data="4"),
-        types.InlineKeyboardButton(text="IT", callback_data="5"),
-        types.InlineKeyboardButton(text="Образование", callback_data="6"),
-        types.InlineKeyboardButton(text="Психология/Саморазвитие", callback_data="7"),
-        types.InlineKeyboardButton(text="Искусство", callback_data="8"),
-        types.InlineKeyboardButton(text="Авторский блог", callback_data="9"),
-        types.InlineKeyboardButton(text="Спорт", callback_data="10"),
-        types.InlineKeyboardButton(text="Наука", callback_data="11"),
-        types.InlineKeyboardButton(text="Технологии", callback_data="12"),
-        types.InlineKeyboardButton(text="Факты", callback_data="13"),
-        types.InlineKeyboardButton(text="Здоровье", callback_data="14"),
-        types.InlineKeyboardButton(text="Фитнес", callback_data="15")
-    ]
-    # сборка клавиатуры из кнопок `InlineKeyboardButton`
+    # С помощью функции get_all_themes() присваиваем в themes - словарь с темами и их айди
+    themes = DBManager().get_all_themes()
+    button_list = []
+    # Заполнение списка тем из словаря с базы данных
+    for i in themes.keys():
+        button_list.append(types.InlineKeyboardButton(text=themes[i], callback_data="ch_ct{}".format(i)))
+
+    # # сборка клавиатуры из кнопок `InlineKeyboardButton`
     reply_markup = types.InlineKeyboardMarkup(build_menu(button_list, n_cols=2))
     # отправка клавиатуры в чат
-    bot.send_message(message.chat.id, text="Список категорий", reply_markup=reply_markup)
+    bot.send_message(message.chat.id, text="Выберите интересные тематики", reply_markup=reply_markup)
 
 
+# Функция построения меню в сообщении
 def build_menu(buttons, n_cols, header_buttons=None, footer_buttons=None):
     menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
     if header_buttons:
@@ -235,6 +227,14 @@ def build_menu(buttons, n_cols, header_buttons=None, footer_buttons=None):
     return menu
 
 
+@bot.callback_query_handler(func=lambda call: True)
+def theme_handler(call):
+    theme_id = int(call.data[5:])
+    bot.send_message(call.message.chat.id, 'Data: {}'.format(str(call.data)))
+    bot.answer_callback_query(call.id)
+
+
+# Действия после нажатия кнопки "Выбрать ценовой диапазон"
 def choose_price_range(message):
     pass
 
