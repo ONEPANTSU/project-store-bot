@@ -249,7 +249,7 @@ class DBManager:
         projects = self.execute_read_query(self.connection, get_projects_query)
         return projects
 
-    def get_projects_by_theme_id(self, theme_id):
+    def get_projects_info_by_theme_id(self, theme_id):
         """
         This function creates SELECT query for getting all project's info by theme's id.
 
@@ -515,3 +515,4 @@ class DBManager:
             return result
         except Error as e:
             print(f"The error '{e}' occurred")
+

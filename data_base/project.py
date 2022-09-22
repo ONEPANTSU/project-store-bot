@@ -90,7 +90,7 @@ class Project:
         if self.db_manager.is_project_exist_by_id(self.id):
             project_sql_row = self.db_manager.get_project_by_id(self.id)
             themes_id = self.db_manager.get_themes_id(self.id)
-            self.set_params(name=project_sql_row[2], price=project_sql_row[3],
+            self.set_params(seller_name=project_sql_row[1], name=project_sql_row[2], price=project_sql_row[3],
                             status_id=project_sql_row[4], subscribers=project_sql_row[5], income=project_sql_row[6],
                             comment=project_sql_row[7], themes_id=themes_id)
         else:
@@ -185,27 +185,43 @@ class Project:
         guarantee_reviews = self.db_manager.get_guarantee_info()[1]
         return guarantee_reviews
 
-    def check_is_not_none(self):
-        """
-        This function checks "params_are_not_none" variable.
-        """
-        if self.status is None and self.status_id is not None:
-            self.status = self.db_manager.get_status_name(self.status_id)
 
-        if self.seller_name is not None:
-            if self.db_manager.is_seller_exist(self.seller_name):
-                self.seller_id = self.db_manager.get_seller_id_by_seller_name(self.seller_name)
-            else:
-                self.seller_id = -1
+def get_projects_list_by_theme_id(theme_id):
+    """
+    This function creates SELECT query for getting all Project class's objects by theme's id.
 
-        if self.themes_names is None and self.themes_id is not None:
-            self.themes_names = self.db_manager.get_themes_names(self.themes_id)
-        elif self.themes_id is None and self.themes_names is not None:
-            self.themes_id = self.db_manager.get_themes_id_by_names(self.themes_names)
+    :param theme_id: id of the theme
+    :type theme_id: :obj: `int`
 
-        if self.name is not None and self.seller_name is not None and self.seller_id is not None and \
-                self.price is not None and self.status_id is not None and self.themes_id is not None and \
-                self.income is not None and self.comment is not None:
-            self.params_are_not_none = True
+    :return: list of the Project class's objects with the concrete theme
+    :rtype: :list::class:`data_base.project.Project`
+    """
+    projects_info = DBManager().get_projects_info_by_theme_id(theme_id)
+    project_list = list()
+    for project_info in projects_info:
+        new_project = Project()
+        new_project.set_params_by_id(project_info[0])
+        project_list.append(new_project)
+    return project_list
+
+
+def get_projects_list_by_themes_id(themes_id):
+    """
+    This function creates SELECT query for getting all Project class's objects by ist with themes's id.
+
+    :param themes_id: list with id of the themes
+    :type themes_id: :list: `int`
+
+    :return: list of the Project class's objects with the concrete theme
+    :rtype: :list::class:`data_base.project.Project`
+    """
+    projects_list = list()
+    for theme_id in themes_id:
+        projects_list = projects_list + get_projects_list_by_theme_id(theme_id)
+    id_list = list()
+    for current_project in projects_list:
+        if current_project.id in id_list:
+            projects_list.remove(current_project)
         else:
-            self.params_are_not_none = False
+            id_list.append(current_project.id)
+    return projects_list
