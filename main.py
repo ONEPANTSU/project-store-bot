@@ -5,6 +5,7 @@ from data_base.db_manager import DBManager
 from data_base.project import Project, get_projects_list_by_theme_id, get_projects_list_by_themes_id
 
 bot = telebot.TeleBot(config.TOKEN)
+db_manager = DBManager()
 
 
 def show_main_keyboard(message, text):
@@ -61,7 +62,7 @@ def main_sell_handler(message):
 
 def put_up_for_sale(message):
     bot.send_message(message.chat.id, text="🖊Заполните анкету🖊")
-    project = Project()
+    project = Project(db_manager)
     project.themes_names = list()
     project.seller_name = "@" + message.from_user.username
     project.status_id = 0
@@ -133,7 +134,7 @@ def choose_themes_menu2(message, project):
 def choose_themes_menu3(message, project):
     if message.text == "Да":
         choose_themes(message, project)
-        #bot.register_next_step_handler(message, process_income_step, project)
+        # bot.register_next_step_handler(message, process_income_step, project)
 
     elif message.text == "Нет":
         message = bot.send_message(message.chat.id,

@@ -262,7 +262,7 @@ class DBManager:
         projects_id = self.get_projects_id_by_theme_id(theme_id)
         projects = list()
         for project_id in projects_id:
-            projects.append(self.get_project_by_id(project_id))
+            projects.append(self.get_all_project_info_by_id(project_id))
         return projects
 
     def get_projects_id_by_theme_id(self, theme_id):
@@ -279,9 +279,34 @@ class DBManager:
         projects_id = self.execute_read_query(self.connection, get_projects_id_query)
         return projects_id
 
+    def get_all_project_info_by_id(self, project_id):
+        """
+        This function creates SELECT query for getting all info about project by project's id
+        for filling Project class's object.
+
+        :param project_id: id of the project
+        :type project_id: :obj: `int`
+
+        :return: all project info: id, seller_id, name, price, status_id, subscribers, income,
+                    comment, seller_name, status_name, themes_id, themes_name
+        :rtype: :list:`str`
+        """
+        get_project_query = "SELECT project.id, project.seller_id, project.name, project.price, " \
+                            "project.status_id, project.subscribers, project.income, project.comment, " \
+                            "seller.telegram_name, status.status_name, theme.id AS theme_id, theme.theme_name " \
+                            "FROM `project` " \
+                            "INNER JOIN `seller` ON project.seller_id = seller.id " \
+                            "INNER JOIN `project_theme` ON project.id = project_theme.project_id " \
+                            "INNER JOIN `theme` ON project_theme.theme_id = theme.id " \
+                            "INNER JOIN `status` ON project.status_id = status.id " \
+                            "WHERE project.id = '%s';" % project_id
+        project = self.execute_read_query(self.connection, get_project_query)
+
+        return project
+
     def get_project_by_id(self, project_id):
         """
-        This function creates SELECT query for getting project's info by project's id.
+        This function creates SELECT query for getting info from `project` table by project's id.
 
         :param project_id: id of the project
         :type project_id: :obj: `int`
@@ -515,4 +540,3 @@ class DBManager:
             return result
         except Error as e:
             print(f"The error '{e}' occurred")
-

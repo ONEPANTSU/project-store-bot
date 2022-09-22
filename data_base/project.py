@@ -1,27 +1,27 @@
-from data_base.db_manager import DBManager
-
-
 class Project:
     """
     Data class for convenient work with Data Base's tables
     """
 
-    def __init__(self) -> object:
+    def __init__(self, db_manager) -> object:
         """
         Project class constructor.
+
+        :param db_manager: DBManager for connection to Data Base
+        :type db_manager: :class: `data_base.db_manager.DBManager`
 
         :return: Instance of the class
         :rtype: :class:`data_base.project.Project`
         """
-        self.db_manager = DBManager()
+        self.db_manager = db_manager
 
         self.params_are_not_none = False
         self.id = None
         self.seller_id = None
         self.seller_name = None
         self.name = None
-        self.themes_id = None
-        self.themes_names = None
+        self.themes_id = list()
+        self.themes_names = list()
         self.price = None
         self.status_id = None
         self.status = None
@@ -129,13 +129,13 @@ class Project:
             else:
                 self.seller_id = -1
 
-        if self.themes_names is None and self.themes_id is not None:
+        if len(self.themes_names) == 0 and len(self.themes_id) != 0:
             self.themes_names = self.db_manager.get_themes_names(self.themes_id)
-        elif self.themes_id is None and self.themes_names is not None:
+        elif len(self.themes_id) == 0 and len(self.themes_names) != 0:
             self.themes_id = self.db_manager.get_themes_id_by_names(self.themes_names)
 
         if self.name is not None and self.seller_name is not None and self.seller_id is not None and \
-                self.price is not None and self.status_id is not None and self.themes_id is not None and \
+                self.price is not None and self.status_id is not None and len(self.themes_id) != 0 and \
                 self.income is not None and self.comment is not None:
             self.params_are_not_none = True
         else:
@@ -186,9 +186,12 @@ class Project:
         return guarantee_reviews
 
 
-def get_projects_list_by_theme_id(theme_id):
+def get_projects_list_by_theme_id(db_manager, theme_id):
     """
     This function creates SELECT query for getting all Project class's objects by theme's id.
+
+    :param db_manager: DBManager for connection to Data Base
+    :type db_manager: :class: `data_base.db_manager.DBManager`
 
     :param theme_id: id of the theme
     :type theme_id: :obj: `int`
@@ -196,18 +199,34 @@ def get_projects_list_by_theme_id(theme_id):
     :return: list of the Project class's objects with the concrete theme
     :rtype: :list::class:`data_base.project.Project`
     """
-    projects_info = DBManager().get_projects_info_by_theme_id(theme_id)
+    projects_info = db_manager.get_projects_info_by_theme_id(theme_id)
     project_list = list()
     for project_info in projects_info:
-        new_project = Project()
-        new_project.set_params_by_id(project_info[0])
+        new_project = Project(db_manager)
+        new_project.id = project_info[0][0]
+        new_project.seller_id = project_info[0][1]
+        new_project.name = project_info[0][2]
+        new_project.price = project_info[0][3]
+        new_project.status_id = project_info[0][4]
+        new_project.subscribers = project_info[0][5]
+        new_project.income = project_info[0][6]
+        new_project.comment = project_info[0][7]
+        new_project.seller_name = project_info[0][8]
+        new_project.status = project_info[0][9]
+        for i in range(len(project_info)):
+            new_project.themes_id.append(project_info[i][10])
+            new_project.themes_names.append(project_info[i][11])
+        new_project.params_are_not_none = True
         project_list.append(new_project)
     return project_list
 
 
-def get_projects_list_by_themes_id(themes_id):
+def get_projects_list_by_themes_id(db_manager, themes_id):
     """
     This function creates SELECT query for getting all Project class's objects by ist with themes's id.
+
+    :param db_manager: DBManager for connection to Data Base
+    :type db_manager: :class: `data_base.db_manager.DBManager`
 
     :param themes_id: list with id of the themes
     :type themes_id: :list: `int`
@@ -216,12 +235,13 @@ def get_projects_list_by_themes_id(themes_id):
     :rtype: :list::class:`data_base.project.Project`
     """
     projects_list = list()
+    db_manager = db_manager
     for theme_id in themes_id:
-        projects_list = projects_list + get_projects_list_by_theme_id(theme_id)
+        projects_list = projects_list + get_projects_list_by_theme_id(db_manager, theme_id)
     id_list = list()
-    for current_project in projects_list:
-        if current_project.id in id_list:
-            projects_list.remove(current_project)
+    for element in projects_list:
+        if element.id in id_list:
+            projects_list.remove(element)
         else:
-            id_list.append(current_project.id)
+            id_list.append(element.id)
     return projects_list
