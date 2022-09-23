@@ -2,7 +2,7 @@ from telebot import types
 import telebot
 import config
 from data_base.db_manager import DBManager
-from data_base.project import Project, get_projects_list_by_theme_id, get_projects_list_by_themes_id
+from data_base.project import Project, get_projects_list_by_seller_name, get_projects_list_by_themes_id
 
 bot = telebot.TeleBot(config.TOKEN)
 db_manager = DBManager()

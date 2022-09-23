@@ -200,6 +200,53 @@ def get_projects_list_by_theme_id(db_manager, theme_id):
     :rtype: :list::class:`data_base.project.Project`
     """
     projects_info = db_manager.get_projects_info_by_theme_id(theme_id)
+    return to_parse_project_list(db_manager, projects_info)
+
+
+def get_projects_list_by_themes_id(db_manager, themes_id):
+    """
+    This function creates SELECT query for getting all Project class's objects by themes's id.
+
+    :param db_manager: DBManager for connection to Data Base
+    :type db_manager: :class: `data_base.db_manager.DBManager`
+
+    :param themes_id: list with id of the themes
+    :type themes_id: :list: `int`
+
+    :return: list of the Project class's objects with the concrete theme
+    :rtype: :list::class:`data_base.project.Project`
+    """
+    projects_list = list()
+    for theme_id in themes_id:
+        projects_list = projects_list + get_projects_list_by_theme_id(db_manager, theme_id)
+    id_list = list()
+    for element in projects_list:
+        if element.id in id_list:
+            projects_list.remove(element)
+        else:
+            id_list.append(element.id)
+    return projects_list
+
+
+def get_projects_list_by_seller_name(db_manager, seller_name):
+    """
+    This function creates SELECT query for getting all Project class's objects by seller's name.
+
+    :param db_manager: DBManager for connection to Data Base
+    :type db_manager: :class: `data_base.db_manager.DBManager`
+
+    :param seller_name: telegram name of the seller
+    :type seller_name: :list: `str`
+
+    :return: list of the Project class's objects with the concrete theme
+    :rtype: :list::class:`data_base.project.Project`
+    """
+    projects_info = db_manager.get_projects_info_by_seller_name(seller_name)
+    projects_list = to_parse_project_list(db_manager, projects_info)
+    return projects_list
+
+
+def to_parse_project_list(db_manager, projects_info):
     project_list = list()
     for project_info in projects_info:
         new_project = Project(db_manager)
@@ -219,29 +266,3 @@ def get_projects_list_by_theme_id(db_manager, theme_id):
         new_project.params_are_not_none = True
         project_list.append(new_project)
     return project_list
-
-
-def get_projects_list_by_themes_id(db_manager, themes_id):
-    """
-    This function creates SELECT query for getting all Project class's objects by ist with themes's id.
-
-    :param db_manager: DBManager for connection to Data Base
-    :type db_manager: :class: `data_base.db_manager.DBManager`
-
-    :param themes_id: list with id of the themes
-    :type themes_id: :list: `int`
-
-    :return: list of the Project class's objects with the concrete theme
-    :rtype: :list::class:`data_base.project.Project`
-    """
-    projects_list = list()
-    db_manager = db_manager
-    for theme_id in themes_id:
-        projects_list = projects_list + get_projects_list_by_theme_id(db_manager, theme_id)
-    id_list = list()
-    for element in projects_list:
-        if element.id in id_list:
-            projects_list.remove(element)
-        else:
-            id_list.append(element.id)
-    return projects_list

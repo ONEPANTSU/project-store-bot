@@ -249,6 +249,38 @@ class DBManager:
         projects = self.execute_read_query(self.connection, get_projects_query)
         return projects
 
+    def get_projects_id_by_seller_name(self, seller_name):
+        """
+        This function creates SELECT query for getting project's id by seller's name.
+
+        :param seller_name: name of the seller
+        :type seller_name: :obj: `str`
+
+        :return: list of the projects with the concrete theme
+        :rtype: :list::list:`str`
+        """
+        get_projects_id_query = "SELECT project.id FROM `project` " \
+                                "INNER JOIN `seller` ON project.seller_id = seller.id  " \
+                                "WHERE `telegram_name` = '%s';" % seller_name
+        projects_id = self.execute_read_query(self.connection, get_projects_id_query)
+        return projects_id
+
+    def get_projects_info_by_seller_name(self, seller_name):
+        """
+        This function creates SELECT query for getting all project's info by seller's name.
+
+        :param seller_name: name of the seller
+        :type seller_name: :obj: `str`
+
+        :return: list of the projects with the concrete theme
+        :rtype: :list::list:`str`
+        """
+        projects_id = self.get_projects_id_by_seller_name(seller_name)
+        projects = list()
+        for project_id in projects_id:
+            projects.append(self.get_all_project_info_by_id(project_id))
+        return projects
+
     def get_projects_info_by_theme_id(self, theme_id):
         """
         This function creates SELECT query for getting all project's info by theme's id.
