@@ -107,10 +107,10 @@ def process_subscribers_step(message, project):
         return
     message = bot.send_message(message.chat.id,
                                text="Укажите тему или темы вашего проекта:")
-    choose_themes(message, project)
+    choose_themes_for_sale(message, project)
 
 
-def choose_themes(message, project):
+def choose_themes_for_sale(message, project):
     text = 'Список тем'
     choose_themes_menu1(message, text)
     bot.register_next_step_handler(message, choose_themes_menu2, project)
@@ -140,8 +140,7 @@ def choose_themes_menu2(message, project):
 
 def choose_themes_menu3(message, project):
     if message.text == "Да":
-        choose_themes(message, project)
-        # bot.register_next_step_handler(message, process_income_step, project)
+        choose_themes_for_sale(message, project)
 
     elif message.text == "Нет":
         message = bot.send_message(message.chat.id,
