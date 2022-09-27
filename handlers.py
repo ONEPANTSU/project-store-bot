@@ -52,3 +52,14 @@ async def get_list_of_projects(message: Message):
 async def back_to_main_menu(message: Message):
     await message.answer(text=MESSAGES['main_menu'].format(message.from_user), reply_markup=get_main_keyboard())
 
+
+@dp.message_handler(text=["💰 Поиск предложений 💰"])
+async def buy_menu(message: Message):
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    category_button = KeyboardButton("Выбрать тематику")
+    price_range_button = KeyboardButton("Выбрать ценовой диапазон")
+    back_button = KeyboardButton("Вернуться в главное меню")
+    markup.add(category_button, price_range_button, back_button)
+    await message.answer(text=MESSAGES['buy_menu'].format(message.from_user), reply_markup=markup)
+
+
