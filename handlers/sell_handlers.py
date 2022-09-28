@@ -18,10 +18,6 @@ def get_main_sell_keyboard():
     return markup
 
 
-async def put_up_for_sale(message: Message):
-    await message.answer(text=MESSAGES['put_up_for_sale'].format(message.from_user), reply_markup=get_main_keyboard())
-
-
 async def get_list_of_projects(message: Message):
     await message.answer(text=MESSAGES['get_list_of_projects'].format(message.from_user),
                          reply_markup=get_main_keyboard())
