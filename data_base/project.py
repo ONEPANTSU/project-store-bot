@@ -1,9 +1,12 @@
+from data_base.db_manager import DBManager
+
+
 class Project:
     """
     Data class for convenient work with Data Base's tables
     """
 
-    def __init__(self, db_manager) -> object:
+    def __init__(self, db_manager: DBManager):
         """
         Project class constructor.
 

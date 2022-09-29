@@ -1,13 +1,13 @@
 from aiogram import Dispatcher
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, Message
-
-from messages import MESSAGES
+from texts.buttons import BUTTONS
+from texts.messages import MESSAGES
 
 
 def get_main_keyboard():
     markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    my_projects_button = KeyboardButton("🗄 Мои предложения 🗄")
-    search_projects_button = KeyboardButton("💰 Поиск предложений 💰")
+    my_projects_button = KeyboardButton(BUTTONS['sell_menu'])
+    search_projects_button = KeyboardButton(BUTTONS['buy_menu'])
     markup.add(my_projects_button, search_projects_button)
     return markup
 
@@ -22,4 +22,4 @@ async def back_to_main_menu(message: Message):
 
 def register_main_handlers(dp: Dispatcher):
     dp.register_message_handler(start_cmd, commands=['start'])
-    dp.register_message_handler(back_to_main_menu, text=['Вернуться в главное меню'])
+    dp.register_message_handler(back_to_main_menu, text=[BUTTONS['back']])

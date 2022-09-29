@@ -5,7 +5,8 @@ from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from data_base.project import Project
 from handlers.main_handlers import get_main_keyboard
 from instruments import db_manager
-from messages import MESSAGES
+from texts.buttons import BUTTONS
+from texts.messages import MESSAGES
 from states import SellProjectStates
 
 
@@ -15,9 +16,9 @@ async def show_main_sell_keyboard(message: Message):
 
 def get_main_sell_keyboard():
     markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    to_sell_project_button = KeyboardButton("Выставить проект на продажу")
-    list_of_my_projects_button = KeyboardButton("Список моих предложений")
-    back_button = KeyboardButton("Вернуться в главное меню")
+    to_sell_project_button = KeyboardButton(BUTTONS['sell_project'])
+    list_of_my_projects_button = KeyboardButton(BUTTONS['sell_list'])
+    back_button = KeyboardButton(BUTTONS['back'])
     markup.add(to_sell_project_button, list_of_my_projects_button, back_button)
     return markup
 
@@ -80,10 +81,7 @@ async def comment_state(message: Message, state: FSMContext):
     project.comment = data['comment']
     project.save_new_project()
 
-
     await state.finish()
-
-
 
 
 async def get_list_of_projects(message: Message):
@@ -92,12 +90,12 @@ async def get_list_of_projects(message: Message):
 
 
 def register_sell_handlers(dp: Dispatcher):
-    dp.register_message_handler(show_main_sell_keyboard, text=['🗄 Мои предложения 🗄'])
-    dp.register_message_handler(put_up_for_sale, text=['Выставить проект на продажу'])
+    dp.register_message_handler(show_main_sell_keyboard, text=[BUTTONS['sell_menu']])
+    dp.register_message_handler(put_up_for_sale, text=[BUTTONS['sell_project']])
     dp.register_message_handler(project_name_state, state=SellProjectStates.project_name)
     dp.register_message_handler(price_state, state=SellProjectStates.price)
     dp.register_message_handler(subscribers_state, state=SellProjectStates.subscribers)
     dp.register_message_handler(themes_names_state, state=SellProjectStates.themes_names)
     dp.register_message_handler(income_state, state=SellProjectStates.income)
     dp.register_message_handler(comment_state, state=SellProjectStates.comment)
-    dp.register_message_handler(get_list_of_projects, text=['Список моих предложений'])
+    dp.register_message_handler(get_list_of_projects, text=[BUTTONS['sell_list']])
