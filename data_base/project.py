@@ -32,15 +32,18 @@ class Project:
         self.income = None
         self.comment = None
 
-    def set_params(self, seller_name, name,
+    def set_params(self, seller_id, seller_name, name,
                    price, status_id, subscribers,
                    themes_id, income, comment):
         """
         This function sets values of all params to the Project's object.
         It is necessary for filling all columns in the row of data base.
 
-        :param seller_name: ID of seller table's row
-        :type seller_name: :obj: `int`
+        :param seller_id: ID of seller table's row
+        :type seller_id: :obj: `int`
+
+        :param seller_name: name of the seller
+        :type seller_name: :obj: `str`
 
         :param name: name of the project
         :type name: :obj: `str`
@@ -66,11 +69,6 @@ class Project:
 
         self.params_are_not_none = True
 
-        if self.db_manager.is_seller_exist(seller_name):
-            self.seller_id = self.db_manager.get_seller_id_by_seller_name(seller_name)
-        else:
-            self.seller_id = -1
-        self.seller_name = seller_name
         self.name = name
         self.themes_id = themes_id
         self.themes_names = self.db_manager.get_themes_names(themes_id)
@@ -80,6 +78,18 @@ class Project:
         self.subscribers = subscribers
         self.income = income
         self.comment = comment
+
+        if seller_name is not None:
+            if self.db_manager.is_seller_exist(seller_name):
+                self.seller_id = self.db_manager.get_seller_id_by_seller_name(seller_name)
+            else:
+                self.seller_id = -1
+            self.seller_name = seller_name
+        elif seller_id is not None:
+            self.seller_id = seller_id
+            self.seller_name = self.db_manager.get_seller_name(seller_id)
+        else:
+            print("Error! Seller's info is empty!")
 
     def set_params_by_id(self, project_id):
         """
@@ -93,7 +103,7 @@ class Project:
         if self.db_manager.is_project_exist_by_id(self.id):
             project_sql_row = self.db_manager.get_project_by_id(self.id)
             themes_id = self.db_manager.get_themes_id(self.id)
-            self.set_params(seller_name=project_sql_row[1], name=project_sql_row[2], price=project_sql_row[3],
+            self.set_params(seller_id=project_sql_row[1], seller_name=None, name=project_sql_row[2], price=project_sql_row[3],
                             status_id=project_sql_row[4], subscribers=project_sql_row[5], income=project_sql_row[6],
                             comment=project_sql_row[7], themes_id=themes_id)
         else:
@@ -189,7 +199,7 @@ class Project:
         return guarantee_reviews
 
 
-def get_projects_list_by_theme_id(db_manager, theme_id):
+def get_projects_list_by_theme_id(db_manager: DBManager, theme_id):
     """
     This function creates SELECT query for getting all Project class's objects by theme's id.
 
@@ -206,7 +216,7 @@ def get_projects_list_by_theme_id(db_manager, theme_id):
     return to_parse_project_list(db_manager, projects_info)
 
 
-def get_projects_list_by_themes_id(db_manager, themes_id):
+def get_projects_list_by_themes_id(db_manager: DBManager, themes_id):
     """
     This function creates SELECT query for getting all Project class's objects by themes's id.
 
@@ -231,7 +241,7 @@ def get_projects_list_by_themes_id(db_manager, themes_id):
     return projects_list
 
 
-def get_projects_list_by_seller_name(db_manager, seller_name):
+def get_projects_list_by_seller_name(db_manager: DBManager, seller_name):
     """
     This function creates SELECT query for getting all Project class's objects by seller's name.
 
@@ -249,7 +259,7 @@ def get_projects_list_by_seller_name(db_manager, seller_name):
     return projects_list
 
 
-def to_parse_project_list(db_manager, projects_info):
+def to_parse_project_list(db_manager: DBManager, projects_info):
     project_list = list()
     for project_info in projects_info:
         new_project = Project(db_manager)
