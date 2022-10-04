@@ -1,4 +1,26 @@
-from data_base.db_manager import DBManager
+from instruments import db_manager
+
+
+def get_guarantee_name():
+    """
+    This function returns telegram name of the guarantee from `guarantee` table.
+
+    :return: name of guarantee
+    :rtype: :obj:`str`
+    """
+    guarantee_name = db_manager.get_guarantee_info()[0]
+    return guarantee_name
+
+
+def get_guarantee_reviews():
+    """
+    This function returns telegram channel name with reviews of the guarantee from `guarantee` table.
+
+    :return: telegram channel name with reviews
+    :rtype: :obj:`str`
+    """
+    guarantee_reviews = db_manager.get_guarantee_info()[1]
+    return guarantee_reviews
 
 
 class Project:
@@ -6,17 +28,13 @@ class Project:
     Data class for convenient work with Data Base's tables
     """
 
-    def __init__(self, db_manager: DBManager):
+    def __init__(self):
         """
         Project class constructor.
-
-        :param db_manager: DBManager for connection to Data Base
-        :type db_manager: :class: `data_base.db_manager.DBManager`
 
         :return: Instance of the class
         :rtype: :class:`data_base.project.Project`
         """
-        self.db_manager = db_manager
 
         self.params_are_not_none = False
         self.id = None
@@ -71,23 +89,23 @@ class Project:
 
         self.name = name
         self.themes_id = themes_id
-        self.themes_names = self.db_manager.get_themes_names(themes_id)
+        self.themes_names = db_manager.get_themes_names(themes_id)
         self.price = price
         self.status_id = status_id
-        self.status = self.db_manager.get_status_name(status_id)
+        self.status = db_manager.get_status_name(status_id)
         self.subscribers = subscribers
         self.income = income
         self.comment = comment
 
         if seller_name is not None:
-            if self.db_manager.is_seller_exist(seller_name):
-                self.seller_id = self.db_manager.get_seller_id_by_seller_name(seller_name)
+            if db_manager.is_seller_exist(seller_name):
+                self.seller_id = db_manager.get_seller_id_by_seller_name(seller_name)
             else:
                 self.seller_id = -1
             self.seller_name = seller_name
         elif seller_id is not None:
             self.seller_id = seller_id
-            self.seller_name = self.db_manager.get_seller_name(seller_id)
+            self.seller_name = db_manager.get_seller_name(seller_id)
         else:
             print("Error! Seller's info is empty!")
 
@@ -100,10 +118,11 @@ class Project:
         :type project_id: :obj: `int`
         """
         self.set_id(project_id)
-        if self.db_manager.is_project_exist_by_id(self.id):
-            project_sql_row = self.db_manager.get_project_by_id(self.id)
-            themes_id = self.db_manager.get_themes_id(self.id)
-            self.set_params(seller_id=project_sql_row[1], seller_name=None, name=project_sql_row[2], price=project_sql_row[3],
+        if db_manager.is_project_exist_by_id(self.id):
+            project_sql_row = db_manager.get_project_by_id(self.id)
+            themes_id = db_manager.get_themes_id(self.id)
+            self.set_params(seller_id=project_sql_row[1], seller_name=None, name=project_sql_row[2],
+                            price=project_sql_row[3],
                             status_id=project_sql_row[4], subscribers=project_sql_row[5], income=project_sql_row[6],
                             comment=project_sql_row[7], themes_id=themes_id)
         else:
@@ -127,25 +146,25 @@ class Project:
         if self.params_are_not_none is False:
             print("Error: Project's params are empty")
         else:
-            self.db_manager.insert_project(self)
+            db_manager.insert_project(self)
 
     def check_is_not_none(self):
         """
         This function checks "params_are_not_none" variable.
         """
         if self.status is None and self.status_id is not None:
-            self.status = self.db_manager.get_status_name(self.status_id)
+            self.status = db_manager.get_status_name(self.status_id)
 
         if self.seller_name is not None:
-            if self.db_manager.is_seller_exist(self.seller_name):
-                self.seller_id = self.db_manager.get_seller_id_by_seller_name(self.seller_name)
+            if db_manager.is_seller_exist(self.seller_name):
+                self.seller_id = db_manager.get_seller_id_by_seller_name(self.seller_name)
             else:
                 self.seller_id = -1
 
         if len(self.themes_names) == 0 and len(self.themes_id) != 0:
-            self.themes_names = self.db_manager.get_themes_names(self.themes_id)
+            self.themes_names = db_manager.get_themes_names(self.themes_id)
         elif len(self.themes_id) == 0 and len(self.themes_names) != 0:
-            self.themes_id = self.db_manager.get_themes_id_by_names(self.themes_names)
+            self.themes_id = db_manager.get_themes_id_by_names(self.themes_names)
 
         if self.name is not None and self.seller_name is not None and self.seller_id is not None and \
                 self.price is not None and self.status_id is not None and len(self.themes_id) != 0 and \
@@ -163,7 +182,7 @@ class Project:
         elif self.id is None:
             print("Error: Project's id is empty")
         else:
-            self.db_manager.update_project(self.id, self)
+            db_manager.update_project(self.id, self)
 
     def delete_project_by_id(self, project_id):
         """
@@ -173,38 +192,15 @@ class Project:
         :type project_id: :obj: `int`
         """
         self.set_id(project_id)
-        if self.db_manager.is_project_exist_by_id(self.id):
-            self.db_manager.delete_project(self.id)
+        if db_manager.is_project_exist_by_id(self.id):
+            db_manager.delete_project(self.id)
         else:
             print("Error: Project does not exist")
 
-    def get_guarantee_name(self):
-        """
-        This function returns telegram name of the guarantee from `guarantee` table.
 
-        :return: name of guarantee
-        :rtype: :obj:`str`
-        """
-        guarantee_name = self.db_manager.get_guarantee_info()[0]
-        return guarantee_name
-
-    def get_guarantee_reviews(self):
-        """
-        This function returns telegram channel name with reviews of the guarantee from `guarantee` table.
-
-        :return: telegram channel name with reviews
-        :rtype: :obj:`str`
-        """
-        guarantee_reviews = self.db_manager.get_guarantee_info()[1]
-        return guarantee_reviews
-
-
-def get_projects_list_by_theme_id(db_manager: DBManager, theme_id):
+def get_projects_list_by_theme_id(theme_id):
     """
     This function creates SELECT query for getting all Project class's objects by theme's id.
-
-    :param db_manager: DBManager for connection to Data Base
-    :type db_manager: :class: `data_base.db_manager.DBManager`
 
     :param theme_id: id of the theme
     :type theme_id: :obj: `int`
@@ -213,15 +209,12 @@ def get_projects_list_by_theme_id(db_manager: DBManager, theme_id):
     :rtype: :list::class:`data_base.project.Project`
     """
     projects_info = db_manager.get_projects_info_by_theme_id(theme_id)
-    return to_parse_project_list(db_manager, projects_info)
+    return to_parse_project_list(projects_info)
 
 
-def get_projects_list_by_themes_id(db_manager: DBManager, themes_id):
+def get_projects_list_by_themes_id(themes_id):
     """
     This function creates SELECT query for getting all Project class's objects by themes's id.
-
-    :param db_manager: DBManager for connection to Data Base
-    :type db_manager: :class: `data_base.db_manager.DBManager`
 
     :param themes_id: list with id of the themes
     :type themes_id: :list: `int`
@@ -231,7 +224,7 @@ def get_projects_list_by_themes_id(db_manager: DBManager, themes_id):
     """
     projects_list = list()
     for theme_id in themes_id:
-        projects_list = projects_list + get_projects_list_by_theme_id(db_manager, theme_id)
+        projects_list = projects_list + get_projects_list_by_theme_id(theme_id)
     id_list = list()
     for element in projects_list:
         if element.id in id_list:
@@ -241,12 +234,9 @@ def get_projects_list_by_themes_id(db_manager: DBManager, themes_id):
     return projects_list
 
 
-def get_projects_list_by_seller_name(db_manager: DBManager, seller_name):
+def get_projects_list_by_seller_name(seller_name):
     """
     This function creates SELECT query for getting all Project class's objects by seller's name.
-
-    :param db_manager: DBManager for connection to Data Base
-    :type db_manager: :class: `data_base.db_manager.DBManager`
 
     :param seller_name: telegram name of the seller
     :type seller_name: :list: `str`
@@ -255,14 +245,14 @@ def get_projects_list_by_seller_name(db_manager: DBManager, seller_name):
     :rtype: :list::class:`data_base.project.Project`
     """
     projects_info = db_manager.get_projects_info_by_seller_name(seller_name)
-    projects_list = to_parse_project_list(db_manager, projects_info)
+    projects_list = to_parse_project_list(projects_info)
     return projects_list
 
 
-def to_parse_project_list(db_manager: DBManager, projects_info):
+def to_parse_project_list(projects_info):
     project_list = list()
     for project_info in projects_info:
-        new_project = Project(db_manager)
+        new_project = Project()
         new_project.id = project_info[0][0]
         new_project.seller_id = project_info[0][1]
         new_project.name = project_info[0][2]
