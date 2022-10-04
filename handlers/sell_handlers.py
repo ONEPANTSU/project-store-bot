@@ -1,10 +1,9 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, LabeledPrice, ContentType, PreCheckoutQuery
-from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, \
+    LabeledPrice, ContentType, PreCheckoutQuery
 
 from config import PAYMENTS_TOKEN
-from data_base.project import Project
 from data_base.project import Project, get_projects_list_by_seller_name
 from handlers.main_handlers import get_main_keyboard
 from instruments import db_manager, bot
@@ -163,11 +162,7 @@ async def buy_process(message: Message, state: FSMContext):
 
 async def checkout_process(pre_checkout_query: PreCheckoutQuery):
     await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
-async def get_list_of_projects(message: Message):
-    project_list = get_projects_list_by_seller_name(message.from_user.username)
-    await message.reply(text=MESSAGES['get_list_of_projects'], reply_markup=list_of_project_menu())
 
-    #await message.reply()
 
 async def successful_payment(message: Message):
     new_projects_dict[message.from_user.username].save_new_project()
@@ -179,9 +174,15 @@ async def successful_payment(message: Message):
     )
 
 
+async def get_list_of_projects(message: Message):
+    project_list = get_projects_list_by_seller_name(message.from_user.username)
+    await message.reply(text=MESSAGES['get_list_of_projects'], reply_markup=list_of_project_menu())
+
+    # await message.reply()
+
 
 def list_of_project_menu():
-    markup = InlineKeyboardMarkup(row_width = 2)
+    markup = InlineKeyboardMarkup(row_width=2)
     prev_button = InlineKeyboardButton(text=BUTTONS['prev'], callback='prev')
     next_button = InlineKeyboardButton(text=BUTTONS['next'], callback='next')
     markup.add(prev_button, next_button)
