@@ -120,7 +120,7 @@ class DBManager:
         :type themes_id: :list: `int`
         """
         for theme_id in themes_id:
-            project_theme_val = str(project_id) + ", " + str(theme_id[0])
+            project_theme_val = str(project_id) + ", " + str(theme_id)
             create_project_theme = QUERIES['insert_project_theme'] % project_theme_val
             self.execute_query(self.connection, create_project_theme)
 

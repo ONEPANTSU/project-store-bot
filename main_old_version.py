@@ -179,7 +179,13 @@ def process_save_step(message, project):
 def get_list_of_projects(message):
     pass
 
-
+# markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+#     theme1_button = KeyboardButton(BUTTONS['theme1'])
+#     theme2_button = KeyboardButton(BUTTONS['theme2'])
+#     theme3_button = KeyboardButton(BUTTONS['theme3'])
+#     theme4_button = KeyboardButton(BUTTONS['theme4'])
+#     markup.add(theme1_button, theme2_button, theme3_button, theme4_button)
+#     return markup
 """
 ИРИНА ЧАСТЬ: охаёёёёёёёёёёё они чан
 """

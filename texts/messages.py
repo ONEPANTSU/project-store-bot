@@ -12,6 +12,11 @@ subscribers_check_question = "Укажите количество подписч
 income_question = "Какой доход у вашего проекта?"
 income_check_question = "Укажите доход проекта числом. Какой доход у вашего проекта:"
 themes_question = "Выберете не более 3-х тематик вашего проекта:"
+themes_warn_question = "Такой темы нет в списке! Выберите тему из списка"
+themes_plus_1_question = "Выберите ещё одну тему"
+themes_plus_question = "Хотите выбрать ещё тему?"
+yes_question = "Да"
+no_question = "Нет"
 comment_question = "Добавьте комментарий к обьявлению:"
 save_project_question = "Ваше обьявление сохранено!"
 
@@ -31,6 +36,11 @@ MESSAGES = {
     'subscribers': subscribers_question,
     'subscribers_check': subscribers_check_question,
     'themes': themes_question,
+    'themes_warn': themes_warn_question,
+    'themes_plus_1': themes_plus_1_question,
+    'themes_plus': themes_plus_question,
+    'yes': yes_question,
+    'no': no_question,
     'income': income_question,
     'income_check': income_check_question,
     'comment': comment_question,

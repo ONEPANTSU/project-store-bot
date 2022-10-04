@@ -6,7 +6,7 @@ from texts.messages import MESSAGES
 
 
 def get_main_keyboard():
-    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     my_projects_button = KeyboardButton(BUTTONS['sell_menu'])
     search_projects_button = KeyboardButton(BUTTONS['buy_menu'])
     markup.add(my_projects_button, search_projects_button)
