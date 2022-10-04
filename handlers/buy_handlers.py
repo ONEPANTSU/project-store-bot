@@ -1,11 +1,12 @@
 from aiogram import Dispatcher
-from aiogram.types import Message, ReplyKeyboardMarkup, ReplyKeyboardRemove,\
-    KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import Message, ReplyKeyboardMarkup, ReplyKeyboardRemove, \
+    KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
+from data_base.project import get_projects_list_by_theme_id
 from handlers.main_handlers import get_main_keyboard
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
-from instruments import db_manager, dp
+from instruments import db_manager, dp, bot
 
 
 async def buy_menu(message: Message):
@@ -24,19 +25,34 @@ async def chose_themes(message: Message):
     themes_keyboard = InlineKeyboardMarkup(row_width=2)
     # Заполнение списка тем из словаря с базы данных
     for i in themes.keys():
-        themes_keyboard.add(InlineKeyboardButton(text=themes[i], callback_data="ch_ct{}".format(i)))
+        themes_keyboard.add(
+            InlineKeyboardButton(text=themes[i], callback_data="ch_ct{}".format(i)))  # Если не выйдет то эту версию
         # button_list.append(InlineKeyboardButton(text=themes[i], callback_data="ch_ct{}".format(i)))
+
     # сборка клавиатуры из кнопок `InlineKeyboardButton`
-
-
     await message.reply(text=MESSAGES['chose_themes'], reply_markup=themes_keyboard)
 
 
-async def theme_callback_handler(call):
-    theme_id = int(call.data[5:])
-    proj = db_manager.get_projects_info_by_theme_id(theme_id)
-    await dp.send_message(call.message.chat.id, 'Data: {}'.format(proj))
-    await dp.answer_callback_query(call.id)
+@dp.callback_query_handler(lambda c: c.data)
+async def theme_callback_handler(callback_query: CallbackQuery):
+    theme_id = int(callback_query.data[5:])
+    projects_list = get_projects_list_by_theme_id(theme_id)
+
+    for project in projects_list:
+        themes_str = ''
+        for i in project.themes_names:
+            themes_str += "#" + str(i) + ' '
+        await bot.send_message(callback_query.message.chat.id, \
+                               '*Название*: {name}\n*Тематика*: {theme}\n*Подписчиков:* {subs}\n*Доход в месяц*: {'
+                               'income}\n\n*Комментарий*: {comm}\n\n*Продавец:* @{seller}\n\n*Цена:* {price}'.format(
+                                   name=project.name,
+                                   theme=themes_str,
+                                   subs=project.subscribers,
+                                   income=project.income,
+                                   comm=project.comment,
+                                   seller=project.seller_name,
+                                   price=project.price), parse_mode='Markdown')
+    await bot.answer_callback_query(callback_query.id)
 
 
 # Функция построения меню в сообщении
@@ -58,4 +74,3 @@ def register_buy_handlers(dp: Dispatcher):
     dp.register_message_handler(chose_themes, text=[BUTTONS['buy_chose_themes']])
     dp.register_message_handler(chose_prices, text=[BUTTONS['buy_price_range']])
     dp.register_callback_query_handler(theme_callback_handler, lambda callback_query: True)
-

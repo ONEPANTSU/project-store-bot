@@ -94,7 +94,7 @@ class Project:
         self.status_id = status_id
         self.status = db_manager.get_status_name(status_id)
         self.subscribers = subscribers
-        self.income = income
+        self.income = income # доход в месяц
         self.comment = comment
 
         if seller_name is not None:
