@@ -4,14 +4,14 @@ from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, InlineKe
     LabeledPrice, ContentType, PreCheckoutQuery
 
 from config import PAYMENTS_TOKEN
-from data_base.project import Project, get_projects_list_by_seller_name
+from data_base.project import Project, get_need_payment, get_to_sell_price
 from handlers.main_handlers import get_main_keyboard
 from instruments import db_manager, bot
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
 from states import SellProjectStates
 
-price_amount = 1000
+price_amount = get_to_sell_price()
 PRICES = [LabeledPrice(label=MESSAGES['sell_payment'], amount=price_amount)]
 new_projects_dict = {}
 
@@ -68,7 +68,7 @@ async def themes_names_state(message: Message, state: FSMContext):
     themes_dict = db_manager.get_all_themes()
     themes_list = themes_dict.values()
     message_text = message.text
-    if set(themes_list) & set(message_text.split()):
+    if message_text in themes_list:
         answer = list()
         data = await state.get_data()
         themes = data.get('themes', False)
@@ -76,6 +76,9 @@ async def themes_names_state(message: Message, state: FSMContext):
             answer = data['themes']
         if message.text not in answer:
             answer.append(message.text)
+        else:
+            await message.answer(text=MESSAGES['themes_already_added'], reply_markup=themes_plus_keyboard())
+            await SellProjectStates.themes_plus.set()
         await state.update_data(themes=answer)
         size = len(answer)
         if size < 3:
@@ -147,17 +150,25 @@ async def buy_process(message: Message, state: FSMContext):
     new_project.themes_names = data['themes']
     new_project.income = data['income']
     new_project.comment = data['comment']
-    new_projects_dict[message.from_user.username] = new_project
-    await bot.send_invoice(message.chat.id,
-                           title=MESSAGES['sell_payment_title'],
-                           description=MESSAGES['sell_payment_description'],
-                           provider_token=PAYMENTS_TOKEN,
-                           currency='rub',
-                           is_flexible=False,
-                           prices=PRICES,
-                           start_parameter='example',
-                           payload='some_invoice')
-    await state.finish()
+    need_payment = get_need_payment()
+    if need_payment == 1:
+        new_projects_dict[message.from_user.username] = new_project
+        await bot.send_invoice(message.chat.id,
+                               title=MESSAGES['sell_payment_title'],
+                               description=MESSAGES['sell_payment_description'],
+                               provider_token=PAYMENTS_TOKEN,
+                               currency='rub',
+                               is_flexible=False,
+                               prices=PRICES,
+                               start_parameter='example',
+                               payload='some_invoice')
+        await state.finish()
+    elif need_payment == 0:
+        new_project.save_new_project()
+        await bot.send_message(
+            message.chat.id,
+            MESSAGES['successful_payment'].format(total_amount=message.successful_payment.total_amount // 100,
+                                                  currency=message.successful_payment.currency))
 
 
 async def checkout_process(pre_checkout_query: PreCheckoutQuery):

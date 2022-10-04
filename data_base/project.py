@@ -1,28 +1,6 @@
 from instruments import db_manager
 
 
-def get_guarantee_name():
-    """
-    This function returns telegram name of the guarantee from `guarantee` table.
-
-    :return: name of guarantee
-    :rtype: :obj:`str`
-    """
-    guarantee_name = db_manager.get_guarantee_info()[0]
-    return guarantee_name
-
-
-def get_guarantee_reviews():
-    """
-    This function returns telegram channel name with reviews of the guarantee from `guarantee` table.
-
-    :return: telegram channel name with reviews
-    :rtype: :obj:`str`
-    """
-    guarantee_reviews = db_manager.get_guarantee_info()[1]
-    return guarantee_reviews
-
-
 class Project:
     """
     Data class for convenient work with Data Base's tables
@@ -269,3 +247,46 @@ def to_parse_project_list(projects_info):
         new_project.params_are_not_none = True
         project_list.append(new_project)
     return project_list
+
+
+def get_guarantee_name():
+    """
+    This function returns telegram name of the guarantee from `settings` table.
+
+    :return: name of guarantee
+    :rtype: :obj:`str`
+    """
+    guarantee_name = db_manager.get_settings_info()[0]
+    return guarantee_name
+
+
+def get_guarantee_reviews():
+    """
+    This function returns telegram channel name with reviews of the guarantee from `settings` table.
+
+    :return: telegram channel name with reviews
+    :rtype: :obj:`str`
+    """
+    guarantee_reviews = db_manager.get_settings_info()[1]
+    return guarantee_reviews
+
+
+def get_need_payment():
+    """
+    This function returns need_payment (0=False, 1=True) from `settings` table.
+
+    :return: 0=False, 1=True
+    :rtype: :obj:`int`
+    """
+    need_payment = db_manager.get_settings_info()[2]
+    return need_payment
+
+def get_to_sell_price():
+    """
+    This function returns selling price from `settings` table.
+
+    :return: selling price
+    :rtype: :obj:`int`
+    """
+    to_sell_price = db_manager.get_settings_info()[3]
+    return to_sell_price

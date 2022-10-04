@@ -52,7 +52,7 @@ select_theme_id_by_theme_name_query = "SELECT `id` FROM `theme` WHERE `theme_nam
 select_themes_id_by_project_id_query = "SELECT `theme_id` FROM `project_theme` WHERE `project_id` = '%s';"
 select_all_themes_query = "SELECT * FROM `theme`;"
 select_status_name_by_status_id_query = "SELECT `status_name` FROM `status` WHERE `id` = '%s';"
-select_all_guarantee_info_query = "SELECT * FROM `guarantee`;"
+select_all_settings_info_query = "SELECT * FROM `settings`;"
 
 update_project_query = """
         UPDATE
@@ -92,7 +92,7 @@ QUERIES = {
     'select_themes_id_by_project_id': select_themes_id_by_project_id_query,
     'select_all_themes': select_all_themes_query,
     'select_status_name_by_status_id': select_status_name_by_status_id_query,
-    'select_all_guarantee_info': select_all_guarantee_info_query,
+    'select_all_settings_info': select_all_settings_info_query,
 
     'update_project': update_project_query,
     'update_seller': update_seller_query,

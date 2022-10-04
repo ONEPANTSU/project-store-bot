@@ -395,16 +395,16 @@ class DBManager:
         status_name = self.execute_read_query(self.connection, get_status_name_query)[0][0]
         return status_name
 
-    def get_guarantee_info(self):
+    def get_settings_info(self):
         """
-        This function creates SELECT query for getting all guarantee info from of `guarantee`.
+        This function creates SELECT query for getting all settings info from of `settings`.
 
-        :return: list of guarantee's name and channel's name of guarantee's reviews.
+        :return: list of guarantee's name, channel's name of guarantee's reviews and need_payment (0=False, 1=True).
         :rtype: :list:`str`
         """
-        get_guarantee_query = QUERIES['select_all_guarantee_info']
-        guarantee_info = self.execute_read_query(self.connection, get_guarantee_query)[0]
-        return guarantee_info
+        get_settings_query = QUERIES['select_all_settings_info']
+        settings_info = self.execute_read_query(self.connection, get_settings_query)[0]
+        return settings_info
 
     def update_project(self, project_id, project):
         """
