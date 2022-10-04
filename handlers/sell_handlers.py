@@ -1,13 +1,18 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, LabeledPrice, ContentType, PreCheckoutQuery
 
+from config import PAYMENTS_TOKEN
 from data_base.project import Project
 from handlers.main_handlers import get_main_keyboard
-from instruments import db_manager
+from instruments import db_manager, bot
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
 from states import SellProjectStates
+
+price_amount = 1000
+PRICES = [LabeledPrice(label=MESSAGES['sell_payment'], amount=price_amount)]
+new_projects_dict = {}
 
 
 async def show_main_sell_keyboard(message: Message):
@@ -92,7 +97,7 @@ def themes_menu():
     return markup
 
 
-async def themes_plus_state(message: Message, state: FSMContext):
+async def themes_plus_state(message: Message):
     answer = message.text
     if answer == "Да":
         await message.answer(text=MESSAGES['themes_plus_1'], reply_markup=themes_menu())
@@ -124,27 +129,48 @@ async def income_state(message: Message, state: FSMContext):
 async def comment_state(message: Message, state: FSMContext):
     answer = message.text
     await state.update_data(comment=answer)
-    await message.answer(text=MESSAGES['save_project'])
-    project = Project(db_manager)
-    data = await state.get_data()
-    project.name = data['project_name']
-    project.seller_name = message.from_user.username
-    project.status_id = 0
-    project.price = data['price']
-    project.subscribers = data['subscribers']
-    project.themes_names = data['themes']
-    project.income = data['income']
-    project.comment = data['comment']
-    project.save_new_project()
+    '''
+    Подтверждение корректности введённых данных (Да/Нет)
+    '''
+    await SellProjectStates.buy_process.set()
 
+
+async def buy_process(message: Message, state: FSMContext):
+    data = await state.get_data()
+    new_project = Project()
+    new_project.name = data['project_name']
+    new_project.seller_name = message.from_user.username
+    new_project.status_id = 0
+    new_project.price = data['price']
+    new_project.subscribers = data['subscribers']
+    new_project.themes_names = data['themes']
+    new_project.income = data['income']
+    new_project.comment = data['comment']
+    new_projects_dict[message.from_user.username] = new_project
+    await bot.send_invoice(message.chat.id,
+                           title=MESSAGES['sell_payment_title'],
+                           description=MESSAGES['sell_payment_description'],
+                           provider_token=PAYMENTS_TOKEN,
+                           currency='rub',
+                           is_flexible=False,
+                           prices=PRICES,
+                           start_parameter='example',
+                           payload='some_invoice')
     await state.finish()
 
 
-async def get_list_of_projects(message: Message):
-    proj = db_manager.get_projects_by_seller_id(message.from_user.id)
-    await message.reply('Data: {}'.format(proj))
-    #await message.answer(text=MESSAGES['get_list_of_projects'].format(message.from_user),
-                         #reply_markup=get_main_keyboard())
+async def checkout_process(pre_checkout_query: PreCheckoutQuery):
+    await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
+
+
+async def successful_payment(message: Message):
+    new_projects_dict[message.from_user.username].save_new_project()
+    new_projects_dict.pop(message.from_user.username)
+    await bot.send_message(
+        message.chat.id,
+        MESSAGES['successful_payment'].format(total_amount=message.successful_payment.total_amount // 100,
+                                              currency=message.successful_payment.currency)
+    )
 
 
 def register_sell_handlers(dp: Dispatcher):
@@ -157,4 +183,6 @@ def register_sell_handlers(dp: Dispatcher):
     dp.register_message_handler(themes_plus_state, state=SellProjectStates.themes_plus)
     dp.register_message_handler(income_state, state=SellProjectStates.income)
     dp.register_message_handler(comment_state, state=SellProjectStates.comment)
-    dp.register_message_handler(get_list_of_projects, text=[BUTTONS['sell_list']])
+    dp.register_message_handler(buy_process, state=SellProjectStates.buy_process)
+    dp.register_pre_checkout_query_handler(checkout_process, lambda q: True)
+    dp.register_message_handler(successful_payment, content_types=ContentType.SUCCESSFUL_PAYMENT)

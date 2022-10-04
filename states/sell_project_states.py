@@ -10,3 +10,4 @@ class SellProjectStates(StatesGroup):
     themes_plus = State()
     income = State()
     comment = State()
+    buy_process = State()
