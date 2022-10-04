@@ -26,9 +26,16 @@ buy_menu_message = "💰 Поиск предложений 💰"
 chose_themes_message = "Выберите интересные тематики"
 chose_prices_message = "Выберите ценовой диапазон"
 
+sell_payment_label = "Разместить объявление!"
+sell_payment_title = "Оплата"
+sell_payment_description = "Оплата за размещение объявления"
+successful_payment_message = "Оплата произведена успешно!"
+
 MESSAGES = {
     'start': start_message,
+
     'sell_menu': sell_menu_message,
+
     'put_up_for_sale': put_up_for_sale_massage,
     'project_name': project_name_question,
     'price': price_question,
@@ -49,5 +56,10 @@ MESSAGES = {
     'main_menu': main_menu_massage,
     'buy_menu': buy_menu_message,
     'chose_themes': chose_themes_message,
-    'chose_prices': chose_prices_message
+    'chose_prices': chose_prices_message,
+
+    'sell_payment': sell_payment_label,
+    'sell_payment_title': sell_payment_title,
+    'sell_payment_description': sell_payment_description,
+    'successful_payment': successful_payment_message,
 }
