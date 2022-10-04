@@ -32,6 +32,11 @@ sell_payment_title = "Оплата"
 sell_payment_description = "Оплата за размещение объявления"
 successful_payment_message = "Оплата произведена успешно!"
 
+show_project_message = "<b>Название:</b> {name}\n<b>Тематика:</b> {theme}\n<b>Подписчиков:</b> {subs}\n<b>Доход в " \
+                       "месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> @{" \
+                       "seller}\n\n<b>Цена:</b> {price}\n\nГарантируем 100% безопасность при сделках в " \
+                       "Telegram.\n<b>Гарант:</b> {guarantee} "
+
 MESSAGES = {
     'start': start_message,
 
@@ -64,4 +69,6 @@ MESSAGES = {
     'sell_payment_title': sell_payment_title,
     'sell_payment_description': sell_payment_description,
     'successful_payment': successful_payment_message,
+
+    'show_project': show_project_message
 }

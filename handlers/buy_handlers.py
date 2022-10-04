@@ -2,7 +2,7 @@ from aiogram import Dispatcher
 from aiogram.types import Message, ReplyKeyboardMarkup, ReplyKeyboardRemove, \
     KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
-from data_base.project import get_projects_list_by_theme_id
+from data_base.project import get_projects_list_by_theme_id, get_guarantee_name
 from handlers.main_handlers import get_main_keyboard
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
@@ -40,18 +40,19 @@ async def theme_callback_handler(callback_query: CallbackQuery):
 
     for project in projects_list:
         themes_str = ''
+        guarantee = get_guarantee_name()
         for i in project.themes_names:
             themes_str += "#" + str(i) + ' '
-        await bot.send_message(callback_query.message.chat.id, \
-                               '*Название*: {name}\n*Тематика*: {theme}\n*Подписчиков:* {subs}\n*Доход в месяц*: {'
-                               'income}\n\n*Комментарий*: {comm}\n\n*Продавец:* @{seller}\n\n*Цена:* {price}'.format(
+        project_info = MESSAGES['show_project'].format(
                                    name=project.name,
                                    theme=themes_str,
                                    subs=project.subscribers,
                                    income=project.income,
                                    comm=project.comment,
                                    seller=project.seller_name,
-                                   price=project.price), parse_mode='Markdown')
+                                   price=project.price,
+                                   guarantee=guarantee)
+        await bot.send_message(callback_query.message.chat.id, project_info)
     await bot.answer_callback_query(callback_query.id)
 
 
