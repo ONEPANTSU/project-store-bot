@@ -11,10 +11,9 @@ buy_price_range_button = 'Выбрать ценовой диапазон'
 
 yes_button = 'Да'
 no_button = 'Нет'
-theme1_button = 'Криптовалюта'
-theme2_button = 'Недвижимость'
-theme3_button = 'Маркетинг'
-theme4_button = 'Бизнес/Финансы'
+
+prev_button = '◀Туда'
+next_button = 'Туда▶'
 
 BUTTONS = {
 
@@ -30,9 +29,7 @@ BUTTONS = {
 
     'yes': yes_button,
     'no': no_button,
-    'theme1': theme1_button,
-    'theme2': theme2_button,
-    'theme3': theme3_button,
-    'theme4': theme4_button,
+    'prev': prev_button,
+    'next': next_button,
 
 }
