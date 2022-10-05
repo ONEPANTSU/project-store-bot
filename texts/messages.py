@@ -13,7 +13,7 @@ income_question = "Какой доход у вашего проекта?"
 income_check_question = "Укажите доход проекта числом. Какой доход у вашего проекта:"
 themes_question = "Выберете не более 3-х тематик вашего проекта:"
 themes_warn_question = "Такой темы нет в списке! Выберите тему из списка"
-themes_already_added_question = "Данная тема уже добавлена!"
+themes_warn_2_question = "Данная тема уже добавлена!"
 themes_plus_1_question = "Выберите ещё одну тему"
 themes_plus_question = "Хотите выбрать ещё тему?"
 yes_question = "Да"
@@ -50,7 +50,7 @@ MESSAGES = {
     'subscribers_check': subscribers_check_question,
     'themes': themes_question,
     'themes_warn': themes_warn_question,
-    'themes_already_added': themes_already_added_question,
+    'themes_warn_2': themes_warn_2_question,
     'themes_plus_1': themes_plus_1_question,
     'themes_plus': themes_plus_question,
     'yes': yes_question,

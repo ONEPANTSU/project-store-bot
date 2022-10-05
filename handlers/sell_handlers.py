@@ -75,7 +75,7 @@ async def themes_names_state(message: Message, state: FSMContext):
         if message.text not in answer:
             answer.append(message.text)
         else:
-            await message.answer(text=MESSAGES['themes_already_added'], reply_markup=themes_plus_keyboard())
+            await message.answer(text=MESSAGES['themes_warn_2'], reply_markup=themes_plus_keyboard())
             await SellProjectStates.themes_plus.set()
         await state.update_data(themes=answer)
         size = len(answer)
@@ -184,12 +184,29 @@ async def successful_payment(message: Message):
                                               currency=message.successful_payment.currency)
     )
 
-
+#??????? залупа надо решить!  ваня пообещал что скажет как это сделает
 async def get_list_of_projects(message: Message):
     project_list = get_projects_list_by_seller_name(message.from_user.username)
+    await message.reply(text=MESSAGES['get_list_of_projects'])
     await message.reply(text=MESSAGES['get_list_of_projects'], reply_markup=list_of_project_menu())
 
-    # await message.reply()
+
+
+def project_list_callback_query(call, proj_id, message):
+    message_id = call.message.message_id
+    # условие чтобы не листал меньше 1
+    # условие чтобы не листал больше нужного???
+    if call.data == "prev":
+        proj_id -= 1
+
+        bot.edit_message_reply_markup(chat_id=call.message.sender_chat.id, message_id=message_id,
+                                      reply_markup=list_of_project_menu())
+        bot.answer_callback_query(call.id, "листает назад")
+    elif call.data == "next":
+        proj_id += 1
+        bot.edit_message_reply_markup(chat_id=call.message.sender_chat.id, message_id=message_id,
+                                      reply_markup=list_of_project_menu())
+        bot.answer_callback_query(call.id, "листает вперед")
 
 
 def list_of_project_menu():
@@ -220,3 +237,5 @@ def register_sell_handlers(dp: Dispatcher):
     dp.register_message_handler(buy_process, state=SellProjectStates.buy_process)
     dp.register_pre_checkout_query_handler(checkout_process, lambda q: True)
     dp.register_message_handler(successful_payment, content_types=ContentType.SUCCESSFUL_PAYMENT)
+    dp.register_callback_query_handler(project_list_callback_query, lambda q: True)
+
