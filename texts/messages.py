@@ -19,6 +19,12 @@ themes_plus_question = "Хотите выбрать ещё тему?"
 yes_question = "Да"
 no_question = "Нет"
 comment_question = "Добавьте комментарий к обьявлению:"
+confirm_question = "Данные введены верно? Если да, то перейдите к оплате. " \
+                   "При нажатии кнопки 'Отмена' Вы вернётесь в главное меню.\n\n" \
+                   "<b>Название:</b> {name}\n<b>Тематика:</b> {themes}\n<b>Подписчиков:</b> {subs}\n<b>Доход в " \
+                       "месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> @{" \
+                       "seller}\n\n<b>Цена:</b> {price}"
+cancellation_question = "Отмена"
 save_project_question = "Ваше обьявление сохранено!"
 
 get_list_of_projects_message = "🗄 Выставленные на продажу предложения 🗄"
@@ -63,6 +69,8 @@ MESSAGES = {
     'income': income_question,
     'income_check': income_check_question,
     'comment': comment_question,
+    'confirm': confirm_question,
+    'cancellation': cancellation_question,
     'save_project': save_project_question,
     'get_list_of_projects': get_list_of_projects_message,
     'main_menu': main_menu_massage,
