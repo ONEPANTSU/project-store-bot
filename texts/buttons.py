@@ -12,6 +12,9 @@ buy_price_range_button = 'Выбрать ценовой диапазон'
 yes_button = 'Да'
 no_button = 'Нет'
 
+confirm_button = 'Подтвердить'
+cancellation_button = 'Отмена'
+
 prev_button = '◀Туда'
 next_button = 'Туда▶'
 
@@ -29,6 +32,8 @@ BUTTONS = {
 
     'yes': yes_button,
     'no': no_button,
+    'confirm': confirm_button,
+    'cancellation': cancellation_button,
     'prev': prev_button,
     'next': next_button,
 

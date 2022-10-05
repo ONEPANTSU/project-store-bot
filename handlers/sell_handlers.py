@@ -32,7 +32,7 @@ def get_main_sell_keyboard():
 
 async def put_up_for_sale(message: Message):
     await message.answer(text=MESSAGES['put_up_for_sale'].format(message.from_user), reply_markup=get_main_keyboard())
-    await message.answer(text=MESSAGES['project_name'])
+    await message.answer(text=MESSAGES['project_name'], reply_markup=ReplyKeyboardRemove())
     await SellProjectStates.project_name.set()
 
 
@@ -108,7 +108,7 @@ async def themes_plus_state(message: Message):
         await message.answer(text=MESSAGES['themes_plus_1'], reply_markup=themes_menu())
         await SellProjectStates.themes_names.set()
     elif answer == "Нет":
-        await message.answer(text=MESSAGES['income'])
+        await message.answer(text=MESSAGES['income'], reply_markup=ReplyKeyboardRemove())
         await SellProjectStates.income.set()
 
 
@@ -134,44 +134,69 @@ async def income_state(message: Message, state: FSMContext):
 async def comment_state(message: Message, state: FSMContext):
     answer = message.text
     await state.update_data(comment=answer)
-    '''
-    Подтверждение корректности введённых данных (Да/Нет)
-    '''
+    data = await state.get_data()
+    themes_str = ''
+    for i in data['themes']:
+        themes_str += "#" + str(i) + ' '
+    project_info = MESSAGES['confirm'].format(
+        name=data['project_name'],
+        themes=themes_str,
+        subs=data['subscribers'],
+        income=data['income'],
+        comm=data['comment'],
+        seller=message.from_user.username,
+        price=data['price'])
+    await message.answer(text=project_info, reply_markup=project_confirmation_menu())
     await SellProjectStates.buy_process.set()
 
 
+def project_confirmation_menu():
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    confirm_button = KeyboardButton(BUTTONS['confirm'])
+    cancellation_button = KeyboardButton(BUTTONS['cancellation'])
+    markup.add(confirm_button, cancellation_button)
+    return markup
+
+
 async def buy_process(message: Message, state: FSMContext):
-    data = await state.get_data()
-    new_project = Project()
-    new_project.name = data['project_name']
-    new_project.seller_name = message.from_user.username
-    new_project.status_id = 0
-    new_project.price = data['price']
-    new_project.subscribers = data['subscribers']
-    new_project.themes_names = data['themes']
-    new_project.income = data['income']
-    new_project.comment = data['comment']
-    need_payment = get_need_payment()
-    if need_payment == 1:
-        price_amount = get_to_sell_price()
-        prices = [LabeledPrice(label=MESSAGES['sell_payment'], amount=price_amount)]
-        new_projects_dict[message.from_user.username] = new_project
-        await bot.send_invoice(message.chat.id,
-                               title=MESSAGES['sell_payment_title'],
-                               description=MESSAGES['sell_payment_description'],
-                               provider_token=PAYMENTS_TOKEN,
-                               currency='rub',
-                               is_flexible=False,
-                               prices=prices,
-                               start_parameter='example',
-                               payload='some_invoice')
+    answer = message.text
+    await state.update_data(comment=answer)
+    if answer == BUTTONS['confirm']:
+        data = await state.get_data()
+        new_project = Project()
+        new_project.name = data['project_name']
+        new_project.seller_name = message.from_user.username
+        new_project.status_id = 0
+        new_project.price = data['price']
+        new_project.subscribers = data['subscribers']
+        new_project.themes_names = data['themes']
+        new_project.income = data['income']
+        new_project.comment = data['comment']
+        need_payment = get_need_payment()
+        if need_payment == 1:
+            price_amount = get_to_sell_price()
+            prices = [LabeledPrice(label=MESSAGES['sell_payment'], amount=price_amount)]
+            new_projects_dict[message.from_user.username] = new_project
+            await bot.send_invoice(message.chat.id,
+                                   title=MESSAGES['sell_payment_title'],
+                                   description=MESSAGES['sell_payment_description'],
+                                   provider_token=PAYMENTS_TOKEN,
+                                   currency='rub',
+                                   is_flexible=False,
+                                   prices=prices,
+                                   start_parameter='example',
+                                   payload='some_invoice')
+            await state.finish()
+        elif need_payment == 0:
+            new_project.save_new_project()
+            await bot.send_message(
+                message.chat.id,
+                MESSAGES['successful_payment'].format(total_amount=message.successful_payment.total_amount // 100,
+                                                      currency=message.successful_payment.currency))
+    elif answer == BUTTONS['cancellation']:
         await state.finish()
-    elif need_payment == 0:
-        new_project.save_new_project()
-        await bot.send_message(
-            message.chat.id,
-            MESSAGES['successful_payment'].format(total_amount=message.successful_payment.total_amount // 100,
-                                                  currency=message.successful_payment.currency))
+        await bot.send_message(chat_id=message.chat.id, text=MESSAGES['main_menu'].format(message.from_user),
+                               reply_markup=get_main_keyboard())
 
 
 async def checkout_process(pre_checkout_query: PreCheckoutQuery):
