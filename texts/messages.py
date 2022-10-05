@@ -25,7 +25,8 @@ get_list_of_projects_message = "🗄 Выставленные на продаж�
 
 buy_menu_message = "💰 Поиск предложений 💰"
 chose_themes_message = "Выберите интересные тематики"
-chose_prices_message = "Выберите ценовой диапазон"
+chose_price_from_message = "Введите цену от: "
+chose_price_up_to_message = "Введите цену до: "
 
 sell_payment_label = "Разместить объявление!"
 sell_payment_title = "Оплата"
@@ -63,7 +64,9 @@ MESSAGES = {
     'main_menu': main_menu_massage,
     'buy_menu': buy_menu_message,
     'chose_themes': chose_themes_message,
-    'chose_prices': chose_prices_message,
+    'chose_price_from': chose_price_from_message,
+    'chose_price_up_to': chose_price_up_to_message,
+
 
     'sell_payment': sell_payment_label,
     'sell_payment_title': sell_payment_title,

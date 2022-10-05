@@ -1,4 +1,5 @@
 from aiogram import Dispatcher
+from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, ReplyKeyboardMarkup, \
     KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from aiogram.utils.callback_data import CallbackData
@@ -8,6 +9,7 @@ from handlers.main_handlers import get_main_keyboard
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
 from instruments import db_manager, bot
+from states import ByeProjectStates
 
 buy_project_callback = CallbackData("buy_project_callback", "page", "theme_id")
 themes_callback = CallbackData("themes_callback", "data")
@@ -38,8 +40,28 @@ async def chose_themes(message: Message):
     await message.reply(text=MESSAGES['chose_themes'], reply_markup=themes_keyboard)
 
 
+# Кнопка выбора ценового диапазона
 async def chose_prices(message: Message):
-    await message.answer(text=MESSAGES['chose_prices'], reply_markup=get_main_keyboard())
+    await message.answer(text=MESSAGES['chose_price_from'])
+    await ByeProjectStates.price_from.set()
+
+
+async def price_from_state(message: Message, state: FSMContext):
+    answer = message.text
+    await state.update_data(price_from=answer)
+    await message.answer(MESSAGES['chose_price_up_to'])
+    await ByeProjectStates.price_up_to.set()
+
+#  В СЛЕДУЮЩИЙ РАЗ ИРА РАБОТАЕТ ОТСЮДА
+# ПС НУЖНА ФУНКЦИЯ ЧТОБЫ ПО СЕРЫМ price_from И price_up_to ВЫТЯНУТЬ ПРОЕКТЫ ИЗ БД
+# ПЛЮС СМОТРИ ЗАДАЧКИ В ЗАМЕТНИКЕ
+async def price_up_to_state(message: Message, state: FSMContext):
+    answer = message.text
+    await state.update_data(price_up_to=answer)
+    data = await state.get_data()
+    price_from = data['price_from']
+    price_up_to = data['price_up_to']
+    await state.finish()
 
 
 def get_buy_projects_keyboard(project_list, theme_id, page: int = 0) -> InlineKeyboardMarkup:
@@ -114,5 +136,7 @@ def register_buy_handlers(dp: Dispatcher):
     dp.register_message_handler(buy_menu, text=[BUTTONS['buy_menu']])
     dp.register_message_handler(chose_themes, text=[BUTTONS['buy_chose_themes']])
     dp.register_message_handler(chose_prices, text=[BUTTONS['buy_price_range']])
+    dp.register_message_handler(price_from_state, state=ByeProjectStates.price_from)
+    dp.register_message_handler(price_up_to_state, state=ByeProjectStates.price_up_to)
     dp.register_callback_query_handler(buy_project_index, themes_callback.filter())
     dp.register_callback_query_handler(buy_project_page_handler, buy_project_callback.filter())
