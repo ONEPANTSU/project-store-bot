@@ -1,7 +1,7 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, \
-    LabeledPrice, ContentType, PreCheckoutQuery, CallbackQuery
+    ReplyKeyboardRemove, LabeledPrice, ContentType, PreCheckoutQuery, CallbackQuery
 from aiogram.utils.callback_data import CallbackData
 
 from config import PAYMENTS_TOKEN
