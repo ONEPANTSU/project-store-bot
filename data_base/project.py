@@ -28,9 +28,18 @@ class Project:
         self.income = None
         self.comment = None
 
-    def set_params(self, seller_id, seller_name, name,
-                   price, status_id, subscribers,
-                   themes_id, income, comment):
+    def set_params(
+        self,
+        seller_id,
+        seller_name,
+        name,
+        price,
+        status_id,
+        subscribers,
+        themes_id,
+        income,
+        comment,
+    ):
         """
         This function sets values of all params to the Project's object.
         It is necessary for filling all columns in the row of data base.
@@ -72,7 +81,7 @@ class Project:
         self.status_id = status_id
         self.status = db_manager.get_status_name(status_id)
         self.subscribers = subscribers
-        self.income = income # доход в месяц
+        self.income = income  # доход в месяц
         self.comment = comment
 
         if seller_name is not None:
@@ -99,10 +108,17 @@ class Project:
         if db_manager.is_project_exist_by_id(self.id):
             project_sql_row = db_manager.get_project_by_id(self.id)
             themes_id = db_manager.get_themes_id(self.id)
-            self.set_params(seller_id=project_sql_row[1], seller_name=None, name=project_sql_row[2],
-                            price=project_sql_row[3],
-                            status_id=project_sql_row[4], subscribers=project_sql_row[5], income=project_sql_row[6],
-                            comment=project_sql_row[7], themes_id=themes_id)
+            self.set_params(
+                seller_id=project_sql_row[1],
+                seller_name=None,
+                name=project_sql_row[2],
+                price=project_sql_row[3],
+                status_id=project_sql_row[4],
+                subscribers=project_sql_row[5],
+                income=project_sql_row[6],
+                comment=project_sql_row[7],
+                themes_id=themes_id,
+            )
         else:
             print("Error: Project does not exist")
 
@@ -135,7 +151,9 @@ class Project:
 
         if self.seller_name is not None:
             if db_manager.is_seller_exist(self.seller_name):
-                self.seller_id = db_manager.get_seller_id_by_seller_name(self.seller_name)
+                self.seller_id = db_manager.get_seller_id_by_seller_name(
+                    self.seller_name
+                )
             else:
                 self.seller_id = -1
 
@@ -144,9 +162,16 @@ class Project:
         elif len(self.themes_id) == 0 and len(self.themes_names) != 0:
             self.themes_id = db_manager.get_themes_id_by_names(self.themes_names)
 
-        if self.name is not None and self.seller_name is not None and self.seller_id is not None and \
-                self.price is not None and self.status_id is not None and len(self.themes_id) != 0 and \
-                self.income is not None and self.comment is not None:
+        if (
+            self.name is not None
+            and self.seller_name is not None
+            and self.seller_id is not None
+            and self.price is not None
+            and self.status_id is not None
+            and len(self.themes_id) != 0
+            and self.income is not None
+            and self.comment is not None
+        ):
             self.params_are_not_none = True
         else:
             self.params_are_not_none = False
@@ -280,6 +305,7 @@ def get_need_payment():
     """
     need_payment = db_manager.get_settings_info()[2]
     return need_payment
+
 
 def get_to_sell_price():
     """

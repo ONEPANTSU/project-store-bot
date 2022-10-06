@@ -1,4 +1,1 @@
-from handlers import main_handlers, \
-                        buy_handlers, \
-                        sell_handlers, \
-                        info_handlers
+from handlers import buy_handlers, info_handlers, main_handlers, sell_handlers
