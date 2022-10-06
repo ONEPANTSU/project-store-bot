@@ -190,7 +190,7 @@ def project_confirmation_menu():
 
 async def buy_process(message: Message, state: FSMContext):
     answer = message.text
-    await state.update_data(comment=answer)
+    await state.update_data(buy_process=answer)
     if answer == BUTTONS["confirm"]:
         data = await state.get_data()
         new_project = Project()
