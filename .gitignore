@@ -13,3 +13,5 @@ data_base/__pycache__/
 *.pyc
 
 .idea/workspace.xml
+
+__pycache__/
