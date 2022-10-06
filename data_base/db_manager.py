@@ -396,6 +396,22 @@ class DBManager:
 
         return return_dict
 
+    def get_filled_themes(self):
+        """
+        This function creates SELECT query for getting dictionary with filled themes
+        from `theme` table by themes's names.
+
+        :return: dictionary with themes's info
+        :rtype: :dict:`int`:`str`
+        """
+        get_themes_query = QUERIES["select_filled_themes"]
+        themes_info = self.execute_read_query(self.connection, get_themes_query)
+        return_dict = {}
+        for i in range(len(themes_info)):
+            return_dict[themes_info[i][0]] = themes_info[i][1]
+
+        return return_dict
+
     def get_status_name(self, status_id):
         """
         This function creates SELECT query for getting status's name of `status` table by id.
