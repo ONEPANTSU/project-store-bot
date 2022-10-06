@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
+
 from config import *
 from texts.sql_queries import QUERIES
 
@@ -42,10 +43,7 @@ class DBManager:
         connection = None
         try:
             connection = mysql.connector.connect(
-                host=host_name,
-                user=user_name,
-                passwd=user_password,
-                database=data_base
+                host=host_name, user=user_name, passwd=user_password, database=data_base
             )
             print("Connection to MySQL DB successful")
         except Error as e:
@@ -63,9 +61,22 @@ class DBManager:
         :return: a part of SQL template for INSERT or UPDATE functions
         :rtype: :obj:`str`
         """
-        return str(project.seller_id) + ", '" + project.name + "', " + str(project.price) + ", " + \
-               str(project.status_id) + ", " + str(project.subscribers) + ", " + \
-               str(project.income) + ", '" + project.comment + "'"
+        return (
+            str(project.seller_id)
+            + ", '"
+            + project.name
+            + "', "
+            + str(project.price)
+            + ", "
+            + str(project.status_id)
+            + ", "
+            + str(project.subscribers)
+            + ", "
+            + str(project.income)
+            + ", '"
+            + project.comment
+            + "'"
+        )
 
     def insert_project(self, project):
         """
@@ -81,7 +92,7 @@ class DBManager:
             project.seller_id = self.get_seller_id_by_seller_name(project.seller_name)
 
         project_val = self.get_string_project_values(project)
-        create_project = QUERIES['insert_project'] % project_val
+        create_project = QUERIES["insert_project"] % project_val
 
         cursor = self.connection.cursor()
         cursor.execute(create_project)
@@ -96,7 +107,7 @@ class DBManager:
         :param status_name: name of new status
         :type status_name: :obj: `str`
         """
-        create_status = QUERIES['insert_status'] % status_name
+        create_status = QUERIES["insert_status"] % status_name
         self.execute_query(self.connection, create_status)
 
     def insert_theme(self, theme_name):
@@ -106,7 +117,7 @@ class DBManager:
         :param theme_name: name of new theme
         :type theme_name: :obj: `str`
         """
-        create_theme = QUERIES['insert_theme'] % theme_name
+        create_theme = QUERIES["insert_theme"] % theme_name
         self.execute_query(self.connection, create_theme)
 
     def insert_project_themes(self, project_id, themes_id):
@@ -121,7 +132,7 @@ class DBManager:
         """
         for theme_id in themes_id:
             project_theme_val = str(project_id) + ", " + str(theme_id)
-            create_project_theme = QUERIES['insert_project_theme'] % project_theme_val
+            create_project_theme = QUERIES["insert_project_theme"] % project_theme_val
             self.execute_query(self.connection, create_project_theme)
 
     def insert_new_seller(self, project):
@@ -132,7 +143,7 @@ class DBManager:
         :type project: :class: `data_base.project.Project`
         """
         seller_val = "'" + project.seller_name + "'"
-        create_seller = QUERIES['insert_seller'] % seller_val
+        create_seller = QUERIES["insert_seller"] % seller_val
         self.execute_query(self.connection, create_seller)
 
     def is_project_exist_by_id(self, project_id):
@@ -145,7 +156,7 @@ class DBManager:
         :return: bool value of existing of the project with concrete id
         :rtype: :obj:`bool`
         """
-        get_project_query = QUERIES['select_project_by_id'] % project_id
+        get_project_query = QUERIES["select_project_by_id"] % project_id
         project = self.execute_read_query(self.connection, get_project_query)
         if len(project) == 0:
             return False
@@ -162,8 +173,10 @@ class DBManager:
         :return: name of the seller with concrete id
         :rtype: :obj:`str`
         """
-        get_seller_name_query = QUERIES['select_seller_name_by_seller_id'] % seller_id
-        seller_name = self.execute_read_query(self.connection, get_seller_name_query)[0][0]
+        get_seller_name_query = QUERIES["select_seller_name_by_seller_id"] % seller_id
+        seller_name = self.execute_read_query(self.connection, get_seller_name_query)[
+            0
+        ][0]
         return seller_name
 
     def get_seller_id_by_project_id(self, project_id):
@@ -176,7 +189,7 @@ class DBManager:
         :return: id of the seller of concrete project
         :rtype: :obj:`str`
         """
-        get_seller_id_query = QUERIES['select_seller_id_by_project_id'] % project_id
+        get_seller_id_query = QUERIES["select_seller_id_by_project_id"] % project_id
         seller_id = self.execute_read_query(self.connection, get_seller_id_query)[0][0]
         return seller_id
 
@@ -190,7 +203,7 @@ class DBManager:
         :return: bool value of existing of the seller with concrete name
         :rtype: :obj:`bool`
         """
-        get_seller_id_query = QUERIES['select_seller_id_by_seller_name'] % seller_name
+        get_seller_id_query = QUERIES["select_seller_id_by_seller_name"] % seller_name
         seller_id = self.execute_read_query(self.connection, get_seller_id_query)
         if len(seller_id) == 0:
             return False
@@ -207,7 +220,7 @@ class DBManager:
         :return: id of the seller of concrete project
         :rtype: :obj:`str`
         """
-        get_seller_id_query = QUERIES['select_seller_id_by_seller_name'] % seller_name
+        get_seller_id_query = QUERIES["select_seller_id_by_seller_name"] % seller_name
         seller_id = self.execute_read_query(self.connection, get_seller_id_query)[0][0]
         return seller_id
 
@@ -221,7 +234,7 @@ class DBManager:
         :return: list of the projects of the concrete seller
         :rtype: :list::list:`str`
         """
-        get_projects_query = QUERIES['select_project_by_seller_id'] % seller_id
+        get_projects_query = QUERIES["select_project_by_seller_id"] % seller_id
         projects = self.execute_read_query(self.connection, get_projects_query)
         return projects
 
@@ -235,7 +248,7 @@ class DBManager:
         :return: list of the projects with the concrete theme
         :rtype: :list::list:`str`
         """
-        get_projects_id_query = QUERIES['select_project_by_seller_name'] % seller_name
+        get_projects_id_query = QUERIES["select_project_by_seller_name"] % seller_name
         projects_id = self.execute_read_query(self.connection, get_projects_id_query)
         return projects_id
 
@@ -281,7 +294,7 @@ class DBManager:
         :return: list of the projects with the concrete theme
         :rtype: :list::list:`str`
         """
-        get_projects_id_query = QUERIES['select_projects_id_by_theme_id'] % theme_id
+        get_projects_id_query = QUERIES["select_projects_id_by_theme_id"] % theme_id
         projects_id = self.execute_read_query(self.connection, get_projects_id_query)
         return projects_id
 
@@ -297,7 +310,7 @@ class DBManager:
                     comment, seller_name, status_name, themes_id, themes_name
         :rtype: :list:`str`
         """
-        get_project_query = QUERIES['select_all_project_info_by_id'] % project_id
+        get_project_query = QUERIES["select_all_project_info_by_id"] % project_id
         project = self.execute_read_query(self.connection, get_project_query)
 
         return project
@@ -312,7 +325,7 @@ class DBManager:
         :return: project's info by the concrete id
         :rtype: :list:`str`
         """
-        get_project_query = QUERIES['select_project_by_id'] % project_id
+        get_project_query = QUERIES["select_project_by_id"] % project_id
         project = self.execute_read_query(self.connection, get_project_query)[0]
         return project
 
@@ -328,7 +341,7 @@ class DBManager:
         """
         themes_names = list()
         for theme_id in themes_id:
-            get_theme_name_query = QUERIES['select_theme_name_by_theme_id'] % theme_id
+            get_theme_name_query = QUERIES["select_theme_name_by_theme_id"] % theme_id
             theme_name = self.execute_read_query(self.connection, get_theme_name_query)
             themes_names.append(theme_name[0])
         return themes_names
@@ -346,8 +359,10 @@ class DBManager:
         """
         themes_id = list()
         for theme_name in themes_names:
-            get_theme_id_query = QUERIES['select_theme_id_by_theme_name'] % theme_name
-            themes_id.append(self.execute_read_query(self.connection, get_theme_id_query)[0][0])
+            get_theme_id_query = QUERIES["select_theme_id_by_theme_name"] % theme_name
+            themes_id.append(
+                self.execute_read_query(self.connection, get_theme_id_query)[0][0]
+            )
         return themes_id
 
     def get_themes_id(self, project_id):
@@ -361,7 +376,7 @@ class DBManager:
         :return: list with themes's id
         :rtype: :list:`int`
         """
-        get_theme_id_query = QUERIES['select_themes_id_by_project_id'] % project_id
+        get_theme_id_query = QUERIES["select_themes_id_by_project_id"] % project_id
         themes_id = self.execute_read_query(self.connection, get_theme_id_query)
         return themes_id
 
@@ -373,7 +388,7 @@ class DBManager:
         :return: dictionary with themes's info
         :rtype: :dict:`int`:`str`
         """
-        get_themes_query = QUERIES['select_all_themes']
+        get_themes_query = QUERIES["select_all_themes"]
         themes_info = self.execute_read_query(self.connection, get_themes_query)
         return_dict = {}
         for i in range(len(themes_info)):
@@ -391,8 +406,10 @@ class DBManager:
         :return: name of the status with concrete id
         :rtype: :obj:`str`
         """
-        get_status_name_query = QUERIES['select_status_name_by_status_id'] % status_id
-        status_name = self.execute_read_query(self.connection, get_status_name_query)[0][0]
+        get_status_name_query = QUERIES["select_status_name_by_status_id"] % status_id
+        status_name = self.execute_read_query(self.connection, get_status_name_query)[
+            0
+        ][0]
         return status_name
 
     def get_settings_info(self):
@@ -402,7 +419,7 @@ class DBManager:
         :return: list of guarantee's name, channel's name of guarantee's reviews and need_payment (0=False, 1=True).
         :rtype: :list:`str`
         """
-        get_settings_query = QUERIES['select_all_settings_info']
+        get_settings_query = QUERIES["select_all_settings_info"]
         settings_info = self.execute_read_query(self.connection, get_settings_query)[0]
         return settings_info
 
@@ -416,10 +433,16 @@ class DBManager:
         :param project: object of class Project with filled params
         :type project: :class: `data_base.project.Project`
         """
-        update_project = QUERIES['update_project'] % (str(project.seller_id), str(project.name),
-                                                      str(project.price), str(project.status_id),
-                                                      str(project.subscribers), str(project.income),
-                                                      str(project.comment), str(project_id))
+        update_project = QUERIES["update_project"] % (
+            str(project.seller_id),
+            str(project.name),
+            str(project.price),
+            str(project.status_id),
+            str(project.subscribers),
+            str(project.income),
+            str(project.comment),
+            str(project_id),
+        )
         self.update_project_themes(project_id, project.themes_id)
         self.execute_query(self.connection, update_project)
 
@@ -446,7 +469,7 @@ class DBManager:
         :param seller_name: new name of existing seller
         :type seller_name: :obj: `str`
         """
-        update_seller = QUERIES['update_seller'] % (seller_name, str(seller_id))
+        update_seller = QUERIES["update_seller"] % (seller_name, str(seller_id))
         self.execute_query(self.connection, update_seller)
 
     def delete_project(self, project_id):
@@ -459,7 +482,7 @@ class DBManager:
         :type project_id: :obj: `int`
         """
         self.delete_project_theme(project_id)
-        delete_project_query = QUERIES['delete_project'] % (str(project_id))
+        delete_project_query = QUERIES["delete_project"] % (str(project_id))
         seller_id = self.get_seller_id_by_project_id(project_id)
         projects = self.get_projects_by_seller_id(seller_id)
         if len(projects) == 0:
@@ -473,7 +496,7 @@ class DBManager:
         :param seller_id: id of existing row of `seller` table
         :type seller_id: :obj: `int`
         """
-        delete_seller_query = QUERIES['delete_seller'] % (str(seller_id))
+        delete_seller_query = QUERIES["delete_seller"] % (str(seller_id))
         self.execute_query(self.connection, delete_seller_query)
 
     def delete_project_theme(self, project_id):
@@ -484,7 +507,7 @@ class DBManager:
         :param project_id: id of existing row of `project` table
         :type project_id: :obj: `int`
         """
-        delete_project_theme_query = QUERIES['delete_project_theme'] % (str(project_id))
+        delete_project_theme_query = QUERIES["delete_project_theme"] % (str(project_id))
         self.execute_query(self.connection, delete_project_theme_query)
 
     @staticmethod
