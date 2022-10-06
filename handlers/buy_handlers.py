@@ -67,7 +67,7 @@ async def question_theme_state(message: Message, state: FSMContext):
 
 async def chose_themes(message: Message):
     # С помощью функции get_all_themes() присваиваем в themes - словарь с темами и их айди
-    themes = db_manager.get_all_themes()
+    themes = db_manager.get_filled_themes()
     # button_list = []
     themes_keyboard = InlineKeyboardMarkup(row_width=2)
     # Заполнение списка тем из словаря с базы данных
