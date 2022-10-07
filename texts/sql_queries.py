@@ -69,9 +69,11 @@ select_themes_id_by_project_id_query = (
     "SELECT `theme_id` FROM `project_theme` WHERE `project_id` = '%s';"
 )
 select_all_themes_query = "SELECT * FROM `theme`;"
-select_filled_themes_query = "SELECT theme.id, theme.theme_name FROM `project_theme` " \
-                             "INNER JOIN `theme` ON theme.id = project_theme.theme_id " \
-                             "GROUP BY theme.theme_name;"
+select_filled_themes_query = (
+    "SELECT theme.id, theme.theme_name FROM `project_theme` "
+    "INNER JOIN `theme` ON theme.id = project_theme.theme_id "
+    "GROUP BY theme.theme_name;"
+)
 select_status_name_by_status_id_query = (
     "SELECT `status_name` FROM `status` WHERE `id` = '%s';"
 )
