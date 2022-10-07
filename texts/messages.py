@@ -51,6 +51,8 @@ show_project_message = (
     "seller}\n\n<b>Цена:</b> {price}\n\nГарантируем 100% безопасность при сделках в "
     "Telegram.\n<b>Гарант:</b> {guarantee} "
 )
+deleted_project_message = "Объявление удалено!"
+empty_projects_message = "У вас не выставлено ни одного объявления."
 
 MESSAGES = {
     "start": start_message,
@@ -85,4 +87,6 @@ MESSAGES = {
     "sell_payment_description": sell_payment_description,
     "successful_payment": successful_payment_message,
     "show_project": show_project_message,
+    "deleted_project": deleted_project_message,
+    "empty_projects": empty_projects_message,
 }

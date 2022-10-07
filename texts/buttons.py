@@ -14,8 +14,9 @@ no_button = "Нет"
 confirm_button = "Подтвердить"
 cancellation_button = "Отмена"
 
-prev_button = "◀Туда"
-next_button = "Туда▶"
+delete_button = "Удалить объявление"
+prev_button = "< Назад"
+next_button = "Вперёд >"
 
 BUTTONS = {
     "back": back_button,
@@ -29,6 +30,8 @@ BUTTONS = {
     "no": no_button,
     "confirm": confirm_button,
     "cancellation": cancellation_button,
+    "delete_project": delete_button,
     "prev": prev_button,
     "next": next_button,
+
 }

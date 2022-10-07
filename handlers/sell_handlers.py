@@ -30,6 +30,7 @@ from texts.messages import MESSAGES
 
 new_projects_dict = {}
 my_projects_callback = CallbackData("my_projects", "page")
+delete_project_callback = CallbackData("delete_project", "id", "page")
 
 
 async def show_main_sell_keyboard(message: Message):
@@ -249,80 +250,106 @@ async def successful_payment(message: Message):
 
 
 def get_my_projects_keyboard(project_list, page: int = 0) -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup(row_width=1)
+    keyboard = InlineKeyboardMarkup(row_width=2)
+
     has_next_page = len(project_list) > page + 1
 
-    keyboard.add(
-        InlineKeyboardButton(
-            text=f"{page + 1} / {len(project_list)}", callback_data="dont_click_me"
-        )
+    page_num_button = InlineKeyboardButton(
+        text=f"{page + 1} / {len(project_list)}", callback_data="dont_click_me"
     )
 
-    if page != 0:
-        keyboard.add(
-            InlineKeyboardButton(
-                text="< Назад", callback_data=my_projects_callback.new(page=page - 1)
-            )
-        )
+    delete_button = InlineKeyboardButton(
+        text=BUTTONS["delete_project"], callback_data=delete_project_callback.new(id=project_list[page].id, page=0)
+    )
 
-    if has_next_page:
-        keyboard.add(
-            InlineKeyboardButton(
-                text="Вперёд >", callback_data=my_projects_callback.new(page=page + 1)
-            )
-        )
+    back_button = InlineKeyboardButton(
+        text=BUTTONS["prev"], callback_data=my_projects_callback.new(page=page - 1)
+    )
+
+    next_button = InlineKeyboardButton(
+        text=BUTTONS["next"], callback_data=my_projects_callback.new(page=page + 1)
+    )
+
+    keyboard.row(page_num_button)
+    keyboard.row(delete_button)
+    if page != 0:
+        if has_next_page:
+            keyboard.row(back_button, next_button)
+        else:
+            keyboard.row(back_button)
+    elif has_next_page:
+        keyboard.row(next_button)
 
     return keyboard
 
 
 async def my_project_index(message: Message):
     project_list = get_projects_list_by_seller_name(message.from_user.username)
-    project_data = project_list[0]
-    keyboard = get_my_projects_keyboard(project_list=project_list)  # Page: 0
-    guarantee = get_guarantee_name()
-    themes_str = ""
-    for theme_name in project_data.themes_names:
-        themes_str += "#" + str(theme_name) + " "
-    project_info = MESSAGES["show_project"].format(
-        name=project_data.name,
-        theme=themes_str,
-        subs=project_data.subscribers,
-        income=project_data.income,
-        comm=project_data.comment,
-        seller=project_data.seller_name,
-        price=project_data.price,
-        guarantee=guarantee,
-    )
-    await bot.send_message(
-        chat_id=message.chat.id,
-        text=project_info,
-        parse_mode="HTML",
-        reply_markup=keyboard,
-    )
+    if len(project_list) != 0:
+        project_data = project_list[0]
+        keyboard = get_my_projects_keyboard(project_list=project_list)  # Page: 0
+        guarantee = get_guarantee_name()
+        themes_str = ""
+        for theme_name in project_data.themes_names:
+            themes_str += "#" + str(theme_name) + " "
+        project_info = MESSAGES["show_project"].format(
+            name=project_data.name,
+            theme=themes_str,
+            subs=project_data.subscribers,
+            income=project_data.income,
+            comm=project_data.comment,
+            seller=project_data.seller_name,
+            price=project_data.price,
+            guarantee=guarantee,
+        )
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=project_info,
+            parse_mode="HTML",
+            reply_markup=keyboard,
+        )
+    else:
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=MESSAGES["empty_projects"]
+        )
 
 
 async def my_project_page_handler(query: CallbackQuery, callback_data: dict):
+    await refresh_pages(query=query, callback_data=callback_data)
+
+
+async def delete_project_handler(query: CallbackQuery, callback_data: dict):
+    db_manager.delete_project(int(callback_data.get("id")))
+    await bot.send_message(chat_id=query.message.chat.id, text=MESSAGES["deleted_project"])
+    await refresh_pages(query=query, callback_data=callback_data)
+
+
+async def refresh_pages(query: CallbackQuery, callback_data: dict):
     page = int(callback_data.get("page"))
 
     project_list = get_projects_list_by_seller_name(query.from_user.username)
-    project_data = project_list[page]
-    guarantee = get_guarantee_name()
-    themes_str = ""
-    for theme_name in project_data.themes_names:
-        themes_str += "#" + str(theme_name) + " "
-    project_info = MESSAGES["show_project"].format(
-        name=project_data.name,
-        theme=themes_str,
-        subs=project_data.subscribers,
-        income=project_data.income,
-        comm=project_data.comment,
-        seller=project_data.seller_name,
-        price=project_data.price,
-        guarantee=guarantee,
-    )
-    keyboard = get_my_projects_keyboard(project_list=project_list, page=page)
+    if len(project_list) != 0:
+        project_data = project_list[page]
+        guarantee = get_guarantee_name()
+        themes_str = ""
+        for theme_name in project_data.themes_names:
+            themes_str += "#" + str(theme_name) + " "
+        project_info = MESSAGES["show_project"].format(
+            name=project_data.name,
+            theme=themes_str,
+            subs=project_data.subscribers,
+            income=project_data.income,
+            comm=project_data.comment,
+            seller=project_data.seller_name,
+            price=project_data.price,
+            guarantee=guarantee,
+        )
+        keyboard = get_my_projects_keyboard(project_list=project_list, page=page)
 
-    await query.message.edit_text(text=project_info, reply_markup=keyboard)
+        await query.message.edit_text(text=project_info, reply_markup=keyboard)
+    else:
+        await query.message.edit_text(text=MESSAGES["empty_projects"], reply_markup=None)
 
 
 def back_menu():
@@ -354,4 +381,7 @@ def register_sell_handlers(dp: Dispatcher):
     dp.register_message_handler(my_project_index, text=BUTTONS["sell_list"])
     dp.register_callback_query_handler(
         my_project_page_handler, my_projects_callback.filter()
+    )
+    dp.register_callback_query_handler(
+        delete_project_handler, delete_project_callback.filter()
     )
