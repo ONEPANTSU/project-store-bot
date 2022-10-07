@@ -28,6 +28,8 @@ confirm_question = (
     "месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> @{"
     "seller}\n\n<b>Цена:</b> {price}"
 )
+payment_message = "Начинается процесс оплаты"
+
 cancellation_question = "Отмена"
 save_project_question = "Ваше обьявление сохранено!"
 

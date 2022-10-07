@@ -113,7 +113,7 @@ async def themes_names_state(message: Message, state: FSMContext):
             )
             await SellProjectStates.themes_plus.set()
         else:
-            await message.answer(text=MESSAGES["income"])
+            await message.answer(text=MESSAGES["income"], reply_markup=ReplyKeyboardRemove())
             await SellProjectStates.income.set()
     else:
 
@@ -135,9 +135,7 @@ async def themes_plus_state(message: Message):
         await message.answer(text=MESSAGES["themes_plus_1"], reply_markup=themes_menu())
         await SellProjectStates.themes_names.set()
     elif answer == "Нет":
-        await message.answer(
-            text=MESSAGES["income"], reply_markup=ReplyKeyboardRemove()
-        )
+        await message.answer(text=MESSAGES["income"], reply_markup=ReplyKeyboardRemove())
         await SellProjectStates.income.set()
 
 
@@ -223,10 +221,7 @@ async def buy_process(message: Message, state: FSMContext):
             new_project.save_new_project()
             await bot.send_message(
                 message.chat.id,
-                MESSAGES["successful_payment"].format(
-                    total_amount=message.successful_payment.total_amount // 100,
-                    currency=message.successful_payment.currency,
-                ),
+                MESSAGES["save_project"], reply_markup=ReplyKeyboardRemove()
             )
     elif answer == BUTTONS["cancellation"]:
         await state.finish()
@@ -249,7 +244,7 @@ async def successful_payment(message: Message):
         MESSAGES["successful_payment"].format(
             total_amount=message.successful_payment.total_amount // 100,
             currency=message.successful_payment.currency,
-        ),
+        ), reply_markup=ReplyKeyboardRemove()
     )
 
 
