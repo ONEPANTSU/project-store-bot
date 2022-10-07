@@ -43,7 +43,11 @@ class DBManager:
         connection = None
         try:
             connection = mysql.connector.connect(
-                host=host_name, user=user_name, passwd=user_password, database=data_base, charset="utf8mb4"
+                host=host_name,
+                user=user_name,
+                passwd=user_password,
+                database=data_base,
+                charset="utf8mb4",
             )
             print("Connection to MySQL DB successful")
         except Error as e:

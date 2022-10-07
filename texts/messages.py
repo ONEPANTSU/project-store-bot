@@ -52,7 +52,10 @@ show_project_message = (
     "Telegram.\n<b>Гарант:</b> {guarantee} "
 )
 deleted_project_message = "Объявление удалено!"
+confirm_deleting_message = "Вы действительно хотите удалить объявление?"
 empty_projects_message = "У вас не выставлено ни одного объявления."
+
+command_error_message = "Сообщение не распознано ☹️"
 
 MESSAGES = {
     "start": start_message,
@@ -88,5 +91,7 @@ MESSAGES = {
     "successful_payment": successful_payment_message,
     "show_project": show_project_message,
     "deleted_project": deleted_project_message,
+    "confirm_deleting": confirm_deleting_message,
     "empty_projects": empty_projects_message,
+    "command_error": command_error_message,
 }

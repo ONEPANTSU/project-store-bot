@@ -24,11 +24,12 @@ from data_base.project import (
 )
 from handlers.main_handlers import get_main_keyboard
 from instruments import bot, db_manager
-from states import SellProjectStates
+from states import DeleteProjectStates, SellProjectStates
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
 
 new_projects_dict = {}
+delete_project_dict = {}
 my_projects_callback = CallbackData("my_projects", "page")
 delete_project_callback = CallbackData("delete_project", "id", "page")
 
@@ -114,7 +115,9 @@ async def themes_names_state(message: Message, state: FSMContext):
             )
             await SellProjectStates.themes_plus.set()
         else:
-            await message.answer(text=MESSAGES["income"], reply_markup=ReplyKeyboardRemove())
+            await message.answer(
+                text=MESSAGES["income"], reply_markup=ReplyKeyboardRemove()
+            )
             await SellProjectStates.income.set()
     else:
 
@@ -136,7 +139,9 @@ async def themes_plus_state(message: Message):
         await message.answer(text=MESSAGES["themes_plus_1"], reply_markup=themes_menu())
         await SellProjectStates.themes_names.set()
     elif answer == "Нет":
-        await message.answer(text=MESSAGES["income"], reply_markup=ReplyKeyboardRemove())
+        await message.answer(
+            text=MESSAGES["income"], reply_markup=ReplyKeyboardRemove()
+        )
         await SellProjectStates.income.set()
 
 
@@ -222,7 +227,8 @@ async def buy_process(message: Message, state: FSMContext):
             new_project.save_new_project()
             await bot.send_message(
                 message.chat.id,
-                MESSAGES["save_project"], reply_markup=ReplyKeyboardRemove()
+                MESSAGES["save_project"],
+                reply_markup=ReplyKeyboardRemove(),
             )
     elif answer == BUTTONS["cancellation"]:
         await state.finish()
@@ -231,6 +237,13 @@ async def buy_process(message: Message, state: FSMContext):
             text=MESSAGES["main_menu"].format(message.from_user),
             reply_markup=get_main_keyboard(),
         )
+    else:
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=MESSAGES["command_error"],
+            reply_markup=project_confirmation_menu(),
+        )
+        await SellProjectStates.buy_process.set()
 
 
 async def checkout_process(pre_checkout_query: PreCheckoutQuery):
@@ -245,7 +258,8 @@ async def successful_payment(message: Message):
         MESSAGES["successful_payment"].format(
             total_amount=message.successful_payment.total_amount // 100,
             currency=message.successful_payment.currency,
-        ), reply_markup=ReplyKeyboardRemove()
+        ),
+        reply_markup=ReplyKeyboardRemove(),
     )
 
 
@@ -259,7 +273,8 @@ def get_my_projects_keyboard(project_list, page: int = 0) -> InlineKeyboardMarku
     )
 
     delete_button = InlineKeyboardButton(
-        text=BUTTONS["delete_project"], callback_data=delete_project_callback.new(id=project_list[page].id, page=0)
+        text=BUTTONS["delete_project"],
+        callback_data=delete_project_callback.new(id=project_list[page].id, page=0),
     )
 
     back_button = InlineKeyboardButton(
@@ -309,10 +324,7 @@ async def my_project_index(message: Message):
             reply_markup=keyboard,
         )
     else:
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text=MESSAGES["empty_projects"]
-        )
+        await bot.send_message(chat_id=message.chat.id, text=MESSAGES["empty_projects"])
 
 
 async def my_project_page_handler(query: CallbackQuery, callback_data: dict):
@@ -320,9 +332,49 @@ async def my_project_page_handler(query: CallbackQuery, callback_data: dict):
 
 
 async def delete_project_handler(query: CallbackQuery, callback_data: dict):
-    db_manager.delete_project(int(callback_data.get("id")))
-    await bot.send_message(chat_id=query.message.chat.id, text=MESSAGES["deleted_project"])
-    await refresh_pages(query=query, callback_data=callback_data)
+    await bot.send_message(
+        chat_id=query.message.chat.id,
+        text=MESSAGES["confirm_deleting"],
+        reply_markup=project_confirmation_menu(),
+    )
+    delete_project_dict[query.message.chat.id] = [
+        int(callback_data.get("id")),
+        query,
+        callback_data,
+    ]
+    await DeleteProjectStates.confirm.set()
+
+
+async def delete_confirm(message: Message, state: FSMContext):
+    answer = message.text
+    await state.update_data(confitrm=answer)
+    if answer == BUTTONS["confirm"]:
+        project_id = delete_project_dict[message.chat.id][0]
+        query = delete_project_dict[message.chat.id][1]
+        callback_data = delete_project_dict[message.chat.id][2]
+        db_manager.delete_project(project_id)
+        await bot.send_message(
+            chat_id=query.message.chat.id,
+            text=MESSAGES["deleted_project"]
+        )
+        await refresh_pages(query=query, callback_data=callback_data)
+
+        delete_project_dict.pop(message.chat.id)
+        await state.finish()
+
+    elif answer == BUTTONS["cancellation"]:
+        await my_project_index(message=message)
+
+        delete_project_dict.pop(message.chat.id)
+        await state.finish()
+
+    else:
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=MESSAGES["command_error"],
+            reply_markup=project_confirmation_menu(),
+        )
+        await DeleteProjectStates.confirm.set()
 
 
 async def refresh_pages(query: CallbackQuery, callback_data: dict):
@@ -349,7 +401,9 @@ async def refresh_pages(query: CallbackQuery, callback_data: dict):
 
         await query.message.edit_text(text=project_info, reply_markup=keyboard)
     else:
-        await query.message.edit_text(text=MESSAGES["empty_projects"], reply_markup=None)
+        await query.message.edit_text(
+            text=MESSAGES["empty_projects"], reply_markup=None
+        )
 
 
 def back_menu():
@@ -385,3 +439,4 @@ def register_sell_handlers(dp: Dispatcher):
     dp.register_callback_query_handler(
         delete_project_handler, delete_project_callback.filter()
     )
+    dp.register_message_handler(delete_confirm, state=DeleteProjectStates.confirm)
