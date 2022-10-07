@@ -13,6 +13,9 @@ buy_chose_themes_button = 'Выбрать тематику'
 buy_price_range_button = 'Выбрать ценовой диапазон'
 chose_search_parameters_button = 'Выбрать параметры поиска'
 
+back_to_sell_menu_button = "Вернуться в меню"
+cancel_button = "⏪ Предыдущий вопрос"
+
 confirm_button = "Подтвердить"
 cancellation_button = "Отмена"
 

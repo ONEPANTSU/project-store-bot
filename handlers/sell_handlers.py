@@ -55,78 +55,129 @@ async def put_up_for_sale(message: Message):
         reply_markup=get_main_keyboard(),
     )
     await message.answer(
-        text=MESSAGES["project_name"], reply_markup=ReplyKeyboardRemove()
+        text=MESSAGES["project_name"], reply_markup=back_menu()
     )
     await SellProjectStates.project_name.set()
 
 
+def cancel_menu():
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    main_menu_button = KeyboardButton(BUTTONS["back_to_sell_menu"])
+    cansel_button = KeyboardButton(BUTTONS["otmena"])
+    markup.add(main_menu_button, cansel_button)
+    return markup
+
+
+def back_menu():
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    back_button = KeyboardButton(BUTTONS["back_to_sell_menu"])
+    markup.add(back_button)
+    return markup
+
+
 async def project_name_state(message: Message, state: FSMContext):
     answer = message.text
-    await state.update_data(project_name=answer)
-    await message.answer(MESSAGES["price"])
-    await SellProjectStates.price.set()
+    if answer == "Вернуться в меню":
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=MESSAGES["sell_menu"], reply_markup=get_main_sell_keyboard(),
+        )
+        await state.finish()
+    else:
+        await state.update_data(project_name=answer)
+        await message.answer(MESSAGES["price"], reply_markup=cancel_menu())
+        await SellProjectStates.price.set()
 
 
 async def price_state(message: Message, state: FSMContext):
     answer = message.text
-    if not answer.isdigit():
-        await message.answer(text=MESSAGES["price_check"])
-        await SellProjectStates.price.set()
+    if answer == "⏪ Предыдущий вопрос":
+        await message.answer(MESSAGES["project_name"], reply_markup=cancel_menu())
+        await SellProjectStates.project_name.set()
+    elif answer == "Вернуться в меню":
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=MESSAGES["sell_menu"], reply_markup=get_main_sell_keyboard(),
+        )
+        await state.finish()
     else:
-        await state.update_data(price=answer)
-        await message.answer(text=MESSAGES["subscribers"])
-        await SellProjectStates.subscribers.set()
+        if not answer.isdigit():
+            await message.answer(text=MESSAGES["price_check"], reply_markup=ReplyKeyboardRemove())
+            await SellProjectStates.price.set()
+        else:
+            await state.update_data(price=answer)
+            await message.answer(text=MESSAGES["subscribers"], reply_markup=cancel_menu())
+            await SellProjectStates.subscribers.set()
 
 
 async def subscribers_state(message: Message, state: FSMContext):
     answer = message.text
-    if not answer.isdigit():
-        await message.answer(text=MESSAGES["subscribers_check"])
-        await SellProjectStates.subscribers.set()
+    if answer == "⏪ Предыдущий вопрос":
+        await message.answer(MESSAGES["price"], reply_markup=cancel_menu())
+        await SellProjectStates.price.set()
+    elif answer == "Вернуться в меню":
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=MESSAGES["sell_menu"], reply_markup=get_main_sell_keyboard(),
+        )
+        await state.finish()
     else:
-        await state.update_data(subscribers=answer)
-        await message.answer(text=MESSAGES["themes"], reply_markup=themes_menu())
-        await SellProjectStates.themes_names.set()
+        if not answer.isdigit():
+            await message.answer(text=MESSAGES["subscribers_check"])
+            await SellProjectStates.subscribers.set()
+
+        else:
+            await state.update_data(subscribers=answer)
+            await message.answer(text=MESSAGES["themes"], reply_markup=themes_menu())
+            await SellProjectStates.themes_names.set()
 
 
 async def themes_names_state(message: Message, state: FSMContext):
     themes_dict = db_manager.get_all_themes()
     themes_list = themes_dict.values()
     message_text = message.text
-    if message_text in themes_list:
-        answer = list()
-        data = await state.get_data()
-        themes = data.get("themes", False)
-        if themes:
-            answer = data["themes"]
-        if message.text not in answer:
-            answer.append(message.text)
-        else:
-            await message.answer(
-                text=MESSAGES["themes_warn_2"], reply_markup=themes_plus_keyboard()
-            )
-            await SellProjectStates.themes_plus.set()
-        await state.update_data(themes=answer)
-        size = len(answer)
-        if size < 3:
-            await message.answer(
-                text=MESSAGES["themes_plus"], reply_markup=themes_plus_keyboard()
-            )
-            await SellProjectStates.themes_plus.set()
-        else:
-            await message.answer(
-                text=MESSAGES["income"], reply_markup=ReplyKeyboardRemove()
-            )
-            await SellProjectStates.income.set()
+    if message_text == "⏪ Предыдущий вопрос":
+        await message.answer(MESSAGES["subscribers"], reply_markup=cancel_menu())
+        await SellProjectStates.subscribers.set()
+    elif message_text == "Вернуться в меню":
+        await bot.send_message(
+            text=MESSAGES["sell_menu"], reply_markup=get_main_sell_keyboard(),
+        )
+        await state.finish()
     else:
+        if message_text in themes_list:
+            answer = list()
+            data = await state.get_data()
+            themes = data.get("themes", False)
+            if themes:
+                answer = data["themes"]
+            if message.text not in answer:
+                answer.append(message.text)
+            else:
+                await message.answer(
+                    text=MESSAGES["themes_warn_2"], reply_markup=themes_plus_keyboard()
+                )
+                await SellProjectStates.themes_plus.set()
+            await state.update_data(themes=answer)
+            size = len(answer)
+            if size < 3:
+                await message.answer(
+                    text=MESSAGES["themes_plus"], reply_markup=themes_plus_keyboard()
+                )
+                await SellProjectStates.themes_plus.set()
+            else:
+                await message.answer(text=MESSAGES["income"], reply_markup=cancel_menu())
+                await SellProjectStates.income.set()
+        else:
 
-        await message.answer(text=MESSAGES["themes_warn"], reply_markup=themes_menu())
-        await SellProjectStates.themes_names.set()
+            await message.answer(text=MESSAGES["themes_warn"], reply_markup=themes_menu())
+            await SellProjectStates.themes_names.set()
 
 
 def themes_menu():
     themes_dict = db_manager.get_all_themes()
     markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    markup.add(KeyboardButton(BUTTONS["otmena"]))
     for key in themes_dict:
         markup.add(KeyboardButton(themes_dict[key]))
     return markup
@@ -138,10 +189,13 @@ async def themes_plus_state(message: Message):
         await message.answer(text=MESSAGES["themes_plus_1"], reply_markup=themes_menu())
         await SellProjectStates.themes_names.set()
     elif answer == "Нет":
-        await message.answer(
-            text=MESSAGES["income"], reply_markup=ReplyKeyboardRemove()
-        )
+        await message.answer(text=MESSAGES["income"], reply_markup=cancel_menu())
         await SellProjectStates.income.set()
+    else:
+        await message.answer(
+            text=MESSAGES["yes_or_no"], reply_markup=themes_plus_keyboard()
+        )
+        await SellProjectStates.themes_plus.set()
 
 
 def themes_plus_keyboard():
@@ -154,95 +208,115 @@ def themes_plus_keyboard():
 
 async def income_state(message: Message, state: FSMContext):
     answer = message.text
-    if not answer.isdigit():
-        await message.answer(text=MESSAGES["income_check"])
-        await SellProjectStates.income.set()
+    if answer == "⏪ Предыдущий вопрос":
+        await message.answer(MESSAGES["themes"], reply_markup=themes_menu())
+        await SellProjectStates.themes_names.set()
+    elif answer == "Вернуться в меню":
+        await bot.send_message(
+            text=MESSAGES["sell_menu"], reply_markup=get_main_sell_keyboard(),
+        )
+        await state.finish()
     else:
-        await state.update_data(income=answer)
-        await message.answer(text=MESSAGES["comment"])
-        await SellProjectStates.comment.set()
+        if not answer.isdigit():
+            await message.answer(text=MESSAGES["income_check"], reply_markup=cancel_menu())
+            await SellProjectStates.income.set()
+        else:
+            await state.update_data(income=answer)
+            await message.answer(text=MESSAGES["comment"], reply_markup=cancel_menu())
+            await SellProjectStates.comment.set()
 
 
 async def comment_state(message: Message, state: FSMContext):
     answer = message.text
-    await state.update_data(comment=answer)
-    data = await state.get_data()
-    themes_str = ""
-    for i in data["themes"]:
-        themes_str += "#" + str(i) + " "
-    project_info = MESSAGES["confirm"].format(
-        name=data["project_name"],
-        themes=themes_str,
-        subs=data["subscribers"],
-        income=data["income"],
-        comm=data["comment"],
-        seller=message.from_user.username,
-        price=data["price"],
-    )
-    await message.answer(text=project_info, reply_markup=project_confirmation_menu())
-    await SellProjectStates.buy_process.set()
+    if answer == "⏪ Предыдущий вопрос":
+        await message.answer(MESSAGES["income"], reply_markup=cancel_menu())
+        await SellProjectStates.income.set()
+    elif answer == "Вернуться в меню":
+        await bot.send_message(
+            text=MESSAGES["sell_menu"], reply_markup=get_main_sell_keyboard(),
+        )
+        await state.finish()
+    else:
+        await state.update_data(comment=answer)
+        data = await state.get_data()
+        themes_str = ""
+        for i in data["themes"]:
+            themes_str += "#" + str(i) + " "
+        project_info = MESSAGES["confirm"].format(
+            name=data["project_name"],
+            themes=themes_str,
+            subs=data["subscribers"],
+            income=data["income"],
+            comm=data["comment"],
+            seller=message.from_user.username,
+            price=data["price"],
+        )
+        await message.answer(text=project_info, reply_markup=project_confirmation_menu())
+        await SellProjectStates.buy_process.set()
 
 
 def project_confirmation_menu():
     markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     confirm_button = KeyboardButton(BUTTONS["confirm"])
+    cansel_button = KeyboardButton(BUTTONS["otmena"])
     cancellation_button = KeyboardButton(BUTTONS["cancellation"])
-    markup.add(confirm_button, cancellation_button)
+    markup.add(confirm_button, cansel_button, cancellation_button)
     return markup
 
 
 async def buy_process(message: Message, state: FSMContext):
     answer = message.text
-    await state.update_data(buy_process=answer)
-    if answer == BUTTONS["confirm"]:
-        data = await state.get_data()
-        new_project = Project()
-        new_project.name = data["project_name"]
-        new_project.seller_name = message.from_user.username
-        new_project.status_id = 0
-        new_project.price = data["price"]
-        new_project.subscribers = data["subscribers"]
-        new_project.themes_names = data["themes"]
-        new_project.income = data["income"]
-        new_project.comment = data["comment"]
-        need_payment = get_need_payment()
-        if need_payment == 1:
-            price_amount = get_to_sell_price()
-            prices = [LabeledPrice(label=MESSAGES["sell_payment"], amount=price_amount)]
-            new_projects_dict[message.from_user.username] = new_project
-            await bot.send_invoice(
-                message.chat.id,
-                title=MESSAGES["sell_payment_title"],
-                description=MESSAGES["sell_payment_description"],
-                provider_token=PAYMENTS_TOKEN,
-                currency="rub",
-                is_flexible=False,
-                prices=prices,
-                start_parameter="example",
-                payload="some_invoice",
-            )
-            await state.finish()
-        elif need_payment == 0:
-            new_project.save_new_project()
-            await bot.send_message(
-                message.chat.id,
-                MESSAGES["save_project"],
-                reply_markup=ReplyKeyboardRemove(),
-            )
-    elif answer == BUTTONS["cancellation"]:
+    if answer == "⏪ Предыдущий вопрос":
+        await message.answer(MESSAGES["comment"], reply_markup=cancel_menu())
+        await SellProjectStates.comment.set()
+    elif answer == "Вернуться в меню":
+        await bot.send_message(
+            text=MESSAGES["sell_menu"], reply_markup=get_main_sell_keyboard(),
+        )
         await state.finish()
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text=MESSAGES["main_menu"].format(message.from_user),
-            reply_markup=get_main_keyboard(),
-        )
     else:
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text=MESSAGES["command_error"],
-            reply_markup=project_confirmation_menu(),
-        )
-        await SellProjectStates.buy_process.set()
+        await state.update_data(buy_process=answer)
+        if answer == BUTTONS["confirm"]:
+            data = await state.get_data()
+            new_project = Project()
+            new_project.name = data["project_name"]
+            new_project.seller_name = message.from_user.username
+            new_project.status_id = 0
+            new_project.price = data["price"]
+            new_project.subscribers = data["subscribers"]
+            new_project.themes_names = data["themes"]
+            new_project.income = data["income"]
+            new_project.comment = data["comment"]
+            need_payment = get_need_payment()
+            if need_payment == 1:
+                price_amount = get_to_sell_price()
+                prices = [LabeledPrice(label=MESSAGES["sell_payment"], amount=price_amount)]
+                new_projects_dict[message.from_user.username] = new_project
+                await bot.send_invoice(
+                    message.chat.id,
+                    title=MESSAGES["sell_payment_title"],
+                    description=MESSAGES["sell_payment_description"],
+                    provider_token=PAYMENTS_TOKEN,
+                    currency="rub",
+                    is_flexible=False,
+                    prices=prices,
+                    start_parameter="example",
+                    payload="some_invoice",
+                )
+                await state.finish()
+            elif need_payment == 0:
+                new_project.save_new_project()
+                await bot.send_message(
+                    message.chat.id,
+                    MESSAGES["save_project"], reply_markup=ReplyKeyboardRemove()
+                )
+        elif answer == BUTTONS["cancellation"]:
+            await state.finish()
+            await bot.send_message(
+                chat_id=message.chat.id,
+                text=MESSAGES["main_menu"].format(message.from_user),
+                reply_markup=get_main_keyboard(),
+            )
 
 
 async def checkout_process(pre_checkout_query: PreCheckoutQuery):
@@ -409,13 +483,6 @@ async def refresh_pages(query: CallbackQuery, callback_data: dict):
         await query.message.edit_text(
             text=MESSAGES["empty_projects"], reply_markup=None
         )
-
-
-def back_menu():
-    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    back_button = KeyboardButton(BUTTONS["back"])
-    markup.add(back_button)
-    return markup
 
 
 def register_sell_handlers(dp: Dispatcher):
