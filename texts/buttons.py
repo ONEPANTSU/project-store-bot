@@ -16,8 +16,9 @@ chose_search_parameters_button = 'Выбрать параметры поиска
 confirm_button = "Подтвердить"
 cancellation_button = "Отмена"
 
-prev_button = "◀Туда"
-next_button = "Туда▶"
+delete_button = "Удалить объявление"
+prev_button = "⏪ Назад"
+next_button = "Вперёд ⏩"
 
 BUTTONS = {
 
