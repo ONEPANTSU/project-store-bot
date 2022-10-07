@@ -223,10 +223,7 @@ async def buy_process(message: Message, state: FSMContext):
             new_project.save_new_project()
             await bot.send_message(
                 message.chat.id,
-                MESSAGES["successful_payment"].format(
-                    total_amount=message.successful_payment.total_amount // 100,
-                    currency=message.successful_payment.currency,
-                ),
+                MESSAGES["save_project"]
             )
     elif answer == BUTTONS["cancellation"]:
         await state.finish()
