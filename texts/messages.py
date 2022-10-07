@@ -4,6 +4,7 @@ start_message = (
 
 main_menu_massage = "📌 Главное меню 📌"
 
+
 sell_menu_message = "🗄 Мои предложения 🗄"
 put_up_for_sale_massage = "🖊Заполните анкету🖊"
 project_name_question = "Напишите название вашего проекта:"
@@ -20,6 +21,7 @@ themes_plus_1_question = "Выберите ещё одну тему"
 themes_plus_question = "Хотите выбрать ещё тему?"
 yes_question = "Да"
 no_question = "Нет"
+yes_or_no_questoin = "Ответьте да или нет"
 comment_question = "Добавьте комментарий к обьявлению:"
 confirm_question = (
     "Данные введены верно? Если да, то перейдите к оплате. "
@@ -73,6 +75,7 @@ MESSAGES = {
     "themes_plus": themes_plus_question,
     "yes": yes_question,
     "no": no_question,
+    "yes_or_no": yes_or_no_questoin,
     "income": income_question,
     "income_check": income_check_question,
     "comment": comment_question,
