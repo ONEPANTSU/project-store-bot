@@ -21,7 +21,7 @@ themes_plus_1_question = "Выберите ещё одну тему"
 themes_plus_question = "Хотите выбрать ещё тему?"
 yes_question = "Да"
 no_question = "Нет"
-yes_or_no_questoin = "Ответьте да или нет"
+yes_or_no_question = "Ответьте да или нет"
 comment_question = "Добавьте комментарий к обьявлению:"
 confirm_question = (
     "Данные введены верно? Если да, то перейдите к оплате. "
@@ -39,12 +39,12 @@ get_list_of_projects_message = "🗄 Выставленные на продаж�
 
 buy_menu_message = "💰 Поиск предложений 💰"
 chose_themes_message = "Выберите интересные тематики"
-question_theme_message = 'Хотите выбрать тематику?'
-question_price_message = 'Хотите выбрать цену?'
+question_theme_message = "Хотите выбрать тематику?"
+question_price_message = "Хотите выбрать цену?"
 chose_price_from_message = "Введите цену от: "
 chose_price_up_to_message = "Введите цену до: "
-show_all_projects_message = 'Показать все предложения'
-not_recognized_message = 'Сообщение не распознано. Попробуйте еще раз!'
+show_all_projects_message = "Показать все предложения"
+not_recognized_message = "Сообщение не распознано. Попробуйте еще раз!"
 
 sell_payment_label = "Разместить объявление!"
 sell_payment_title = "Оплата"
@@ -79,7 +79,7 @@ MESSAGES = {
     "themes_plus": themes_plus_question,
     "yes": yes_question,
     "no": no_question,
-    "yes_or_no": yes_or_no_questoin,
+    "yes_or_no": yes_or_no_question,
     "income": income_question,
     "income_check": income_check_question,
     "comment": comment_question,
@@ -101,45 +101,8 @@ MESSAGES = {
     "confirm_deleting": confirm_deleting_message,
     "empty_projects": empty_projects_message,
     "command_error": command_error_message,
-}
-
-    'sell_menu': sell_menu_message,
-
-    'put_up_for_sale': put_up_for_sale_massage,
-    'project_name': project_name_question,
-    'price': price_question,
-    'price_check': price_check_question,
-    'subscribers': subscribers_question,
-    'subscribers_check': subscribers_check_question,
-    'themes': themes_question,
-    'themes_warn': themes_warn_question,
-    'themes_warn_2': themes_warn_2_question,
-    'themes_plus_1': themes_plus_1_question,
-    'themes_plus': themes_plus_question,
-    'yes': yes_question,
-    'no': no_question,
-    'income': income_question,
-    'income_check': income_check_question,
-    'comment': comment_question,
-    'confirm': confirm_question,
-    'cancellation': cancellation_question,
-    'save_project': save_project_question,
-    'get_list_of_projects': get_list_of_projects_message,
-    'main_menu': main_menu_massage,
-    'buy_menu': buy_menu_message,
-    'question_theme': question_theme_message,
-    'question_price': question_price_message,
-    'chose_themes': chose_themes_message,
-    'chose_price_from': chose_price_from_message,
-    'chose_price_up_to': chose_price_up_to_message,
-    'show_all_projects': show_all_projects_message,
-    'not_recognized' : not_recognized_message,
-
-
-    'sell_payment': sell_payment_label,
-    'sell_payment_title': sell_payment_title,
-    'sell_payment_description': sell_payment_description,
-    'successful_payment': successful_payment_message,
-
-    'show_project': show_project_message
+    "question_theme": question_theme_message,
+    "question_price": question_price_message,
+    "show_all_projects": show_all_projects_message,
+    "not_recognized": not_recognized_message,
 }

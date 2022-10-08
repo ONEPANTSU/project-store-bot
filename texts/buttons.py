@@ -10,10 +10,7 @@ buy_price_range_button = "Выбрать ценовой диапазон"
 
 yes_button = "Да"
 no_button = "Нет"
-buy_menu_button = '💰 Поиск предложений 💰'
-buy_chose_themes_button = 'Выбрать тематику'
-buy_price_range_button = 'Выбрать ценовой диапазон'
-chose_search_parameters_button = 'Выбрать параметры поиска'
+chose_search_params_button = "Выбрать параметры поиска"
 
 back_to_sell_menu_button = "Вернуться в меню"
 cancel_button = "⏪ Предыдущий вопрос"
@@ -42,4 +39,5 @@ BUTTONS = {
     "delete_project": delete_button,
     "prev": prev_button,
     "next": next_button,
+    "chose_search_parameters": chose_search_params_button,
 }

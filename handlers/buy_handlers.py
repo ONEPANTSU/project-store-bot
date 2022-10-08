@@ -9,15 +9,13 @@ from aiogram.types import (
     ReplyKeyboardMarkup,
 )
 from aiogram.utils.callback_data import CallbackData
-from handlers.main_handlers import back_to_main_menu
 
 from data_base.project import get_guarantee_name, get_projects_list_by_theme_id
+from handlers.main_handlers import back_to_main_menu
 from instruments import bot, db_manager
-from states import ByeProjectStates
+from states import BuyProjectStates
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
-from instruments import db_manager, bot
-from states import BuyProjectStates
 
 buy_project_callback = CallbackData("buy_project_callback", "page", "theme_id")
 themes_callback = CallbackData("themes_callback", "data")
@@ -26,43 +24,40 @@ themes_callback = CallbackData("themes_callback", "data")
 def buy_menu():
     # где-то ориентировочно тут надо вставить функцию вывода всех проектов
     markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    chose_search_parameters = KeyboardButton(BUTTONS['chose_search_parameters'])
-    back_button = KeyboardButton(BUTTONS['back'])
-    markup.add(chose_search_parameters, back_button)
+    chose_search_params = KeyboardButton(BUTTONS["chose_search_params"])
+    back_button = KeyboardButton(BUTTONS["back"])
+    markup.add(chose_search_params, back_button)
     return markup
-
 
 
 async def show_main_buy_keyboard(message: Message):
     # где-то ориентировочно тут надо вставить функцию вывода всех проектов
-    await message.answer(text=MESSAGES['buy_menu'], reply_markup=buy_menu())
-
+    await message.answer(text=MESSAGES["buy_menu"], reply_markup=buy_menu())
 
 
 # Кнопка Выбрать параметры поиска
 async def chose_search_parameters(message: Message):
     answer = message.text
-    if answer == 'Выбрать параметры поиска':
-        await ByeProjectStates.question_price.set() # Вызыв состояния вопроса про тему
-    elif answer == 'Вернуться в главное меню':
+    if answer == "Выбрать параметры поиска":
+        await BuyProjectStates.question_price.set()  # Вызыв состояния вопроса про тему
+    elif answer == "Вернуться в главное меню":
         await back_to_main_menu(message)
     else:
-        await message.answer(text=MESSAGES['not_recognized'])
+        await message.answer(text=MESSAGES["not_recognized"])
         await chose_search_parameters(message)
 
 
 async def question_price_state(message: Message, state: FSMContext):
-    await message.answer(MESSAGES['question_price'])
-    await ByeProjectStates.question_theme.set()
+    await message.answer(MESSAGES["question_price"])
+    await BuyProjectStates.question_theme.set()
 
 
 # Вопрос про тему
 async def question_theme_state(message: Message, state: FSMContext):
     answer = message.text
     await state.update_data(price_ans=answer)
-    await message.answer(MESSAGES['question_theme'])
-    await ByeProjectStates.analys_answers.set()
-
+    await message.answer(MESSAGES["question_theme"])
+    await BuyProjectStates.analyse_answers.set()
 
 
 async def chose_themes(message: Message):
@@ -87,14 +82,14 @@ async def chose_themes(message: Message):
 # Кнопка выбора ценового диапазона
 async def chose_prices(message: Message):
     await message.answer(text=MESSAGES["chose_price_from"])
-    await ByeProjectStates.price_from.set()
+    await BuyProjectStates.price_from.set()
 
 
 async def price_from_state(message: Message, state: FSMContext):
     answer = message.text
     await state.update_data(price_from=answer)
     await message.answer(MESSAGES["chose_price_up_to"])
-    await ByeProjectStates.price_up_to.set()
+    await BuyProjectStates.price_up_to.set()
 
 
 #  В СЛЕДУЮЩИЙ РАЗ ИРА РАБОТАЕТ ОТСЮДА
@@ -191,13 +186,12 @@ async def buy_project_page_handler(query: CallbackQuery, callback_data: dict):
 
 
 def register_buy_handlers(dp: Dispatcher):
-    dp.register_message_handler(show_main_buy_keyboard, text=[BUTTONS['buy_menu']])
-    dp.register_message_handler(chose_themes, text=[BUTTONS['buy_chose_themes']])
-    dp.register_message_handler(chose_prices, text=[BUTTONS['buy_price_range']])
-    dp.register_message_handler(price_from_state, state=ByeProjectStates.price_from)
-    dp.register_message_handler(price_up_to_state, state=ByeProjectStates.price_up_to)
+    dp.register_message_handler(show_main_buy_keyboard, text=[BUTTONS["buy_menu"]])
+    dp.register_message_handler(chose_themes, text=[BUTTONS["buy_chose_themes"]])
+    dp.register_message_handler(chose_prices, text=[BUTTONS["buy_price_range"]])
+    dp.register_message_handler(price_from_state, state=BuyProjectStates.price_from)
+    dp.register_message_handler(price_up_to_state, state=BuyProjectStates.price_up_to)
     dp.register_callback_query_handler(buy_project_index, themes_callback.filter())
     dp.register_callback_query_handler(
         buy_project_page_handler, buy_project_callback.filter()
     )
-
