@@ -314,24 +314,10 @@ async def buy_process(message: Message, state: FSMContext):
         elif answer == BUTTONS["cancellation"]:
             await state.finish()
             await bot.send_message(
-                message.chat.id,
-                MESSAGES["save_project"],
-                reply_markup=ReplyKeyboardRemove(),
+                chat_id=message.chat.id,
+                text=MESSAGES["main_menu"].format(message.from_user),
+                reply_markup=get_main_keyboard(),
             )
-    elif answer == BUTTONS["cancellation"]:
-        await state.finish()
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text=MESSAGES["main_menu"].format(message.from_user),
-            reply_markup=get_main_keyboard(),
-        )
-    else:
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text=MESSAGES["command_error"],
-            reply_markup=project_confirmation_menu(),
-        )
-        await SellProjectStates.buy_process.set()
 
 
 async def checkout_process(pre_checkout_query: PreCheckoutQuery):
