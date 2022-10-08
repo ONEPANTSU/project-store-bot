@@ -31,6 +31,7 @@ from texts.messages import MESSAGES
 new_projects_dict = {}
 delete_project_dict = {}
 my_projects_callback = CallbackData("my_projects", "page")
+delete_project_callback = CallbackData("delete_project", "id", "page")
 
 
 async def show_main_sell_keyboard(message: Message):
@@ -360,13 +361,12 @@ async def successful_payment(message: Message):
 
 
 def get_my_projects_keyboard(project_list, page: int = 0) -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup(row_width=1)
+    keyboard = InlineKeyboardMarkup(row_width=2)
+
     has_next_page = len(project_list) > page + 1
 
-    keyboard.add(
-        InlineKeyboardButton(
-            text=f"{page + 1} / {len(project_list)}", callback_data="dont_click_me"
-        )
+    page_num_button = InlineKeyboardButton(
+        text=f"{page + 1} / {len(project_list)}", callback_data="dont_click_me"
     )
 
     delete_button = InlineKeyboardButton(
@@ -385,18 +385,12 @@ def get_my_projects_keyboard(project_list, page: int = 0) -> InlineKeyboardMarku
     keyboard.row(page_num_button)
     keyboard.row(delete_button)
     if page != 0:
-        keyboard.add(
-            InlineKeyboardButton(
-                text="< Назад", callback_data=my_projects_callback.new(page=page - 1)
-            )
-        )
-
-    if has_next_page:
-        keyboard.add(
-            InlineKeyboardButton(
-                text="Вперёд >", callback_data=my_projects_callback.new(page=page + 1)
-            )
-        )
+        if has_next_page:
+            keyboard.row(back_button, next_button)
+        else:
+            keyboard.row(back_button)
+    elif has_next_page:
+        keyboard.row(next_button)
 
     return keyboard
 
@@ -483,22 +477,23 @@ async def refresh_pages(query: CallbackQuery, callback_data: dict):
     page = int(callback_data.get("page"))
 
     project_list = get_projects_list_by_seller_name(query.from_user.username)
-    project_data = project_list[page]
-    guarantee = get_guarantee_name()
-    themes_str = ""
-    for theme_name in project_data.themes_names:
-        themes_str += "#" + str(theme_name) + " "
-    project_info = MESSAGES["show_project"].format(
-        name=project_data.name,
-        theme=themes_str,
-        subs=project_data.subscribers,
-        income=project_data.income,
-        comm=project_data.comment,
-        seller=project_data.seller_name,
-        price=project_data.price,
-        guarantee=guarantee,
-    )
-    keyboard = get_my_projects_keyboard(project_list=project_list, page=page)
+    if len(project_list) != 0:
+        project_data = project_list[page]
+        guarantee = get_guarantee_name()
+        themes_str = ""
+        for theme_name in project_data.themes_names:
+            themes_str += "#" + str(theme_name) + " "
+        project_info = MESSAGES["show_project"].format(
+            name=project_data.name,
+            theme=themes_str,
+            subs=project_data.subscribers,
+            income=project_data.income,
+            comm=project_data.comment,
+            seller=project_data.seller_name,
+            price=project_data.price,
+            guarantee=guarantee,
+        )
+        keyboard = get_my_projects_keyboard(project_list=project_list, page=page)
 
         await query.message.edit_text(text=project_info, reply_markup=keyboard)
     else:

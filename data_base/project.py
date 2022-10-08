@@ -248,7 +248,9 @@ def get_projects_list_by_seller_name(seller_name):
     :rtype: :list::class:`data_base.project.Project`
     """
     projects_info = db_manager.get_projects_info_by_seller_name(seller_name)
-    projects_list = to_parse_project_list(projects_info)
+    projects_list = list()
+    if len(projects_info) != 0:
+        projects_list = to_parse_project_list(projects_info)
     return projects_list
 
 
