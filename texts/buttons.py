@@ -32,7 +32,7 @@ BUTTONS = {
     "yes": yes_button,
     "no": no_button,
     "back_to_sell_menu": back_to_sell_menu_button,
-    "otmena": cancel_button,
+    "cancel": cancel_button,
     "confirm": confirm_button,
     "cancellation": cancellation_button,
     "delete_project": delete_button,
