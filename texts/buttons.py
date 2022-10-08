@@ -39,5 +39,5 @@ BUTTONS = {
     "delete_project": delete_button,
     "prev": prev_button,
     "next": next_button,
-    "chose_search_parameters": chose_search_params_button,
+    "chose_search_params": chose_search_params_button,
 }
