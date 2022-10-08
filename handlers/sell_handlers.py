@@ -51,10 +51,7 @@ def get_main_sell_keyboard():
 
 
 async def put_up_for_sale(message: Message):
-    await message.answer(
-        text=MESSAGES["put_up_for_sale"].format(message.from_user),
-        reply_markup=get_main_keyboard(),
-    )
+    await message.answer(text=MESSAGES["put_up_for_sale"])
     await message.answer(text=MESSAGES["project_name"], reply_markup=back_menu())
     await SellProjectStates.project_name.set()
 
@@ -92,7 +89,7 @@ async def project_name_state(message: Message, state: FSMContext):
 async def price_state(message: Message, state: FSMContext):
     answer = message.text
     if answer == "⏪ Предыдущий вопрос":
-        await message.answer(MESSAGES["project_name"], reply_markup=cancel_menu())
+        await message.answer(MESSAGES["project_name"], reply_markup=back_menu())
         await SellProjectStates.project_name.set()
     elif answer == "Вернуться в меню":
         await bot.send_message(
@@ -220,6 +217,7 @@ def themes_plus_keyboard():
 async def income_state(message: Message, state: FSMContext):
     answer = message.text
     if answer == "⏪ Предыдущий вопрос":
+        await state.update_data(themes=[])
         await message.answer(MESSAGES["themes"], reply_markup=themes_menu())
         await SellProjectStates.themes_names.set()
     elif answer == "Вернуться в меню":
@@ -278,7 +276,7 @@ def project_confirmation_menu(back_button=True):
     cancellation_button = KeyboardButton(BUTTONS["cancellation"])
     if back_button:
         cancel_button = KeyboardButton(BUTTONS["cancel"])
-        markup.add(confirm_button, cancel_button, cancellation_button)
+        markup.add(confirm_button, cancellation_button, cancel_button)
     else:
         markup.add(confirm_button, cancellation_button)
     return markup
@@ -451,7 +449,8 @@ async def delete_confirm(message: Message, state: FSMContext):
         callback_data = delete_project_dict[message.chat.id][2]
         db_manager.delete_project(project_id)
         await bot.send_message(
-            chat_id=query.message.chat.id, text=MESSAGES["deleted_project"]
+            chat_id=query.message.chat.id, text=MESSAGES["deleted_project"],
+            reply_markup=ReplyKeyboardRemove()
         )
         await refresh_pages(query=query, callback_data=callback_data)
 
