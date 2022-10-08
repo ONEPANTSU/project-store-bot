@@ -24,23 +24,20 @@ prev_button = "⏪ Назад"
 next_button = "Вперёд ⏩"
 
 BUTTONS = {
-
-    'back': back_button,
-
-    'sell_menu': sell_menu_button,
-    'sell_project': sell_project_button,
-    'sell_list': sell_list_button,
-
-    'buy_menu': buy_menu_button,
-    'buy_chose_themes': buy_chose_themes_button,
-    'buy_price_range': buy_price_range_button,
-    'chose_search_parameters': chose_search_parameters_button,
-
-    'yes': yes_button,
-    'no': no_button,
-    'confirm': confirm_button,
-    'cancellation': cancellation_button,
-    'prev': prev_button,
-    'next': next_button,
-
+    "back": back_button,
+    "sell_menu": sell_menu_button,
+    "sell_project": sell_project_button,
+    "sell_list": sell_list_button,
+    "buy_menu": buy_menu_button,
+    "buy_chose_themes": buy_chose_themes_button,
+    "buy_price_range": buy_price_range_button,
+    "yes": yes_button,
+    "no": no_button,
+    "back_to_sell_menu": back_to_sell_menu_button,
+    "cancel": cancel_button,
+    "confirm": confirm_button,
+    "cancellation": cancellation_button,
+    "delete_project": delete_button,
+    "prev": prev_button,
+    "next": next_button,
 }
