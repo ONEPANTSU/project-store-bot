@@ -3,25 +3,59 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, ReplyKeyboardMarkup, \
     KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from aiogram.utils.callback_data import CallbackData
+from handlers.main_handlers import back_to_main_menu
 
 from data_base.project import get_projects_list_by_theme_id, get_guarantee_name
 from handlers.main_handlers import get_main_keyboard
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
 from instruments import db_manager, bot
-from states import ByeProjectStates
+from states import BuyProjectStates
 
 buy_project_callback = CallbackData("buy_project_callback", "page", "theme_id")
 themes_callback = CallbackData("themes_callback", "data")
 
 
-async def buy_menu(message: Message):
+def buy_menu():
+    # где-то ориентировочно тут надо вставить функцию вывода всех проектов
     markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    themes_button = KeyboardButton(BUTTONS['buy_chose_themes'])
-    price_range_button = KeyboardButton(BUTTONS['buy_price_range'])
+    chose_search_parameters = KeyboardButton(BUTTONS['chose_search_parameters'])
     back_button = KeyboardButton(BUTTONS['back'])
-    markup.add(themes_button, price_range_button, back_button)
-    await message.answer(text=MESSAGES['buy_menu'], reply_markup=markup)
+    markup.add(chose_search_parameters, back_button)
+    return markup
+
+
+
+async def show_main_buy_keyboard(message: Message):
+    # где-то ориентировочно тут надо вставить функцию вывода всех проектов
+    await message.answer(text=MESSAGES['buy_menu'], reply_markup=buy_menu())
+
+
+
+# Кнопка Выбрать параметры поиска
+async def chose_search_parameters(message: Message):
+    answer = message.text
+    if answer == 'Выбрать параметры поиска':
+        await ByeProjectStates.question_price.set() # Вызыв состояния вопроса про тему
+    elif answer == 'Вернуться в главное меню':
+        await back_to_main_menu(message)
+    else:
+        await message.answer(text=MESSAGES['not_recognized'])
+        await chose_search_parameters(message)
+
+
+async def question_price_state(message: Message, state: FSMContext):
+    await message.answer(MESSAGES['question_price'])
+    await ByeProjectStates.question_theme.set()
+
+
+# Вопрос про тему
+async def question_theme_state(message: Message, state: FSMContext):
+    answer = message.text
+    await state.update_data(price_ans=answer)
+    await message.answer(MESSAGES['question_theme'])
+    await ByeProjectStates.analys_answers.set()
+
 
 
 async def chose_themes(message: Message):
@@ -133,10 +167,11 @@ async def buy_project_page_handler(query: CallbackQuery, callback_data: dict):
 
 
 def register_buy_handlers(dp: Dispatcher):
-    dp.register_message_handler(buy_menu, text=[BUTTONS['buy_menu']])
+    dp.register_message_handler(show_main_buy_keyboard, text=[BUTTONS['buy_menu']])
     dp.register_message_handler(chose_themes, text=[BUTTONS['buy_chose_themes']])
     dp.register_message_handler(chose_prices, text=[BUTTONS['buy_price_range']])
     dp.register_message_handler(price_from_state, state=ByeProjectStates.price_from)
     dp.register_message_handler(price_up_to_state, state=ByeProjectStates.price_up_to)
     dp.register_callback_query_handler(buy_project_index, themes_callback.filter())
     dp.register_callback_query_handler(buy_project_page_handler, buy_project_callback.filter())
+

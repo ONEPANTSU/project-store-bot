@@ -25,8 +25,12 @@ get_list_of_projects_message = "🗄 Выставленные на продаж�
 
 buy_menu_message = "💰 Поиск предложений 💰"
 chose_themes_message = "Выберите интересные тематики"
+question_theme_message = 'Хотите выбрать тематику?'
+question_price_message = 'Хотите выбрать цену?'
 chose_price_from_message = "Введите цену от: "
 chose_price_up_to_message = "Введите цену до: "
+show_all_projects_message = 'Показать все предложения'
+not_recognized_message = 'Сообщение не распознано. Попробуйте еще раз!'
 
 sell_payment_label = "Разместить объявление!"
 sell_payment_title = "Оплата"
@@ -63,9 +67,13 @@ MESSAGES = {
     'get_list_of_projects': get_list_of_projects_message,
     'main_menu': main_menu_massage,
     'buy_menu': buy_menu_message,
+    'question_theme': question_theme_message,
+    'question_price': question_price_message,
     'chose_themes': chose_themes_message,
     'chose_price_from': chose_price_from_message,
     'chose_price_up_to': chose_price_up_to_message,
+    'show_all_projects': show_all_projects_message,
+    'not_recognized' : not_recognized_message,
 
 
     'sell_payment': sell_payment_label,

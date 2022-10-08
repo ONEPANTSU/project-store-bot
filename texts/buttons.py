@@ -8,6 +8,7 @@ sell_list_button = 'Список моих предложений'
 buy_menu_button = '💰 Поиск предложений 💰'
 buy_chose_themes_button = 'Выбрать тематику'
 buy_price_range_button = 'Выбрать ценовой диапазон'
+chose_search_parameters_button = 'Выбрать параметры поиска'
 
 yes_button = 'Да'
 no_button = 'Нет'
@@ -26,6 +27,7 @@ BUTTONS = {
     'buy_menu': buy_menu_button,
     'buy_chose_themes': buy_chose_themes_button,
     'buy_price_range': buy_price_range_button,
+    'chose_search_parameters': chose_search_parameters_button,
 
     'yes': yes_button,
     'no': no_button,
