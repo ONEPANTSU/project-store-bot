@@ -38,12 +38,15 @@ def yes_no_menu():
 
 
 async def show_main_buy_keyboard(message: Message):
+    # где-то ориентировочно тут надо вставить функцию выводаchose_search_params всех проектов
+    await message.answer(text=MESSAGES["buy_menu"], reply_markup=buy_menu())
     # где-то ориентировочно тут надо вставить функцию вывода всех проектов
     await message.answer(text=MESSAGES["buy_menu"].format(message.from_user), reply_markup=buy_menu())
 
 
 # Действия по нажатию кнопки Выбрать параметры поиска
 async def chose_search_parameters(message: Message):
+    await BuyProjectStates.question_price.set()  # Вызыв состояния вопроса про тему
     await message.answer(text=MESSAGES["question_price"].format(message.from_user), reply_markup=yes_no_menu())
     await BuyProjectStates.question_price.set()  # Вызов состояния вопроса про цену
 
