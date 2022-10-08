@@ -73,7 +73,7 @@ def back_menu():
 
 async def project_name_state(message: Message, state: FSMContext):
     answer = message.text
-    if answer == "Вернуться в меню":
+    if answer == BUTTONS['back_to_sell_menu']:
         await bot.send_message(
             chat_id=message.chat.id,
             text=MESSAGES["sell_menu"],
@@ -88,10 +88,10 @@ async def project_name_state(message: Message, state: FSMContext):
 
 async def price_state(message: Message, state: FSMContext):
     answer = message.text
-    if answer == "⏪ Предыдущий вопрос":
+    if answer == BUTTONS['cancel']:
         await message.answer(MESSAGES["project_name"], reply_markup=back_menu())
         await SellProjectStates.project_name.set()
-    elif answer == "Вернуться в меню":
+    elif answer == BUTTONS['back_to_sell_menu']:
         await bot.send_message(
             chat_id=message.chat.id,
             text=MESSAGES["sell_menu"],
@@ -114,10 +114,10 @@ async def price_state(message: Message, state: FSMContext):
 
 async def subscribers_state(message: Message, state: FSMContext):
     answer = message.text
-    if answer == "⏪ Предыдущий вопрос":
+    if answer == BUTTONS['cancel']:
         await message.answer(MESSAGES["price"], reply_markup=cancel_menu())
         await SellProjectStates.price.set()
-    elif answer == "Вернуться в меню":
+    elif answer == BUTTONS['back_to_sell_menu']:
         await bot.send_message(
             chat_id=message.chat.id,
             text=MESSAGES["sell_menu"],
@@ -139,10 +139,10 @@ async def themes_names_state(message: Message, state: FSMContext):
     themes_dict = db_manager.get_all_themes()
     themes_list = themes_dict.values()
     message_text = message.text
-    if message_text == "⏪ Предыдущий вопрос":
+    if message_text == BUTTONS['cancel']:
         await message.answer(MESSAGES["subscribers"], reply_markup=cancel_menu())
         await SellProjectStates.subscribers.set()
-    elif message_text == "Вернуться в меню":
+    elif message_text == BUTTONS['back_to_sell_menu']:
         await bot.send_message(
             text=MESSAGES["sell_menu"],
             reply_markup=get_main_sell_keyboard(),
@@ -193,10 +193,10 @@ def themes_menu():
 
 async def themes_plus_state(message: Message):
     answer = message.text
-    if answer == "Да":
+    if answer == BUTTONS['yes']:
         await message.answer(text=MESSAGES["themes_plus_1"], reply_markup=themes_menu())
         await SellProjectStates.themes_names.set()
-    elif answer == "Нет":
+    elif answer == BUTTONS['no']:
         await message.answer(text=MESSAGES["income"], reply_markup=cancel_menu())
         await SellProjectStates.income.set()
     else:
@@ -216,11 +216,11 @@ def themes_plus_keyboard():
 
 async def income_state(message: Message, state: FSMContext):
     answer = message.text
-    if answer == "⏪ Предыдущий вопрос":
+    if answer == BUTTONS['cancel']:
         await state.update_data(themes=[])
         await message.answer(MESSAGES["themes"], reply_markup=themes_menu())
         await SellProjectStates.themes_names.set()
-    elif answer == "Вернуться в меню":
+    elif answer == BUTTONS['back_to_sell_menu']:
         await bot.send_message(
             text=MESSAGES["sell_menu"],
             reply_markup=get_main_sell_keyboard(),
@@ -240,10 +240,10 @@ async def income_state(message: Message, state: FSMContext):
 
 async def comment_state(message: Message, state: FSMContext):
     answer = message.text
-    if answer == "⏪ Предыдущий вопрос":
+    if answer == BUTTONS['cancel']:
         await message.answer(MESSAGES["income"], reply_markup=cancel_menu())
         await SellProjectStates.income.set()
-    elif answer == "Вернуться в меню":
+    elif answer == BUTTONS['back_to_sell_menu']:
         await bot.send_message(
             text=MESSAGES["sell_menu"],
             reply_markup=get_main_sell_keyboard(),
@@ -284,10 +284,10 @@ def project_confirmation_menu(back_button=True):
 
 async def buy_process(message: Message, state: FSMContext):
     answer = message.text
-    if answer == "⏪ Предыдущий вопрос":
+    if answer == BUTTONS['cancel']:
         await message.answer(MESSAGES["comment"], reply_markup=cancel_menu())
         await SellProjectStates.comment.set()
-    elif answer == "Вернуться в меню":
+    elif answer == BUTTONS['back_to_sell_menu']:
         await bot.send_message(
             text=MESSAGES["sell_menu"],
             reply_markup=get_main_sell_keyboard(),
@@ -354,7 +354,7 @@ async def successful_payment(message: Message):
             total_amount=message.successful_payment.total_amount // 100,
             currency=message.successful_payment.currency,
         ),
-        reply_markup=ReplyKeyboardRemove(),
+        reply_markup=get_main_sell_keyboard(),
     )
 
 
@@ -450,7 +450,7 @@ async def delete_confirm(message: Message, state: FSMContext):
         db_manager.delete_project(project_id)
         await bot.send_message(
             chat_id=query.message.chat.id, text=MESSAGES["deleted_project"],
-            reply_markup=ReplyKeyboardRemove()
+            reply_markup=get_main_sell_keyboard()
         )
         await refresh_pages(query=query, callback_data=callback_data)
 
@@ -458,8 +458,9 @@ async def delete_confirm(message: Message, state: FSMContext):
         await state.finish()
 
     elif answer == BUTTONS["cancellation"]:
+        await bot.send_message(chat_id=message.chat.id, text=MESSAGES["not_deleted_project"],
+                               reply_markup=get_main_sell_keyboard())
         await my_project_index(message=message)
-
         delete_project_dict.pop(message.chat.id)
         await state.finish()
 
