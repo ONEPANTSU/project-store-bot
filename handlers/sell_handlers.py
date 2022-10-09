@@ -81,9 +81,13 @@ async def project_name_state(message: Message, state: FSMContext):
         )
         await state.finish()
     else:
-        await state.update_data(project_name=answer)
-        await message.answer(MESSAGES["price"], reply_markup=cancel_menu())
-        await SellProjectStates.price.set()
+        if len(answer) < 50:
+            await state.update_data(project_name=answer)
+            await message.answer(MESSAGES["price"], reply_markup=cancel_menu())
+            await SellProjectStates.price.set()
+        else:
+            await message.answer(text=MESSAGES["name_so_big"], reply_markup=back_menu())
+            await SellProjectStates.project_name.set()
 
 
 async def price_state(message: Message, state: FSMContext):
@@ -130,9 +134,14 @@ async def subscribers_state(message: Message, state: FSMContext):
             await SellProjectStates.subscribers.set()
 
         else:
-            await state.update_data(subscribers=answer)
-            await message.answer(text=MESSAGES["themes"], reply_markup=themes_menu())
-            await SellProjectStates.themes_names.set()
+            if int(answer) < 1000000000:
+                await state.update_data(subscribers=answer)
+                await state.update_data(themes=[])
+                await message.answer(text=MESSAGES["themes"], reply_markup=themes_menu())
+                await SellProjectStates.themes_names.set()
+            else:
+                await message.answer(text=MESSAGES["to_many_subscribers"], reply_markup=cancel_menu())
+                await SellProjectStates.subscribers.set()
 
 
 async def themes_names_state(message: Message, state: FSMContext):
@@ -250,24 +259,28 @@ async def comment_state(message: Message, state: FSMContext):
         )
         await state.finish()
     else:
-        await state.update_data(comment=answer)
-        data = await state.get_data()
-        themes_str = ""
-        for i in data["themes"]:
-            themes_str += "#" + str(i) + " "
-        project_info = MESSAGES["confirm"].format(
-            name=data["project_name"],
-            themes=themes_str,
-            subs=data["subscribers"],
-            income=data["income"],
-            comm=data["comment"],
-            seller=message.from_user.username,
-            price=data["price"],
-        )
-        await message.answer(
-            text=project_info, reply_markup=project_confirmation_menu()
-        )
-        await SellProjectStates.buy_process.set()
+        if len(answer) < 1000:
+            await state.update_data(comment=answer)
+            data = await state.get_data()
+            themes_str = ""
+            for i in data["themes"]:
+                themes_str += "#" + str(i) + " "
+            project_info = MESSAGES["confirm"].format(
+                name=data["project_name"],
+                themes=themes_str,
+                subs=data["subscribers"],
+                income=data["income"],
+                comm=data["comment"],
+                seller=message.from_user.username,
+                price=data["price"],
+            )
+            await message.answer(
+                text=project_info, reply_markup=project_confirmation_menu()
+            )
+            await SellProjectStates.buy_process.set()
+        else:
+            await message.answer(text=MESSAGES["comment_so_big"], reply_markup=cancel_menu())
+            await SellProjectStates.comment.set()
 
 
 def project_confirmation_menu(back_button=True):

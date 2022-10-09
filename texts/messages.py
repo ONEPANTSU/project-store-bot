@@ -8,10 +8,12 @@ main_menu_massage = "📌 Главное меню 📌"
 sell_menu_message = "🗄 Мои предложения 🗄"
 put_up_for_sale_massage = "🖊Заполните анкету🖊"
 project_name_question = "Напишите название вашего проекта:"
+name_so_big_question = "Ваше имя слишком длинное. Напишите название вашего проекта до 50 символов! "
 price_question = "Напишите цену вашего проекта"
 price_check_question = "Цена должна быть числом. Напишите цену вашего проекта:"
 subscribers_question = "Сколько подписчиков у вашего проекта?"
 subscribers_check_question = "Укажите количество подписчиков числом. Напишите сколько подписчиков у вашего проекта:"
+to_many_subscribers_question = "Введено слишком большое число! Сколько подписчиков у вашего проекта?"
 income_question = "Какой доход у вашего проекта?"
 income_check_question = "Укажите доход проекта числом. Какой доход у вашего проекта:"
 themes_question = "Выберете не более 3-х тематик вашего проекта:"
@@ -23,6 +25,7 @@ yes_question = "Да"
 no_question = "Нет"
 yes_or_no_question = "Ответьте да или нет"
 comment_question = "Добавьте комментарий к обьявлению:"
+comment_so_big_question = "Комментарий слишком длинный! Напишите комментарий не превышая 1000 символов!"
 confirm_question = (
     "Данные введены верно? Если да, то перейдите к оплате. "
     "При нажатии кнопки 'Отмена' Вы вернётесь в главное меню.\n\n"
@@ -69,10 +72,12 @@ MESSAGES = {
     "sell_menu": sell_menu_message,
     "put_up_for_sale": put_up_for_sale_massage,
     "project_name": project_name_question,
+    "name_so_big": name_so_big_question,
     "price": price_question,
     "price_check": price_check_question,
     "subscribers": subscribers_question,
     "subscribers_check": subscribers_check_question,
+    "to_many_subscribers": to_many_subscribers_question,
     "themes": themes_question,
     "themes_warn": themes_warn_question,
     "themes_warn_2": themes_warn_2_question,
@@ -84,6 +89,7 @@ MESSAGES = {
     "income": income_question,
     "income_check": income_check_question,
     "comment": comment_question,
+    "comment_so_big": comment_so_big_question,
     "confirm": confirm_question,
     "cancellation": cancellation_question,
     "save_project": save_project_question,
