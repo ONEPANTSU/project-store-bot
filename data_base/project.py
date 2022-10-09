@@ -29,16 +29,16 @@ class Project:
         self.comment = None
 
     def set_params(
-        self,
-        seller_id,
-        seller_name,
-        name,
-        price,
-        status_id,
-        subscribers,
-        themes_id,
-        income,
-        comment,
+            self,
+            seller_id,
+            seller_name,
+            name,
+            price,
+            status_id,
+            subscribers,
+            themes_id,
+            income,
+            comment,
     ):
         """
         This function sets values of all params to the Project's object.
@@ -163,14 +163,14 @@ class Project:
             self.themes_id = db_manager.get_themes_id_by_names(self.themes_names)
 
         if (
-            self.name is not None
-            and self.seller_name is not None
-            and self.seller_id is not None
-            and self.price is not None
-            and self.status_id is not None
-            and len(self.themes_id) != 0
-            and self.income is not None
-            and self.comment is not None
+                self.name is not None
+                and self.seller_name is not None
+                and self.seller_id is not None
+                and self.price is not None
+                and self.status_id is not None
+                and len(self.themes_id) != 0
+                and self.income is not None
+                and self.comment is not None
         ):
             self.params_are_not_none = True
         else:
@@ -251,6 +251,53 @@ def get_projects_list_by_seller_name(seller_name):
     projects_list = list()
     if len(projects_info) != 0:
         projects_list = to_parse_project_list(projects_info)
+    return projects_list
+
+
+def get_all_project_list():
+    """
+    This function creates SELECT query for getting all Project class's objects.
+
+    :return: list of the Project class's objects
+    :rtype: :list::class:`data_base.project.Project`
+    """
+    projects_info = db_manager.get_all_projects_id()
+    projects_list = list()
+    if len(projects_info) != 0:
+        projects_list = to_parse_project_list(projects_info)
+    return projects_list
+
+
+def get_project_list_by_filter(themes_id=None, price_from=None, price_up_to=None):
+    """
+    This function creates SELECT query for getting all Project class's objects by filter.
+
+    :param themes_id: list with id of the themes
+    :type themes_id: :list: `int`
+    :param price_from: start of price's diapason
+    :type price_from: :obj: `int`
+    :param price_up_to:end of price's diapason
+    :type price_up_to: :obj: `int`
+
+    :return: list of the Project class's objects by filter
+    :rtype: :list::class:`data_base.project.Project`
+    """
+
+    if themes_id is not None:
+        projects_list = get_projects_list_by_themes_id(themes_id)
+    else:
+        projects_list = get_all_project_list()
+
+    if price_from is not None:
+        for project in projects_list:
+            if project.price < price_from:
+                projects_list.remove(project)
+
+    if price_up_to is not None:
+        for project in projects_list:
+            if project.price > price_up_to:
+                projects_list.remove(project)
+
     return projects_list
 
 

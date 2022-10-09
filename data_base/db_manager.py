@@ -66,20 +66,20 @@ class DBManager:
         :rtype: :obj:`str`
         """
         return (
-            str(project.seller_id)
-            + ", '"
-            + project.name
-            + "', "
-            + str(project.price)
-            + ", "
-            + str(project.status_id)
-            + ", "
-            + str(project.subscribers)
-            + ", "
-            + str(project.income)
-            + ", '"
-            + project.comment
-            + "'"
+                str(project.seller_id)
+                + ", '"
+                + project.name
+                + "', "
+                + str(project.price)
+                + ", "
+                + str(project.status_id)
+                + ", "
+                + str(project.subscribers)
+                + ", "
+                + str(project.income)
+                + ", '"
+                + project.comment
+                + "'"
         )
 
     def insert_project(self, project):
@@ -318,6 +318,35 @@ class DBManager:
         project = self.execute_read_query(self.connection, get_project_query)
 
         return project
+
+    def get_all_projects_id(self):
+        """
+        This function creates SELECT query for getting all projects's ids
+
+        :return: ids of the projects
+        :rtype: :list:`int`
+        """
+        get_project_query = QUERIES["select_all_projects_id"]
+        projects_id = self.execute_read_query(self.connection, get_project_query)
+
+        return projects_id
+
+    def get_projects_id_by_prices(self, price_from, price_up_to):
+        """
+        This function creates SELECT query for getting projects's ids by price filter
+
+        :param price_from: start of price's diapason
+        :type price_from: :obj: `int`
+        :param price_up_to:end of price's diapason
+        :type price_up_to: :obj: `int`
+
+        :return: ids of the projects
+        :rtype: :list:`int`
+        """
+        get_project_query = QUERIES["select_projects_id_by_prices"] % price_from % price_up_to
+        projects_id = self.execute_read_query(self.connection, get_project_query)
+
+        return projects_id
 
     def get_project_by_id(self, project_id):
         """

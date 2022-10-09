@@ -69,15 +69,16 @@ async def analyse_answers_state(message: Message, state: FSMContext):
     theme_ans = data['theme_ans']
     if price_ans == 'Нет' and theme_ans == 'Да':
         await message.answer(text=MESSAGES["chose_themes"], reply_markup=ReplyKeyboardRemove())
-        await chose_themes(message)
+        await message.reply(text=MESSAGES["chose_themes"], reply_markup=chose_themes_keyboard())
     elif price_ans == 'Да' and theme_ans == 'Нет':
         pass
     elif price_ans == 'Да' and theme_ans == 'Да':
         pass
+    await state.finish()
     # await message.answer(MESSAGES["question_theme"])
 
 
-async def chose_themes(message: Message):
+def chose_themes_keyboard():
     # С помощью функции get_all_themes() присваиваем в themes - словарь с темами и их айди
     themes = db_manager.get_filled_themes()
     # button_list = []
@@ -87,12 +88,10 @@ async def chose_themes(message: Message):
         themes_keyboard.add(
             InlineKeyboardButton(
                 text=themes[theme_key],
-                callback_data=themes_callback.new(data="{}".format(theme_key)),
+                callback_data=themes_callback.new(data="{}".format(theme_key))
             )
         )
-
-    # сборка клавиатуры из кнопок `InlineKeyboardButton`
-    await message.reply(text=MESSAGES["chose_themes"], reply_markup=themes_keyboard)
+    return themes_keyboard
 
 
 # Кнопка выбора ценового диапазона
@@ -210,6 +209,4 @@ def register_buy_handlers(dp: Dispatcher):
     dp.register_message_handler(price_from_state, state=BuyProjectStates.price_from)
     dp.register_message_handler(price_up_to_state, state=BuyProjectStates.price_up_to)
     dp.register_callback_query_handler(buy_project_index, themes_callback.filter())
-    dp.register_callback_query_handler(
-        buy_project_page_handler, buy_project_callback.filter()
-    )
+    dp.register_callback_query_handler(buy_project_page_handler, buy_project_callback.filter())
