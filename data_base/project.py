@@ -261,14 +261,17 @@ def get_all_project_list():
     :return: list of the Project class's objects
     :rtype: :list::class:`data_base.project.Project`
     """
-    projects_info = db_manager.get_all_projects_id()
+    projects_id = db_manager.get_all_projects_id()
+    projects_info = list()
+    for project_id in projects_id:
+        projects_info.append(db_manager.get_all_project_info_by_id(project_id))
     projects_list = list()
     if len(projects_info) != 0:
         projects_list = to_parse_project_list(projects_info)
     return projects_list
 
 
-def get_project_list_by_filter(themes_id=None, price_from=None, price_up_to=None):
+def get_project_list_by_filter(themes_id="None", price_from="None", price_up_to="None"):
     """
     This function creates SELECT query for getting all Project class's objects by filter.
 
@@ -283,22 +286,29 @@ def get_project_list_by_filter(themes_id=None, price_from=None, price_up_to=None
     :rtype: :list::class:`data_base.project.Project`
     """
 
-    if themes_id is not None:
+    if themes_id != "None":
         projects_list = get_projects_list_by_themes_id(themes_id)
     else:
         projects_list = get_all_project_list()
 
-    if price_from is not None:
-        for project in projects_list:
-            if project.price < price_from:
-                projects_list.remove(project)
+    return_list = list()
 
-    if price_up_to is not None:
+    if price_from != "None" and price_up_to != "None":
         for project in projects_list:
-            if project.price > price_up_to:
-                projects_list.remove(project)
+            if int(price_from) <= project.price <= int(price_up_to):
+                return_list.append(project)
 
-    return projects_list
+    elif price_up_to != "None":
+        for project in projects_list:
+            if project.price <= int(price_up_to):
+                return_list.append(project)
+
+    elif price_from != "None":
+        for project in projects_list:
+            if project.price >= int(price_from):
+                return_list.append(project)
+
+    return return_list
 
 
 def to_parse_project_list(projects_info):
