@@ -308,6 +308,9 @@ def get_project_list_by_filter(themes_id="None", price_from="None", price_up_to=
             if project.price >= int(price_from):
                 return_list.append(project)
 
+    else:
+        return_list = projects_list
+
     return return_list
 
 

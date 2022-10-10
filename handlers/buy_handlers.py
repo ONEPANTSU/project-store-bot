@@ -18,7 +18,7 @@ from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
 
 buy_project_callback = CallbackData("buy_project_callback", "page", "theme_id", "price_from", "price_upt")
-themes_callback = CallbackData("themes_callback", "data", "theme_id", "price_from", "price_upt")
+themes_callback = CallbackData("themes_callback", "theme_id", "price_from", "price_upt")
 
 
 def buy_menu():
