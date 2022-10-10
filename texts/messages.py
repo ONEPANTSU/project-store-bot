@@ -61,6 +61,7 @@ deleted_project_message = "Объявление удалено!"
 not_deleted_project_message = "Объявление не удалено"
 confirm_deleting_message = "Вы действительно хотите удалить объявление?"
 empty_projects_message = "У вас не выставлено ни одного объявления."
+projects_none_message = "Проектов не найдено"
 
 command_error_message = "Сообщение не распознано ☹️"
 
@@ -102,6 +103,7 @@ MESSAGES = {
     'not_deleted_project': not_deleted_project_message,
     "confirm_deleting": confirm_deleting_message,
     "empty_projects": empty_projects_message,
+    "project_none": projects_none_message,
     "command_error": command_error_message,
     "question_theme": question_theme_message,
     "question_price": question_price_message,
