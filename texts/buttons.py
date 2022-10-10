@@ -13,6 +13,7 @@ no_button = "Нет"
 chose_search_params_button = "Выбрать параметры поиска"
 
 back_to_sell_menu_button = "Вернуться в меню"
+back_to_buy_menu_button = "Вернуться в меню"
 cancel_button = "⏪ Предыдущий вопрос"
 
 confirm_button = "Подтвердить"
@@ -33,6 +34,7 @@ BUTTONS = {
     "yes": yes_button,
     "no": no_button,
     "back_to_sell_menu": back_to_sell_menu_button,
+    "back_to_buy_menu": back_to_buy_menu_button,
     "cancel": cancel_button,
     "confirm": confirm_button,
     "cancellation": cancellation_button,

@@ -287,7 +287,7 @@ def get_project_list_by_filter(themes_id="None", price_from="None", price_up_to=
     """
 
     if themes_id != "None":
-        projects_list = get_projects_list_by_themes_id(themes_id)
+        projects_list = get_projects_list_by_theme_id(themes_id)
     else:
         projects_list = get_all_project_list()
 

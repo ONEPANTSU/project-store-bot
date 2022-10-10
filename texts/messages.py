@@ -21,7 +21,7 @@ themes_plus_1_question = "Выберите ещё одну тему"
 themes_plus_question = "Хотите выбрать ещё тему?"
 yes_question = "Да"
 no_question = "Нет"
-yes_or_no_question = "Ответьте да или нет"
+yes_or_no_question = "Ответ должен быть 'Да' или 'Нет' "
 comment_question = "Добавьте комментарий к обьявлению:"
 confirm_question = (
     "Данные введены верно? Если да, то перейдите к оплате. "
@@ -37,14 +37,20 @@ save_project_question = "Ваше обьявление сохранено!"
 
 get_list_of_projects_message = "🗄 Выставленные на продажу предложения 🗄"
 
+
 buy_menu_message = "💰 Поиск предложений 💰"
 chose_themes_message = "Выберите интересные тематики"
+back_to_buy_menu_message = "Вернуться назад?"
 question_theme_message = "Хотите выбрать тематику?"
+themes_list_message = "Список тематик"
 question_price_message = "Хотите выбрать цену?"
 chose_price_from_message = "Введите цену от: "
 chose_price_up_to_message = "Введите цену до: "
 show_all_projects_message = "Показать все предложения"
 not_recognized_message = "Сообщение не распознано. Попробуйте еще раз!"
+error_not_digit_price_from_message = "Ответ должен быть числом! Введите цену от: "
+error_not_digit_price_upto_message = "Ответ должен быть числом! Введите цену до: "
+
 
 sell_payment_label = "Разместить объявление!"
 sell_payment_title = "Оплата"
@@ -105,8 +111,12 @@ MESSAGES = {
     "empty_projects": empty_projects_message,
     "project_none": projects_none_message,
     "command_error": command_error_message,
+    "error_not_digit_price_from": error_not_digit_price_from_message,
+    "error_not_digit_price_upto": error_not_digit_price_upto_message,
     "question_theme": question_theme_message,
+    "back_to_buy_menu": back_to_buy_menu_message,
     "question_price": question_price_message,
     "show_all_projects": show_all_projects_message,
     "not_recognized": not_recognized_message,
+    "themes_list": themes_list_message
 }
