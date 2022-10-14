@@ -28,7 +28,7 @@ insert_seller_query = """
         (%s);
         """
 
-select_moderators_query = "SELECT `name` from `moderators`"
+select_moderators_query = "SELECT `id` from `moderators`"
 select_all_projects_id_query = "SELECT id FROM `project`"
 select_projects_id_by_prices_query = "SELECT id FROM `project` WHERE price >= '%s' AND price <= '%s'"
 select_project_by_id_query = "SELECT * FROM `project` WHERE `id` = '%s';"

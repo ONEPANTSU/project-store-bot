@@ -17,6 +17,7 @@ back_to_buy_menu_button = "Вернуться в меню"
 cancel_button = "⏪ Предыдущий вопрос"
 
 confirm_button = "Подтвердить"
+reject_button = "Отклонить"
 cancellation_button = "Отмена"
 
 delete_button = "Удалить объявление"
@@ -37,6 +38,7 @@ BUTTONS = {
     "back_to_buy_menu": back_to_buy_menu_button,
     "cancel": cancel_button,
     "confirm": confirm_button,
+    "reject": reject_button,
     "cancellation": cancellation_button,
     "delete_project": delete_button,
     "prev": prev_button,
