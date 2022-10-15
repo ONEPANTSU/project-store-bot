@@ -59,6 +59,7 @@ show_all_projects_message = "Показать все предложения"
 not_recognized_message = "Сообщение не распознано. Попробуйте еще раз!"
 error_not_digit_price_from_message = "Ответ должен быть числом! Введите цену от: "
 error_not_digit_price_upto_message = "Ответ должен быть числом! Введите цену до: "
+list_is_empty_message = "Проектов по вашему запросу не найдено"
 
 sell_payment_label = "Разместить объявление!"
 sell_payment_title = "Оплата"
@@ -141,6 +142,7 @@ MESSAGES = {
     "question_price": question_price_message,
     "show_all_projects": show_all_projects_message,
     "not_recognized": not_recognized_message,
+    "list_is_empty": list_is_empty_message
     "themes_list": themes_list_message,
     "moderation": moderation_message,
     "moderator_confirm": moderator_confirm_message,
