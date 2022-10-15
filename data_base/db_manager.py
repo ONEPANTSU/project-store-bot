@@ -79,6 +79,10 @@ class DBManager:
             + str(project.income)
             + ", '"
             + project.comment
+            + ", '"
+            + str(project.vip_ending)
+            + ", '"
+            + str(project.link)
             + "'"
         )
 
@@ -498,6 +502,7 @@ class DBManager:
         :type project: :class: `data_base.project.Project`
         """
         update_project = QUERIES["update_project"] % (
+            str(project_id),
             str(project.seller_id),
             str(project.name),
             str(project.price),
@@ -505,7 +510,8 @@ class DBManager:
             str(project.subscribers),
             str(project.income),
             str(project.comment),
-            str(project_id),
+            str(project.vip_ending),
+            str(project.link),
         )
         self.update_project_themes(project_id, project.themes_id)
         self.execute_query(self.connection, update_project)

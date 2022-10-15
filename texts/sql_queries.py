@@ -1,6 +1,6 @@
 insert_project_query = """
         INSERT INTO 
-        `project` (`seller_id`, `name`, `price`, `status_id`, `subscribers`, `income`, `comment`) 
+        `project` (`seller_id`, `name`, `price`, `status_id`, `subscribers`, `income`, `comment`, `vip_ending`, `link`) 
         VALUES (%s);
         """
 insert_status_query = """
@@ -55,7 +55,7 @@ select_projects_id_by_theme_id_query = (
 select_all_project_info_by_id_query = (
     "SELECT project.id, project.seller_id, project.name, project.price, "
     "project.status_id, project.subscribers, project.income, project.comment, "
-    "seller.telegram_name, status.status_name, theme.id "
+    "seller.telegram_name, status.status_name, theme.id, project.vip_ending, project.link "
     "AS theme_id, theme.theme_name "
     "FROM `project` "
     "INNER JOIN `seller` ON project.seller_id = seller.id "
@@ -88,7 +88,7 @@ update_project_query = """
         UPDATE
         `project`
         SET `seller_id` = '%s', `name` = '%s', `price` = '%s', `status_id` = '%s', 
-        `subscribers` = '%s', `income` = '%s', `comment` = '%s'
+        `subscribers` = '%s', `income` = '%s', `comment` = '%s', `vip_ending` = '%s', `link` = '%s'
         WHERE `id` = '%s';
         """
 update_seller_query = """
