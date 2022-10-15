@@ -2,8 +2,10 @@ import telebot
 from telebot import types
 
 import config
-from data_base.db_functions import (get_projects_list_by_seller_name,
-                                    get_projects_list_by_themes_id)
+from data_base.db_functions import (
+    get_projects_list_by_seller_name,
+    get_projects_list_by_themes_id,
+)
 from data_base.db_manager import DBManager
 from data_base.project import Project
 

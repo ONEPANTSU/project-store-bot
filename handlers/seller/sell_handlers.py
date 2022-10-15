@@ -1,27 +1,36 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import (CallbackQuery, ContentType, InlineKeyboardButton,
-                           InlineKeyboardMarkup, KeyboardButton, LabeledPrice,
-                           Message, PreCheckoutQuery, ReplyKeyboardMarkup,
-                           ReplyKeyboardRemove)
+from aiogram.types import (
+    CallbackQuery,
+    ContentType,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    LabeledPrice,
+    Message,
+    PreCheckoutQuery,
+    ReplyKeyboardMarkup,
+    ReplyKeyboardRemove,
+)
 from aiogram.utils.callback_data import CallbackData
 
 from config import PAYMENTS_TOKEN
-from data_base.db_functions import (get_guarantee_name, get_need_payment,
-                                    get_projects_list_by_seller_name,
-                                    get_to_sell_price)
+from data_base.db_functions import get_need_payment, get_to_sell_price
 from data_base.project import Project
 from handlers.main_handlers import get_main_keyboard
+from handlers.seller.seller_keyboard_markups import (
+    get_back_menu_keyboard,
+    get_cancel_menu_keyboard,
+    get_main_sell_keyboard,
+    get_project_confirmation_menu_keyboard,
+)
 from instruments import bot, db_manager
-from states import DeleteProjectStates, SellProjectStates
+from states import SellProjectStates
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
 
 moderation_dict = {}
 new_projects_dict = {}
-delete_project_dict = {}
-my_projects_callback = CallbackData("my_projects", "page")
-delete_project_callback = CallbackData("delete_project", "id", "page")
 moderators_confirm_callback = CallbackData(
     "moderator_confirm", "project_data_id", "user_id"
 )
@@ -37,19 +46,12 @@ async def show_main_sell_keyboard(message: Message):
     )
 
 
-def get_main_sell_keyboard():
-    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    to_sell_project_button = KeyboardButton(BUTTONS["sell_project"])
-    list_of_my_projects_button = KeyboardButton(BUTTONS["sell_list"])
-    back_button = KeyboardButton(BUTTONS["back"])
-    markup.add(to_sell_project_button, list_of_my_projects_button, back_button)
-    return markup
-
-
 async def put_up_for_sale(message: Message):
     if message.from_user.username is not None:
         await message.answer(text=MESSAGES["put_up_for_sale"])
-        await message.answer(text=MESSAGES["project_name"], reply_markup=back_menu())
+        await message.answer(
+            text=MESSAGES["project_name"], reply_markup=get_back_menu_keyboard()
+        )
         await SellProjectStates.project_name.set()
     else:
         await bot.send_message(
@@ -57,21 +59,6 @@ async def put_up_for_sale(message: Message):
             text=MESSAGES["empty_username"],
             reply_markup=get_main_sell_keyboard(),
         )
-
-
-def cancel_menu():
-    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    main_menu_button = KeyboardButton(BUTTONS["back_to_sell_menu"])
-    cancel_button = KeyboardButton(BUTTONS["cancel"])
-    markup.add(main_menu_button, cancel_button)
-    return markup
-
-
-def back_menu():
-    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    back_button = KeyboardButton(BUTTONS["back_to_sell_menu"])
-    markup.add(back_button)
-    return markup
 
 
 async def project_name_state(message: Message, state: FSMContext):
@@ -87,17 +74,23 @@ async def project_name_state(message: Message, state: FSMContext):
     else:
         if len(answer) < 50:
             await state.update_data(project_name=answer)
-            await message.answer(MESSAGES["price"], reply_markup=cancel_menu())
+            await message.answer(
+                MESSAGES["price"], reply_markup=get_cancel_menu_keyboard()
+            )
             await SellProjectStates.price.set()
         else:
-            await message.answer(text=MESSAGES["name_so_big"], reply_markup=back_menu())
+            await message.answer(
+                text=MESSAGES["name_so_big"], reply_markup=get_back_menu_keyboard()
+            )
             await SellProjectStates.project_name.set()
 
 
 async def price_state(message: Message, state: FSMContext):
     answer = message.text
     if answer == BUTTONS["cancel"]:
-        await message.answer(MESSAGES["project_name"], reply_markup=back_menu())
+        await message.answer(
+            MESSAGES["project_name"], reply_markup=get_back_menu_keyboard()
+        )
         await SellProjectStates.project_name.set()
     elif answer == BUTTONS["back_to_sell_menu"]:
         await bot.send_message(
@@ -115,7 +108,7 @@ async def price_state(message: Message, state: FSMContext):
         else:
             await state.update_data(price=answer)
             await message.answer(
-                text=MESSAGES["subscribers"], reply_markup=cancel_menu()
+                text=MESSAGES["subscribers"], reply_markup=get_cancel_menu_keyboard()
             )
             await SellProjectStates.subscribers.set()
 
@@ -123,7 +116,7 @@ async def price_state(message: Message, state: FSMContext):
 async def subscribers_state(message: Message, state: FSMContext):
     answer = message.text
     if answer == BUTTONS["cancel"]:
-        await message.answer(MESSAGES["price"], reply_markup=cancel_menu())
+        await message.answer(MESSAGES["price"], reply_markup=get_cancel_menu_keyboard())
         await SellProjectStates.price.set()
     elif answer == BUTTONS["back_to_sell_menu"]:
         await bot.send_message(
@@ -147,7 +140,8 @@ async def subscribers_state(message: Message, state: FSMContext):
                 await SellProjectStates.themes_names.set()
             else:
                 await message.answer(
-                    text=MESSAGES["to_many_subscribers"], reply_markup=cancel_menu()
+                    text=MESSAGES["to_many_subscribers"],
+                    reply_markup=get_cancel_menu_keyboard(),
                 )
                 await SellProjectStates.subscribers.set()
 
@@ -157,7 +151,9 @@ async def themes_names_state(message: Message, state: FSMContext):
     themes_list = themes_dict.values()
     message_text = message.text
     if message_text == BUTTONS["cancel"]:
-        await message.answer(MESSAGES["subscribers"], reply_markup=cancel_menu())
+        await message.answer(
+            MESSAGES["subscribers"], reply_markup=get_cancel_menu_keyboard()
+        )
         await SellProjectStates.subscribers.set()
     elif message_text == BUTTONS["back_to_sell_menu"]:
         await bot.send_message(
@@ -188,7 +184,7 @@ async def themes_names_state(message: Message, state: FSMContext):
                 await SellProjectStates.themes_plus.set()
             else:
                 await message.answer(
-                    text=MESSAGES["income"], reply_markup=cancel_menu()
+                    text=MESSAGES["income"], reply_markup=get_cancel_menu_keyboard()
                 )
                 await SellProjectStates.income.set()
         else:
@@ -214,7 +210,9 @@ async def themes_plus_state(message: Message):
         await message.answer(text=MESSAGES["themes_plus_1"], reply_markup=themes_menu())
         await SellProjectStates.themes_names.set()
     elif answer == BUTTONS["no"]:
-        await message.answer(text=MESSAGES["income"], reply_markup=cancel_menu())
+        await message.answer(
+            text=MESSAGES["income"], reply_markup=get_cancel_menu_keyboard()
+        )
         await SellProjectStates.income.set()
     else:
         await message.answer(
@@ -247,19 +245,23 @@ async def income_state(message: Message, state: FSMContext):
     else:
         if not answer.isdigit():
             await message.answer(
-                text=MESSAGES["income_check"], reply_markup=cancel_menu()
+                text=MESSAGES["income_check"], reply_markup=get_cancel_menu_keyboard()
             )
             await SellProjectStates.income.set()
         else:
             await state.update_data(income=answer)
-            await message.answer(text=MESSAGES["comment"], reply_markup=cancel_menu())
+            await message.answer(
+                text=MESSAGES["comment"], reply_markup=get_cancel_menu_keyboard()
+            )
             await SellProjectStates.comment.set()
 
 
 async def comment_state(message: Message, state: FSMContext):
     answer = message.text
     if answer == BUTTONS["cancel"]:
-        await message.answer(MESSAGES["income"], reply_markup=cancel_menu())
+        await message.answer(
+            MESSAGES["income"], reply_markup=get_cancel_menu_keyboard()
+        )
         await SellProjectStates.income.set()
     elif answer == BUTTONS["back_to_sell_menu"]:
         await bot.send_message(
@@ -284,32 +286,22 @@ async def comment_state(message: Message, state: FSMContext):
                 price=data["price"],
             )
             await message.answer(
-                text=project_info, reply_markup=project_confirmation_menu()
+                text=project_info, reply_markup=get_project_confirmation_menu_keyboard()
             )
             await SellProjectStates.confirm.set()
         else:
             await message.answer(
-                text=MESSAGES["comment_so_big"], reply_markup=cancel_menu()
+                text=MESSAGES["comment_so_big"], reply_markup=get_cancel_menu_keyboard()
             )
             await SellProjectStates.comment.set()
-
-
-def project_confirmation_menu(back_button=True):
-    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    confirm_button = KeyboardButton(BUTTONS["confirm"])
-    cancellation_button = KeyboardButton(BUTTONS["cancellation"])
-    if back_button:
-        cancel_button = KeyboardButton(BUTTONS["cancel"])
-        markup.add(confirm_button, cancellation_button, cancel_button)
-    else:
-        markup.add(confirm_button, cancellation_button)
-    return markup
 
 
 async def moderators_confirm_state(message: Message, state: FSMContext):
     answer = message.text
     if answer == BUTTONS["cancel"]:
-        await message.answer(MESSAGES["comment"], reply_markup=cancel_menu())
+        await message.answer(
+            MESSAGES["comment"], reply_markup=get_cancel_menu_keyboard()
+        )
         await SellProjectStates.comment.set()
     elif answer == BUTTONS["back_to_sell_menu"]:
         await bot.send_message(
@@ -450,154 +442,6 @@ async def successful_payment(message: Message):
     )
 
 
-def get_my_projects_keyboard(project_list, page: int = 0) -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup(row_width=2)
-
-    has_next_page = len(project_list) > page + 1
-
-    page_num_button = InlineKeyboardButton(
-        text=f"{page + 1} / {len(project_list)}", callback_data="dont_click_me"
-    )
-
-    delete_button = InlineKeyboardButton(
-        text=BUTTONS["delete_project"],
-        callback_data=delete_project_callback.new(id=project_list[page].id, page=0),
-    )
-
-    back_button = InlineKeyboardButton(
-        text=BUTTONS["prev"], callback_data=my_projects_callback.new(page=page - 1)
-    )
-
-    next_button = InlineKeyboardButton(
-        text=BUTTONS["next"], callback_data=my_projects_callback.new(page=page + 1)
-    )
-
-    keyboard.row(page_num_button)
-    keyboard.row(delete_button)
-    if page != 0:
-        if has_next_page:
-            keyboard.row(back_button, next_button)
-        else:
-            keyboard.row(back_button)
-    elif has_next_page:
-        keyboard.row(next_button)
-
-    return keyboard
-
-
-async def my_project_index(message: Message):
-    project_list = get_projects_list_by_seller_name(message.from_user.username)
-    if len(project_list) != 0:
-        project_data = project_list[0]
-        keyboard = get_my_projects_keyboard(project_list=project_list)  # Page: 0
-        guarantee = get_guarantee_name()
-        themes_str = ""
-        for theme_name in project_data.themes_names:
-            themes_str += "#" + str(theme_name) + " "
-        project_info = MESSAGES["show_project"].format(
-            name=project_data.name,
-            theme=themes_str,
-            subs=project_data.subscribers,
-            income=project_data.income,
-            comm=project_data.comment,
-            seller=project_data.seller_name,
-            price=project_data.price,
-            guarantee=guarantee,
-        )
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text=project_info,
-            parse_mode="HTML",
-            reply_markup=keyboard,
-        )
-    else:
-        await bot.send_message(chat_id=message.chat.id, text=MESSAGES["empty_projects"])
-
-
-async def my_project_page_handler(query: CallbackQuery, callback_data: dict):
-    await refresh_pages(query=query, callback_data=callback_data)
-
-
-async def delete_project_handler(query: CallbackQuery, callback_data: dict):
-    await bot.send_message(
-        chat_id=query.message.chat.id,
-        text=MESSAGES["confirm_deleting"],
-        reply_markup=project_confirmation_menu(back_button=False),
-    )
-    delete_project_dict[query.message.chat.id] = [
-        int(callback_data.get("id")),
-        query,
-        callback_data,
-    ]
-    await DeleteProjectStates.confirm.set()
-
-
-async def delete_confirm(message: Message, state: FSMContext):
-    answer = message.text
-    await state.update_data(confitrm=answer)
-    if answer == BUTTONS["confirm"]:
-        project_id = delete_project_dict[message.chat.id][0]
-        query = delete_project_dict[message.chat.id][1]
-        callback_data = delete_project_dict[message.chat.id][2]
-        db_manager.delete_project(project_id)
-        await bot.send_message(
-            chat_id=query.message.chat.id,
-            text=MESSAGES["deleted_project"],
-            reply_markup=get_main_sell_keyboard(),
-        )
-        await refresh_pages(query=query, callback_data=callback_data)
-
-        delete_project_dict.pop(message.chat.id)
-        await state.finish()
-
-    elif answer == BUTTONS["cancellation"]:
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text=MESSAGES["not_deleted_project"],
-            reply_markup=get_main_sell_keyboard(),
-        )
-        await my_project_index(message=message)
-        delete_project_dict.pop(message.chat.id)
-        await state.finish()
-
-    else:
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text=MESSAGES["command_error"],
-            reply_markup=project_confirmation_menu(),
-        )
-        await DeleteProjectStates.confirm.set()
-
-
-async def refresh_pages(query: CallbackQuery, callback_data: dict):
-    page = int(callback_data.get("page"))
-
-    project_list = get_projects_list_by_seller_name(query.from_user.username)
-    if len(project_list) != 0:
-        project_data = project_list[page]
-        guarantee = get_guarantee_name()
-        themes_str = ""
-        for theme_name in project_data.themes_names:
-            themes_str += "#" + str(theme_name) + " "
-        project_info = MESSAGES["show_project"].format(
-            name=project_data.name,
-            theme=themes_str,
-            subs=project_data.subscribers,
-            income=project_data.income,
-            comm=project_data.comment,
-            seller=project_data.seller_name,
-            price=project_data.price,
-            guarantee=guarantee,
-        )
-        keyboard = get_my_projects_keyboard(project_list=project_list, page=page)
-
-        await query.message.edit_text(text=project_info, reply_markup=keyboard)
-    else:
-        await query.message.edit_text(
-            text=MESSAGES["empty_projects"], reply_markup=None
-        )
-
-
 def register_sell_handlers(dp: Dispatcher):
     dp.register_message_handler(show_main_sell_keyboard, text=[BUTTONS["sell_menu"]])
     dp.register_message_handler(put_up_for_sale, text=[BUTTONS["sell_project"]])
@@ -619,17 +463,9 @@ def register_sell_handlers(dp: Dispatcher):
     dp.register_message_handler(
         successful_payment, content_types=ContentType.SUCCESSFUL_PAYMENT
     )
-    dp.register_message_handler(my_project_index, text=BUTTONS["sell_list"])
-    dp.register_callback_query_handler(
-        my_project_page_handler, my_projects_callback.filter()
-    )
-    dp.register_callback_query_handler(
-        delete_project_handler, delete_project_callback.filter()
-    )
     dp.register_callback_query_handler(
         moderators_confirm, moderators_confirm_callback.filter()
     )
     dp.register_callback_query_handler(
         moderators_reject, moderators_reject_callback.filter()
     )
-    dp.register_message_handler(delete_confirm, state=DeleteProjectStates.confirm)

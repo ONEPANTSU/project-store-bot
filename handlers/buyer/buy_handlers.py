@@ -1,13 +1,18 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import (CallbackQuery, InlineKeyboardButton,
-                           InlineKeyboardMarkup, KeyboardButton, Message,
-                           ReplyKeyboardMarkup, ReplyKeyboardRemove)
+from aiogram.types import (
+    CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    Message,
+    ReplyKeyboardMarkup,
+    ReplyKeyboardRemove,
+)
 from aiogram.utils.callback_data import CallbackData
 from aiogram.utils.exceptions import InvalidQueryID, MessageNotModified
 
-from data_base.db_functions import (get_guarantee_name,
-                                    get_project_list_by_filter)
+from data_base.db_functions import get_guarantee_name, get_project_list_by_filter
 from instruments import bot, db_manager
 from states import BuyProjectStates
 from texts.buttons import BUTTONS
