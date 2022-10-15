@@ -63,6 +63,7 @@ async def put_up_for_sale(message: Message):
 
 async def project_name_state(message: Message, state: FSMContext):
     await state.update_data(seller=message.from_user.username)
+    print(message.date)
     answer = message.text
     if answer == BUTTONS["back_to_sell_menu"]:
         await bot.send_message(
@@ -172,14 +173,14 @@ async def themes_names_state(message: Message, state: FSMContext):
                 answer.append(message.text)
             else:
                 await message.answer(
-                    text=MESSAGES["themes_warn_2"], reply_markup=themes_plus_keyboard()
+                    text=MESSAGES["themes_warn_2"], reply_markup=yes_or_no_keyboard()
                 )
                 await SellProjectStates.themes_plus.set()
             await state.update_data(themes=answer)
             size = len(answer)
             if size < 3:
                 await message.answer(
-                    text=MESSAGES["themes_plus"], reply_markup=themes_plus_keyboard()
+                    text=MESSAGES["themes_plus"], reply_markup=yes_or_no_keyboard()
                 )
                 await SellProjectStates.themes_plus.set()
             else:
@@ -216,12 +217,12 @@ async def themes_plus_state(message: Message):
         await SellProjectStates.income.set()
     else:
         await message.answer(
-            text=MESSAGES["yes_or_no"], reply_markup=themes_plus_keyboard()
+            text=MESSAGES["yes_or_no"], reply_markup=yes_or_no_keyboard()
         )
         await SellProjectStates.themes_plus.set()
 
 
-def themes_plus_keyboard():
+def yes_or_no_keyboard():
     markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     yes_button = KeyboardButton(BUTTONS["yes"])
     no_button = KeyboardButton(BUTTONS["no"])
@@ -259,12 +260,12 @@ async def income_state(message: Message, state: FSMContext):
 async def comment_state(message: Message, state: FSMContext):
     answer = message.text
     if answer == BUTTONS["cancel"]:
-        await message.answer(
-            MESSAGES["income"], reply_markup=get_cancel_menu_keyboard()
-        )
+        await state.update_data(themes=[])
+        await message.answer(MESSAGES["income"], reply_markup=get_cancel_menu_keyboard())
         await SellProjectStates.income.set()
     elif answer == BUTTONS["back_to_sell_menu"]:
         await bot.send_message(
+            chat_id=message.chat.id,
             text=MESSAGES["sell_menu"],
             reply_markup=get_main_sell_keyboard(),
         )
@@ -272,6 +273,52 @@ async def comment_state(message: Message, state: FSMContext):
     else:
         if len(answer) < 1000:
             await state.update_data(comment=answer)
+            await message.answer(
+                text=MESSAGES["status"], reply_markup=yes_or_no_keyboard()
+            )
+            await SellProjectStates.status.set()
+        else:
+            await message.answer(
+                text=MESSAGES["comment_so_big"], reply_markup=get_cancel_menu_keyboard()
+            )
+            await SellProjectStates.comment.set()
+
+
+async def status_state(message: Message, state: FSMContext):
+    answer = message.text
+    if answer == BUTTONS["cancel"]:
+        await message.answer(
+            MESSAGES["comment"], reply_markup=get_cancel_menu_keyboard()
+        )
+        await SellProjectStates.comment.set()
+    elif answer == BUTTONS["back_to_sell_menu"]:
+        await bot.send_message(
+            text=MESSAGES["sell_menu"],
+            reply_markup=get_main_sell_keyboard(),
+        )
+        await state.finish()
+    else:
+        if answer == BUTTONS["yes"]:
+            await state.update_data(status=1)
+            data = await state.get_data()
+            themes_str = ""
+            for i in data["themes"]:
+                themes_str += "#" + str(i) + " "
+            project_info = MESSAGES["confirm"].format(
+                name=data["project_name"],
+                themes=themes_str,
+                subs=data["subscribers"],
+                income=data["income"],
+                comm=data["comment"],
+                seller=message.from_user.username + ' 🌟',
+                price=data["price"],
+            )
+            await message.answer(
+                text=project_info, reply_markup=get_project_confirmation_menu_keyboard()
+            )
+            await SellProjectStates.confirm.set()
+        elif answer == BUTTONS["no"]:
+            await state.update_data(status=0)
             data = await state.get_data()
             themes_str = ""
             for i in data["themes"]:
@@ -291,18 +338,18 @@ async def comment_state(message: Message, state: FSMContext):
             await SellProjectStates.confirm.set()
         else:
             await message.answer(
-                text=MESSAGES["comment_so_big"], reply_markup=get_cancel_menu_keyboard()
+                text=MESSAGES["yes_or_no"], reply_markup=yes_or_no_keyboard()
             )
-            await SellProjectStates.comment.set()
+            await SellProjectStates.status.set()
 
 
 async def moderators_confirm_state(message: Message, state: FSMContext):
     answer = message.text
     if answer == BUTTONS["cancel"]:
         await message.answer(
-            MESSAGES["comment"], reply_markup=get_cancel_menu_keyboard()
+            MESSAGES["status"], reply_markup=yes_or_no_keyboard()
         )
-        await SellProjectStates.comment.set()
+        await SellProjectStates.status.set()
     elif answer == BUTTONS["back_to_sell_menu"]:
         await bot.send_message(
             text=MESSAGES["sell_menu"],
@@ -372,7 +419,7 @@ async def moderators_confirm(query: CallbackQuery, callback_data: dict):
     new_project = Project()
     new_project.name = data["project_name"]
     new_project.seller_name = data["seller"]
-    new_project.status_id = 0
+    new_project.status_id = data["status"]
     new_project.price = data["price"]
     new_project.subscribers = data["subscribers"]
     new_project.themes_names = data["themes"]
@@ -456,6 +503,7 @@ def register_sell_handlers(dp: Dispatcher):
     dp.register_message_handler(themes_plus_state, state=SellProjectStates.themes_plus)
     dp.register_message_handler(income_state, state=SellProjectStates.income)
     dp.register_message_handler(comment_state, state=SellProjectStates.comment)
+    dp.register_message_handler(status_state, state=SellProjectStates.status)
     dp.register_message_handler(
         moderators_confirm_state, state=SellProjectStates.confirm
     )

@@ -31,6 +31,8 @@ comment_question = "Добавьте комментарий к обьявлен�
 comment_so_big_question = (
     "Комментарий слишком длинный! Напишите комментарий не превышая 1000 символов!"
 )
+status_question = "Хотите ли получить VIP-статус?"
+status_yes_question = "Ура, теперь вы счталивый обладатель VIP-статуса!!!💦"
 confirm_question = (
     "Данные введены верно? Если да, то перейдите к оплате. "
     "При нажатии кнопки 'Отмена' Вы вернётесь в главное меню.\n\n"
@@ -110,6 +112,8 @@ MESSAGES = {
     "income_check": income_check_question,
     "comment": comment_question,
     "comment_so_big": comment_so_big_question,
+    "status": status_question,
+    "status_yes": status_yes_question,
     "confirm": confirm_question,
     "cancellation": cancellation_question,
     "save_project": save_project_question,
