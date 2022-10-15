@@ -1,12 +1,30 @@
 from aiogram.types import CallbackQuery
 
-from data_base.db_functions import get_guarantee_name
-from handlers.seller.inner_functions.seller_carousel_keyboard import get_my_projects_keyboard
+from data_base.db_functions import get_guarantee_name, get_projects_list_by_seller_name
+from handlers.seller.inner_functions.seller_carousel_keyboard import (
+    get_my_projects_keyboard,
+)
+from handlers.seller.instruments.seller_dicts import delete_project_dict
 from texts.messages import MESSAGES
 from useful.instruments import bot
 
 
-async def update_project_page(query: CallbackQuery, project_list, page):
+async def refresh_pages(query: CallbackQuery, callback_data: dict):
+    page = int(callback_data.get("page"))
+    project_list = get_projects_list_by_seller_name(query.from_user.username)
+    await update_page(page, project_list, query)
+
+
+async def update_page(page, project_list, query):
+    if len(project_list) != 0:
+        await edit_project_page(query=query, project_list=project_list, page=page)
+    else:
+        await query.message.edit_text(
+            text=MESSAGES["empty_projects"], reply_markup=None
+        )
+
+
+async def edit_project_page(query: CallbackQuery, project_list, page):
     keyboard, project_info = get_page_content(page, project_list)
     await query.message.edit_text(
         text=project_info,
@@ -55,3 +73,11 @@ def get_themes_str(themes_names):
     for theme_name in themes_names:
         themes_str += "#" + str(theme_name) + " "
     return themes_str
+
+
+def get_delete_project_dict_info(chat_id):
+    project_id = delete_project_dict[chat_id][0]
+    query = delete_project_dict[chat_id][1]
+    callback_data = delete_project_dict[chat_id][2]
+    delete_project_dict.pop(chat_id)
+    return callback_data, project_id, query

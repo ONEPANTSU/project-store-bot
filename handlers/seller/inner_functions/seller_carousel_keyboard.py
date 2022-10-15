@@ -1,6 +1,9 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from handlers.seller.instruments.seller_callbacks import my_projects_callback, delete_project_callback
+from handlers.seller.instruments.seller_callbacks import (
+    delete_project_callback,
+    my_projects_callback,
+)
 from texts.buttons import BUTTONS
 
 
@@ -12,11 +15,14 @@ def get_my_projects_keyboard(project_list, page: int = 0) -> InlineKeyboardMarku
     back_button = create_back_button(page)
     next_button = create_next_button(page)
 
-    return create_my_projects_keyboard(back_button, delete_button, has_next_page, next_button, page, page_num_button)
+    return create_my_projects_keyboard(
+        back_button, delete_button, has_next_page, next_button, page, page_num_button
+    )
 
 
-def create_my_projects_keyboard(back_button, delete_button, has_next_page, next_button, page,
-                                page_num_button):
+def create_my_projects_keyboard(
+    back_button, delete_button, has_next_page, next_button, page, page_num_button
+):
     keyboard = InlineKeyboardMarkup(row_width=2)
     keyboard.row(page_num_button)
     keyboard.row(delete_button)
