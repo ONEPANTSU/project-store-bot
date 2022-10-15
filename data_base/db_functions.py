@@ -1,5 +1,5 @@
 from data_base.project import Project
-from instruments import db_manager
+from useful.instruments import db_manager
 
 
 def get_projects_list_by_theme_id(theme_id):

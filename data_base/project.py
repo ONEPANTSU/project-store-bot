@@ -1,4 +1,4 @@
-from instruments import db_manager
+from useful.instruments import db_manager
 
 
 class Project:

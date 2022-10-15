@@ -24,10 +24,10 @@ from handlers.seller.seller_keyboard_markups import (
     get_main_sell_keyboard,
     get_project_confirmation_menu_keyboard,
 )
-from instruments import bot, db_manager
 from states import SellProjectStates
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
+from useful.instruments import bot, db_manager
 
 moderation_dict = {}
 new_projects_dict = {}
