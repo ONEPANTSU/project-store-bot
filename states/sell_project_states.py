@@ -11,4 +11,5 @@ class SellProjectStates(StatesGroup):
     themes_plus = State()
     income = State()
     comment = State()
+    status = State()
     confirm = State()
