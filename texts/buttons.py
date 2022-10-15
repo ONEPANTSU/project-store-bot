@@ -1,5 +1,7 @@
 back_button = "Вернуться в главное меню"
 
+moderate_button = "Управление проектами"
+
 sell_menu_button = "🗄 Мои предложения 🗄"
 sell_project_button = "Выставить проект на продажу"
 sell_list_button = "Список моих предложений"
@@ -44,4 +46,5 @@ BUTTONS = {
     "prev": prev_button,
     "next": next_button,
     "chose_search_params": chose_search_params_button,
+    "moderate": moderate_button,
 }

@@ -7,13 +7,13 @@ from handlers.seller.instruments.seller_callbacks import (
 from texts.buttons import BUTTONS
 
 
-def get_my_projects_keyboard(project_list, page: int = 0) -> InlineKeyboardMarkup:
+def get_my_projects_keyboard(project_list, is_moderator, page: int = 0) -> InlineKeyboardMarkup:
     has_next_page = len(project_list) > page + 1
 
     page_num_button = create_page_num_button(page, len(project_list))
-    delete_button = create_delete_button(page, project_list)
-    back_button = create_back_button(page)
-    next_button = create_next_button(page)
+    delete_button = create_delete_button(page, project_list, is_moderator)
+    back_button = create_back_button(page, is_moderator)
+    next_button = create_next_button(page, is_moderator)
 
     return create_my_projects_keyboard(
         back_button, delete_button, has_next_page, next_button, page, page_num_button
@@ -40,22 +40,22 @@ def add_page_buttons(has_next_page, keyboard, back_button, next_button, page):
     return keyboard
 
 
-def create_next_button(page):
+def create_next_button(page, is_moderator):
     return InlineKeyboardButton(
-        text=BUTTONS["next"], callback_data=my_projects_callback.new(page=page + 1)
+        text=BUTTONS["next"], callback_data=my_projects_callback.new(page=page + 1, is_moderator=is_moderator)
     )
 
 
-def create_back_button(page):
+def create_back_button(page, is_moderator):
     return InlineKeyboardButton(
-        text=BUTTONS["prev"], callback_data=my_projects_callback.new(page=page - 1)
+        text=BUTTONS["prev"], callback_data=my_projects_callback.new(page=page - 1, is_moderator=is_moderator)
     )
 
 
-def create_delete_button(page, project_list):
+def create_delete_button(page, project_list, is_moderator):
     return InlineKeyboardButton(
         text=BUTTONS["delete_project"],
-        callback_data=delete_project_callback.new(id=project_list[page].id, page=0),
+        callback_data=delete_project_callback.new(id=project_list[page].id, page=0, is_moderator=is_moderator),
     )
 
 
