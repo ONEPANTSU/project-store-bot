@@ -49,9 +49,9 @@ get_list_of_projects_message = "🗄 Выставленные на продаж�
 
 buy_menu_message = "💰 Поиск предложений 💰"
 chose_themes_message = "Выберите интересные тематики"
-back_to_buy_menu_message = "Вернуться назад?"
 question_theme_message = "Хотите выбрать тематику?"
 themes_list_message = "Список тематик"
+themes_list_smile_message = "📋"
 question_price_message = "Хотите выбрать цену?"
 chose_price_from_message = "Введите цену от: "
 chose_price_up_to_message = "Введите цену до: "
@@ -60,6 +60,7 @@ not_recognized_message = "Сообщение не распознано. Попр
 error_not_digit_price_from_message = "Ответ должен быть числом! Введите цену от: "
 error_not_digit_price_upto_message = "Ответ должен быть числом! Введите цену до: "
 list_is_empty_message = "Проектов по вашему запросу не найдено"
+
 
 sell_payment_label = "Разместить объявление!"
 sell_payment_title = "Оплата"
@@ -138,12 +139,12 @@ MESSAGES = {
     "error_not_digit_price_from": error_not_digit_price_from_message,
     "error_not_digit_price_upto": error_not_digit_price_upto_message,
     "question_theme": question_theme_message,
-    "back_to_buy_menu": back_to_buy_menu_message,
     "question_price": question_price_message,
     "show_all_projects": show_all_projects_message,
     "not_recognized": not_recognized_message,
-    "list_is_empty": list_is_empty_message
+    "list_is_empty": list_is_empty_message,
     "themes_list": themes_list_message,
+    "themes_list_smile": themes_list_smile_message,
     "moderation": moderation_message,
     "moderator_confirm": moderator_confirm_message,
     "rejected_project": rejected_project_message,
