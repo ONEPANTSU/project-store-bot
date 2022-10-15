@@ -30,7 +30,9 @@ insert_seller_query = """
 
 select_moderators_query = "SELECT `id` from `moderators`"
 select_all_projects_id_query = "SELECT id FROM `project`"
-select_projects_id_by_prices_query = "SELECT id FROM `project` WHERE price >= '%s' AND price <= '%s'"
+select_projects_id_by_prices_query = (
+    "SELECT id FROM `project` WHERE price >= '%s' AND price <= '%s'"
+)
 select_project_by_id_query = "SELECT * FROM `project` WHERE `id` = '%s';"
 select_seller_name_by_seller_id_query = (
     "SELECT `telegram_name` FROM `seller` WHERE `id` = '%s';"
