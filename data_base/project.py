@@ -83,22 +83,31 @@ class Project:
         self.subscribers = subscribers
         self.income = income  # доход в месяц
         self.comment = comment
+        self._set_seller_info(seller_name, seller_id)
 
+    def _set_seller_info(self, seller_name, seller_id):
         if seller_name is not None:
-            if db_manager.is_seller_exist(seller_name):
-                self.seller_id = db_manager.get_seller_id_by_seller_name(seller_name)
-            else:
-                self.seller_id = -1
-            self.seller_name = seller_name
+            self._set_seller_info_by_name(seller_name)
         elif seller_id is not None:
-            self.seller_id = seller_id
-            self.seller_name = db_manager.get_seller_name(seller_id)
+            self._set_seller_info_by_id(seller_id)
         else:
             print("Error! Seller's info is empty!")
 
+    def _set_seller_info_by_id(self, seller_id):
+        self.seller_id = seller_id
+        self.seller_name = db_manager.get_seller_name(seller_id)
+
+    def _set_seller_info_by_name(self, seller_name):
+        if db_manager.is_seller_exist(seller_name):
+            self.seller_id = db_manager.get_seller_id_by_seller_name(seller_name)
+        else:
+            self.seller_id = -1
+        self.seller_name = seller_name
+
     def set_params_by_id(self, project_id):
         """
-        This function sets values of all searched params to the Project's object.
+        This function sets values of all searched params to
+        the Project's object.
         The search is carried out by the id of the existing project.
 
         :param project_id: ID of project table's row
@@ -106,21 +115,24 @@ class Project:
         """
         self.set_id(project_id)
         if db_manager.is_project_exist_by_id(self.id):
-            project_sql_row = db_manager.get_project_by_id(self.id)
-            themes_id = db_manager.get_themes_id(self.id)
-            self.set_params(
-                seller_id=project_sql_row[1],
-                seller_name=None,
-                name=project_sql_row[2],
-                price=project_sql_row[3],
-                status_id=project_sql_row[4],
-                subscribers=project_sql_row[5],
-                income=project_sql_row[6],
-                comment=project_sql_row[7],
-                themes_id=themes_id,
-            )
+            self._set_exist_params()
         else:
             print("Error: Project does not exist")
+
+    def _set_exist_params(self):
+        project_sql_row = db_manager.get_project_by_id(self.id)
+        themes_id = db_manager.get_themes_id(self.id)
+        self.set_params(
+            seller_id=project_sql_row[1],
+            seller_name=None,
+            name=project_sql_row[2],
+            price=project_sql_row[3],
+            status_id=project_sql_row[4],
+            subscribers=project_sql_row[5],
+            income=project_sql_row[6],
+            comment=project_sql_row[7],
+            themes_id=themes_id,
+        )
 
     def set_id(self, project_id):
         """
@@ -134,34 +146,28 @@ class Project:
 
     def save_new_project(self):
         """
-        This function inserts filled params of the Project's object to the new row of the data base.
+        This function inserts filled params of
+        the Project's object to the new row of the data base.
         """
-        self.check_is_not_none()
-        if self.params_are_not_none is False:
-            print("Error: Project's params are empty")
-        else:
+        self._check_is_not_none()
+        if self.params_are_not_none:
             db_manager.insert_project(self)
+        else:
+            print("Error: Project's params are empty")
 
-    def check_is_not_none(self):
+    def _check_is_not_none(self):
         """
         This function checks "params_are_not_none" variable.
         """
-        if self.status is None and self.status_id is not None:
-            self.status = db_manager.get_status_name(self.status_id)
+        self._check_coupled_params()
+        self._set_params_are_not_none()
 
-        if self.seller_name is not None:
-            if db_manager.is_seller_exist(self.seller_name):
-                self.seller_id = db_manager.get_seller_id_by_seller_name(
-                    self.seller_name
-                )
-            else:
-                self.seller_id = -1
+    def _check_coupled_params(self):
+        self._check_status()
+        self._check_seller()
+        self._check_themes()
 
-        if len(self.themes_names) == 0 and len(self.themes_id) != 0:
-            self.themes_names = db_manager.get_themes_names(self.themes_id)
-        elif len(self.themes_id) == 0 and len(self.themes_names) != 0:
-            self.themes_id = db_manager.get_themes_id_by_names(self.themes_names)
-
+    def _set_params_are_not_none(self):
         if (
             self.name is not None
             and self.seller_name is not None
@@ -176,9 +182,29 @@ class Project:
         else:
             self.params_are_not_none = False
 
+    def _check_themes(self):
+        if len(self.themes_names) == 0 and len(self.themes_id) != 0:
+            self.themes_names = db_manager.get_themes_names(self.themes_id)
+        elif len(self.themes_id) == 0 and len(self.themes_names) != 0:
+            self.themes_id = db_manager.get_themes_id_by_names(self.themes_names)
+
+    def _check_seller(self):
+        if self.seller_name is not None:
+            if db_manager.is_seller_exist(self.seller_name):
+                self.seller_id = db_manager.get_seller_id_by_seller_name(
+                    self.seller_name
+                )
+            else:
+                self.seller_id = -1
+
+    def _check_status(self):
+        if self.status is None and self.status_id is not None:
+            self.status = db_manager.get_status_name(self.status_id)
+
     def save_changes_to_existing_project(self):
         """
-        This function updates already existing row of data base by new params of the Project's object.
+        This function updates already existing row of
+        data base by new params of the Project's object.
         """
         if self.params_are_not_none is False:
             print("Error: Project's params are empty")
@@ -189,7 +215,8 @@ class Project:
 
     def delete_project_by_id(self, project_id):
         """
-        This function deletes existing row of data base by id of the Project's object.
+        This function deletes existing row of
+        data base by id of the Project's object.
 
         :param project_id: ID of project table's row
         :type project_id: :obj: `int`

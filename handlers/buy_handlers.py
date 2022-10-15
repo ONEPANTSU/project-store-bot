@@ -4,7 +4,7 @@ from aiogram.types import (CallbackQuery, InlineKeyboardButton,
                            InlineKeyboardMarkup, KeyboardButton, Message,
                            ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from aiogram.utils.callback_data import CallbackData
-from aiogram.utils.exceptions import MessageNotModified, InvalidQueryID
+from aiogram.utils.exceptions import InvalidQueryID, MessageNotModified
 
 from data_base.db_functions import (get_guarantee_name,
                                     get_project_list_by_filter)
