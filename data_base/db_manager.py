@@ -66,20 +66,20 @@ class DBManager:
         :rtype: :obj:`str`
         """
         return (
-                str(project.seller_id)
-                + ", '"
-                + project.name
-                + "', "
-                + str(project.price)
-                + ", "
-                + str(project.status_id)
-                + ", "
-                + str(project.subscribers)
-                + ", "
-                + str(project.income)
-                + ", '"
-                + project.comment
-                + "'"
+            str(project.seller_id)
+            + ", '"
+            + project.name
+            + "', "
+            + str(project.price)
+            + ", "
+            + str(project.status_id)
+            + ", "
+            + str(project.subscribers)
+            + ", "
+            + str(project.income)
+            + ", '"
+            + project.comment
+            + "'"
         )
 
     def insert_project(self, project):
@@ -175,7 +175,9 @@ class DBManager:
         :rtype: :list:`str`
         """
         get_moderators_names_query = QUERIES["select_moderators"]
-        moderators_names = self.execute_read_query(self.connection, get_moderators_names_query)
+        moderators_names = self.execute_read_query(
+            self.connection, get_moderators_names_query
+        )
         return moderators_names
 
     def get_seller_name(self, seller_id):
@@ -189,7 +191,9 @@ class DBManager:
         :rtype: :obj:`str`
         """
         get_seller_name_query = QUERIES["select_seller_name_by_seller_id"] % seller_id
-        seller_name = self.execute_read_query(self.connection, get_seller_name_query)[0][0]
+        seller_name = self.execute_read_query(self.connection, get_seller_name_query)[
+            0
+        ][0]
         return seller_name
 
     def get_seller_id_by_project_id(self, project_id):
@@ -352,7 +356,9 @@ class DBManager:
         :return: ids of the projects
         :rtype: :list:`int`
         """
-        get_project_query = QUERIES["select_projects_id_by_prices"] % price_from % price_up_to
+        get_project_query = (
+            QUERIES["select_projects_id_by_prices"] % price_from % price_up_to
+        )
         projects_id = self.execute_read_query(self.connection, get_project_query)
 
         return projects_id
