@@ -1,43 +1,149 @@
-start_message = "Здравствуйте, {0.first_name}! Я тестовый бот для продажи и покупки проектов!"
+start_message = (
+    "Здравствуйте, {0.first_name}! Я тестовый бот для продажи и покупки проектов!"
+)
 
 main_menu_massage = "📌 Главное меню 📌"
 
 sell_menu_message = "🗄 Мои предложения 🗄"
 put_up_for_sale_massage = "🖊Заполните анкету🖊"
 project_name_question = "Напишите название вашего проекта:"
+name_so_big_question = (
+    "Ваше имя слишком длинное. Напишите название вашего проекта до 50 символов! "
+)
 price_question = "Напишите цену вашего проекта"
 price_check_question = "Цена должна быть числом. Напишите цену вашего проекта:"
 subscribers_question = "Сколько подписчиков у вашего проекта?"
 subscribers_check_question = "Укажите количество подписчиков числом. Напишите сколько подписчиков у вашего проекта:"
+to_many_subscribers_question = (
+    "Введено слишком большое число! Сколько подписчиков у вашего проекта?"
+)
 income_question = "Какой доход у вашего проекта?"
 income_check_question = "Укажите доход проекта числом. Какой доход у вашего проекта:"
 themes_question = "Выберете не более 3-х тематик вашего проекта:"
+themes_warn_question = "Такой темы нет в списке! Выберите тему из списка"
+themes_warn_2_question = "Данная тема уже добавлена!"
+themes_plus_1_question = "Выберите ещё одну тему"
+themes_plus_question = "Хотите выбрать ещё тему?"
+yes_question = "Да"
+no_question = "Нет"
+yes_or_no_question = "Ответ должен быть 'Да' или 'Нет' "
 comment_question = "Добавьте комментарий к обьявлению:"
+comment_so_big_question = (
+    "Комментарий слишком длинный! Напишите комментарий не превышая 1000 символов!"
+)
+status_question = "Хотите ли получить VIP-статус?"
+status_yes_question = "Ура, теперь вы счталивый обладатель VIP-статуса!!!💦"
+confirm_question = (
+    "Данные введены верно? Если да, то перейдите к оплате. "
+    "При нажатии кнопки 'Отмена' Вы вернётесь в главное меню.\n\n"
+    "<b>Название:</b> {name}\n<b>Тематика:</b> {themes}\n<b>Подписчиков:</b> {subs}\n<b>Доход в "
+    "месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> @{"
+    "seller}\n\n<b>Цена:</b> {price}"
+)
+payment_message = "Начинается процесс оплаты"
+
+cancellation_question = "Отмена"
 save_project_question = "Ваше обьявление сохранено!"
 
 get_list_of_projects_message = "🗄 Выставленные на продажу предложения 🗄"
 
 buy_menu_message = "💰 Поиск предложений 💰"
 chose_themes_message = "Выберите интересные тематики"
-chose_prices_message = "Выберите ценовой диапазон"
+back_to_buy_menu_message = "Вернуться назад?"
+question_theme_message = "Хотите выбрать тематику?"
+themes_list_message = "Список тематик"
+question_price_message = "Хотите выбрать цену?"
+chose_price_from_message = "Введите цену от: "
+chose_price_up_to_message = "Введите цену до: "
+show_all_projects_message = "Показать все предложения"
+not_recognized_message = "Сообщение не распознано. Попробуйте еще раз!"
+error_not_digit_price_from_message = "Ответ должен быть числом! Введите цену от: "
+error_not_digit_price_upto_message = "Ответ должен быть числом! Введите цену до: "
+
+sell_payment_label = "Разместить объявление!"
+sell_payment_title = "Оплата"
+sell_payment_description = "Оплата за размещение объявления"
+successful_payment_message = "Оплата произведена успешно!"
+
+show_project_message = (
+    "<b>Название:</b> {name}\n<b>Тематика:</b> {theme}\n<b>Подписчиков:</b> {subs}\n<b>Доход в "
+    "месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> @{"
+    "seller}\n\n<b>Цена:</b> {price}\n\nГарантируем 100% безопасность при сделках в "
+    "Telegram.\n<b>Гарант:</b> {guarantee} "
+)
+deleted_project_message = "Объявление удалено!"
+not_deleted_project_message = "Объявление не удалено"
+confirm_deleting_message = "Вы действительно хотите удалить объявление?"
+empty_projects_message = "У вас не выставлено ни одного объявления."
+projects_none_message = "Проектов не найдено"
+
+command_error_message = "Сообщение не распознано ☹️"
+
+moderation_message = "Ожидайте. Ваша заявка на модерации!"
+moderator_confirm_message = (
+    "Новая заявка на размещение объявления ждёт подтверждения!\n\n"
+    "<b>Название:</b> {name}\n<b>Тематика:</b> {themes}\n<b>Подписчиков:</b> {"
+    "subs}\n<b>Доход в месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> "
+    "@{seller}\n\n<b>Цена:</b> {price}"
+)
+rejected_project_message = "К сожалению, ваш проект '%s' не прошёл модерацию! ☹"
+empty_username_message = "У вас не задано имя пользователя в телеграме! Измените настройки и возвращайтесь! 😊"
 
 MESSAGES = {
-    'start': start_message,
-    'sell_menu': sell_menu_message,
-    'put_up_for_sale': put_up_for_sale_massage,
-    'project_name': project_name_question,
-    'price': price_question,
-    'price_check': price_check_question,
-    'subscribers': subscribers_question,
-    'subscribers_check': subscribers_check_question,
-    'themes': themes_question,
-    'income': income_question,
-    'income_check': income_check_question,
-    'comment': comment_question,
-    'save_project': save_project_question,
-    'get_list_of_projects': get_list_of_projects_message,
-    'main_menu': main_menu_massage,
-    'buy_menu': buy_menu_message,
-    'chose_themes': chose_themes_message,
-    'chose_prices': chose_prices_message
+    "start": start_message,
+    "sell_menu": sell_menu_message,
+    "put_up_for_sale": put_up_for_sale_massage,
+    "project_name": project_name_question,
+    "name_so_big": name_so_big_question,
+    "price": price_question,
+    "price_check": price_check_question,
+    "subscribers": subscribers_question,
+    "subscribers_check": subscribers_check_question,
+    "to_many_subscribers": to_many_subscribers_question,
+    "themes": themes_question,
+    "themes_warn": themes_warn_question,
+    "themes_warn_2": themes_warn_2_question,
+    "themes_plus_1": themes_plus_1_question,
+    "themes_plus": themes_plus_question,
+    "yes": yes_question,
+    "no": no_question,
+    "yes_or_no": yes_or_no_question,
+    "income": income_question,
+    "income_check": income_check_question,
+    "comment": comment_question,
+    "comment_so_big": comment_so_big_question,
+    "status": status_question,
+    "status_yes": status_yes_question,
+    "confirm": confirm_question,
+    "cancellation": cancellation_question,
+    "save_project": save_project_question,
+    "get_list_of_projects": get_list_of_projects_message,
+    "main_menu": main_menu_massage,
+    "buy_menu": buy_menu_message,
+    "chose_themes": chose_themes_message,
+    "chose_price_from": chose_price_from_message,
+    "chose_price_up_to": chose_price_up_to_message,
+    "sell_payment": sell_payment_label,
+    "sell_payment_title": sell_payment_title,
+    "sell_payment_description": sell_payment_description,
+    "successful_payment": successful_payment_message,
+    "show_project": show_project_message,
+    "deleted_project": deleted_project_message,
+    "not_deleted_project": not_deleted_project_message,
+    "confirm_deleting": confirm_deleting_message,
+    "empty_projects": empty_projects_message,
+    "project_none": projects_none_message,
+    "command_error": command_error_message,
+    "error_not_digit_price_from": error_not_digit_price_from_message,
+    "error_not_digit_price_upto": error_not_digit_price_upto_message,
+    "question_theme": question_theme_message,
+    "back_to_buy_menu": back_to_buy_menu_message,
+    "question_price": question_price_message,
+    "show_all_projects": show_all_projects_message,
+    "not_recognized": not_recognized_message,
+    "themes_list": themes_list_message,
+    "moderation": moderation_message,
+    "moderator_confirm": moderator_confirm_message,
+    "rejected_project": rejected_project_message,
+    "empty_username": empty_username_message,
 }

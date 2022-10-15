@@ -1,12 +1,9 @@
 from aiogram import executor
 
-from instruments import loop, dp
+from useful.instruments import dp, loop
+from useful.registrator import register_handlers
 
-from handlers import main_handlers, buy_handlers, sell_handlers
+register_handlers(dp=dp)
 
-main_handlers.register_main_handlers(dp=dp)
-buy_handlers.register_buy_handlers(dp=dp)
-sell_handlers.register_sell_handlers(dp=dp)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     executor.start_polling(dp, loop=loop)

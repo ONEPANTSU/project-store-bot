@@ -11,3 +11,9 @@ data_base/__pycache__/
 .idea/ProjectStoreBot.iml
 
 *.pyc
+
+.idea/
+
+__pycache__/
+
+.idea/

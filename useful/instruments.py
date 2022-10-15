@@ -1,4 +1,5 @@
 import asyncio
+
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
@@ -7,7 +8,6 @@ from data_base.db_manager import DBManager
 
 storage = MemoryStorage()
 loop = asyncio.new_event_loop()
-bot = Bot(BOT_TOKEN, parse_mode='HTML')
+bot = Bot(BOT_TOKEN, parse_mode="HTML")
 dp = Dispatcher(bot, loop=loop, storage=storage)
 db_manager = DBManager()
-
