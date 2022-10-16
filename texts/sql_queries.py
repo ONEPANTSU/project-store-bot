@@ -55,8 +55,8 @@ select_projects_id_by_theme_id_query = (
 select_all_project_info_by_id_query = (
     "SELECT project.id, project.seller_id, project.name, project.price, "
     "project.status_id, project.subscribers, project.income, project.comment, "
-    "seller.telegram_name, status.status_name, theme.id, project.vip_ending, project.link "
-    "AS theme_id, theme.theme_name "
+    "seller.telegram_name, status.status_name, theme.id "
+    "AS theme_id, theme.theme_name, project.vip_ending, project.link "
     "FROM `project` "
     "INNER JOIN `seller` ON project.seller_id = seller.id "
     "INNER JOIN `project_theme` ON project.id = project_theme.project_id "

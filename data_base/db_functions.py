@@ -1,3 +1,5 @@
+import datetime
+
 from data_base.project import Project
 from useful.instruments import db_manager
 
@@ -151,6 +153,8 @@ def to_parse_project_list(projects_info):
         new_project.comment = project_info[0][7]
         new_project.seller_name = project_info[0][8]
         new_project.status = project_info[0][9]
+        new_project.vip_ending = project_info[0][12]
+        new_project.link = project_info[0][13]
         for i in range(len(project_info)):
             new_project.themes_id.append(project_info[i][10])
             new_project.themes_names.append(project_info[i][11])

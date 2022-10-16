@@ -16,7 +16,7 @@ from states import BuyProjectStates
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
 from useful.instruments import bot, db_manager
-from handlers.main_handlers import get_main_keyboard, back_to_main_menu
+from handlers.main_handlers import get_main_keyboard, main_menu
 
 buy_project_callback = CallbackData("buy_project_callback", "page", "theme_id", "price_from", "price_up_to")
 themes_callback = CallbackData("themes_callback", "theme_id", "price_from", "price_up_to")
@@ -112,7 +112,7 @@ async def price_from_state(message: Message, state: FSMContext):
         await chose_search_parameters(message)
         return 0
     elif answer == BUTTONS['back']:
-        await back_to_main_menu(message)
+        await main_menu(message)
         await state.finish()
         return 0
 
@@ -132,7 +132,7 @@ async def price_up_to_state(message: Message, state: FSMContext):
         await state.finish()
         return 0
     elif answer == BUTTONS['back']:
-        await back_to_main_menu(message)
+        await main_menu(message)
         return 0
 
     if answer.isdigit():
