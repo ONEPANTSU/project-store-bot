@@ -6,8 +6,7 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     KeyboardButton,
     Message,
-    ReplyKeyboardMarkup,
-    ReplyKeyboardRemove
+    ReplyKeyboardMarkup
 )
 from aiogram.utils.callback_data import CallbackData
 
@@ -68,6 +67,7 @@ async def question_price_state(message: Message, state: FSMContext):
         await message.answer(text=MESSAGES["yes_or_no"].format(message.from_user), reply_markup=yes_no_menu())
         await BuyProjectStates.question_price.set()  # Вызов состояния вопроса про цену
 
+
 # Вопрос про тему и
 # Анализ введенных ответов и дальнейший вывод
 async def analyse_answers_state(message: Message, state: FSMContext):
@@ -104,7 +104,6 @@ async def back_to_buy_menu(message: Message):
             reply_markup=buy_menu())
 
 
-
 # Получение ответа про цену "от" и запрос цены "до"
 async def price_from_state(message: Message, state: FSMContext):
     answer = message.text
@@ -112,7 +111,7 @@ async def price_from_state(message: Message, state: FSMContext):
         await chose_search_parameters(message)
         return 0
     elif answer == BUTTONS['back']:
-        await main_menu(message)
+        await main_menu(message, message_text=MESSAGES["main_menu"])
         await state.finish()
         return 0
 
@@ -121,7 +120,8 @@ async def price_from_state(message: Message, state: FSMContext):
         await message.answer(MESSAGES["chose_price_up_to"])
         await BuyProjectStates.price_up_to.set()
     else:
-        await message.answer(text=MESSAGES["error_not_digit_price_from"].format(message.from_user), reply_markup=buy_menu())
+        await message.answer(text=MESSAGES["error_not_digit_price_from"].format(message.from_user),
+                             reply_markup=buy_menu())
         await BuyProjectStates.price_from.set()
 
 
@@ -132,7 +132,7 @@ async def price_up_to_state(message: Message, state: FSMContext):
         await state.finish()
         return 0
     elif answer == BUTTONS['back']:
-        await main_menu(message)
+        await main_menu(message, message_text=MESSAGES["main_menu"])
         return 0
 
     if answer.isdigit():
@@ -144,35 +144,39 @@ async def price_up_to_state(message: Message, state: FSMContext):
 
         if theme_ans == "Нет":
             # Если только цена, то вывод следующий(отправляю в колбэк только цены)
-            await buy_project_index(chat_id=message.chat.id, theme_id="None", price_from=price_from, price_up_to=price_up_to)
+            await buy_project_index(chat_id=message.chat.id, theme_id="None", price_from=price_from,
+                                    price_up_to=price_up_to)
 
         elif theme_ans == "Да":
-            await message.reply(text=MESSAGES["themes_list"], reply_markup=chose_themes_keyboard(price_from, price_up_to)) # вывод клавы тем
+            await message.reply(text=MESSAGES["themes_list"],
+                                reply_markup=chose_themes_keyboard(price_from, price_up_to))  # вывод клавы тем
         await state.finish()
 
     else:
-        await message.answer(text=MESSAGES["error_not_digit_price_upto"].format(message.from_user), reply_markup=buy_menu())
+        await message.answer(text=MESSAGES["error_not_digit_price_upto"].format(message.from_user),
+                             reply_markup=buy_menu())
         await BuyProjectStates.price_up_to.set()
 
 
 def chose_themes_keyboard(price_from="None", price_up_to="None"):
     # С помощью функции get_all_themes() присваиваем в themes - словарь с темами и их айди
     themes = db_manager.get_filled_themes()
-    # button_list = []
     themes_keyboard = InlineKeyboardMarkup(row_width=2)
     # Заполнение списка тем из словаря с базы данных
     for theme_key in themes.keys():
         themes_keyboard.add(
             InlineKeyboardButton(
                 text=themes[theme_key],
-                callback_data=themes_callback.new(theme_id="{}".format(theme_key), price_from=price_from, price_up_to=price_up_to)
+                callback_data=themes_callback.new(theme_id="{}".format(theme_key), price_from=price_from,
+                                                  price_up_to=price_up_to)
             )
         )
     return themes_keyboard
 
 
 # Клавиатура для карусели по листу проектов
-def get_buy_projects_price_keyboard(project_list, theme_id, price_from, price_up_to, page: int = 0) -> InlineKeyboardMarkup:
+def get_buy_projects_price_keyboard(project_list, theme_id, price_from, price_up_to,
+                                    page: int = 0) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup(row_width=2)
 
     has_next_page = len(project_list) > page + 1
@@ -206,37 +210,6 @@ def get_buy_projects_price_keyboard(project_list, theme_id, price_from, price_up
         keyboard.row(next_button)
 
     return keyboard
-
-
-# # Обновление страниц в карусели
-# async def refresh_pages(query: CallbackQuery, callback_data: dict):
-#     page = int(callback_data.get("page"))
-#     price_from = int(callback_data.get("price_from"))
-#     price_up_to = int(callback_data.get("price_up_to"))
-#     project_list = get_project_list_by_filter(price_from, price_up_to)
-#     if len(project_list) != 0:
-#         project_data = project_list[page]
-#         guarantee = get_guarantee_name()
-#         themes_str = ""
-#         for theme_name in project_data.themes_names:
-#             themes_str += "#" + str(theme_name) + " "
-#         project_info = MESSAGES["show_project"].format(
-#             name=project_data.name,
-#             theme=themes_str,
-#             subs=project_data.subscribers,
-#             income=project_data.income,
-#             comm=project_data.comment,
-#             seller=project_data.seller_name,
-#             price=project_data.price,
-#             guarantee=guarantee,
-#         )
-#         keyboard = get_bye_projects_price_keyboard(project_list=project_list, page=page)
-#
-#         await query.message.edit_text(text=project_info, reply_markup=keyboard)
-#     else:
-#         await query.message.edit_text(
-#             text=MESSAGES["empty_projects"], reply_markup=None
-#         )
 
 
 def get_project_info(project_data):  # Page: 0
@@ -302,8 +275,6 @@ async def buy_project_page_handler(query: CallbackQuery, callback_data: dict):
 def register_buy_handlers(dp: Dispatcher):
     dp.register_message_handler(get_main_keyboard, text=BUTTONS['back'])
     dp.register_message_handler(show_main_buy_keyboard, text=[BUTTONS["buy_menu"]])
-    # dp.register_message_handler(back_to_buy_menu, text=[BUTTONS["back_to_buy_menu"]])
-    # dp.register_message_handler(chose_prices, text=[BUTTONS["buy_price_range"]])
     dp.register_message_handler(chose_search_parameters, text=[BUTTONS["chose_search_params"]])
     dp.register_message_handler(question_price_state, state=BuyProjectStates.question_price)
     dp.register_message_handler(analyse_answers_state, state=BuyProjectStates.analyse_answers)
