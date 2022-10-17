@@ -215,11 +215,21 @@ def get_need_payment():
     return db_manager.get_settings_info()[3]
 
 
-def get_to_sell_price():
+def get_regular_sell_price():
     """
-    This function returns selling price from `settings` table.
+    This function returns regular selling price from `settings` table.
 
     :return: selling price
     :rtype: :obj:`int`
     """
     return db_manager.get_settings_info()[4]
+
+
+def get_vip_sell_price():
+    """
+    This function returns vip selling price from `settings` table.
+
+    :return: selling price
+    :rtype: :obj:`int`
+    """
+    return db_manager.get_settings_info()[5]

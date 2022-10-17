@@ -15,7 +15,7 @@ from aiogram.types import (
 from aiogram.utils.callback_data import CallbackData
 
 from config import PAYMENTS_TOKEN
-from data_base.db_functions import get_need_payment, get_to_sell_price, get_moderator_id
+from data_base.db_functions import get_need_payment, get_regular_sell_price, get_moderator_id, get_vip_sell_price
 from data_base.project import Project
 from handlers.main_handlers import get_main_keyboard
 from handlers.seller.inner_functions.seller_keyboard_markups import (
@@ -72,7 +72,6 @@ async def put_up_for_sale(message: Message):
 
 async def project_name_state(message: Message, state: FSMContext):
     await state.update_data(seller=message.from_user.username)
-    print(message.date)
     answer = message.text
     if answer == BUTTONS["back_to_sell_menu"]:
         await bot.send_message(
@@ -435,10 +434,13 @@ async def moderators_confirm_state(message: Message, state: FSMContext):
             )
         elif answer == BUTTONS["cancellation"]:
             await state.finish()
+            is_moderator = False
+            if message.chat.id == get_moderator_id():
+                is_moderator = True
             await bot.send_message(
-                chat_id=message.chat.id,
-                text=MESSAGES["main_menu"].format(message.from_user),
-                reply_markup=get_main_keyboard(),
+                message.chat.id,
+                MESSAGES["main_menu"].format(message.from_user),
+                reply_markup=get_main_keyboard(is_moderator=is_moderator),
             )
 
 
@@ -460,7 +462,11 @@ async def moderators_confirm(query: CallbackQuery, callback_data: dict):
     new_project.comment = data["comment"]
     need_payment = get_need_payment()
     if need_payment == 1:
-        price_amount = get_to_sell_price()
+        price_amount = 0
+        if new_project.status_id == 0:
+            price_amount = get_regular_sell_price()
+        elif new_project.status_id == 1:
+            price_amount = get_vip_sell_price()
         prices = [LabeledPrice(label=MESSAGES["sell_payment"], amount=price_amount)]
         new_projects_dict[new_project.seller_name] = new_project
         await bot.send_invoice(
