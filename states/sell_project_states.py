@@ -4,6 +4,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 class SellProjectStates(StatesGroup):
     seller = State()
     project_name = State()
+    link = State()
     price = State()
     price2 = State()
     subscribers = State()

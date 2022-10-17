@@ -28,6 +28,7 @@ from states import SellProjectStates
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
 from useful.instruments import bot, db_manager
+from datetime import datetime
 
 moderation_dict = {}
 new_projects_dict = {}
@@ -76,9 +77,9 @@ async def project_name_state(message: Message, state: FSMContext):
         if len(answer) < 50:
             await state.update_data(project_name=answer)
             await message.answer(
-                MESSAGES["price"], reply_markup=get_cancel_menu_keyboard()
+                MESSAGES["link"], reply_markup=get_cancel_menu_keyboard()
             )
-            await SellProjectStates.price.set()
+            await SellProjectStates.link.set()
         else:
             await message.answer(
                 text=MESSAGES["name_so_big"], reply_markup=get_back_menu_keyboard()
@@ -86,13 +87,35 @@ async def project_name_state(message: Message, state: FSMContext):
             await SellProjectStates.project_name.set()
 
 
-async def price_state(message: Message, state: FSMContext):
+async def link_state(message: Message, state: FSMContext):
     answer = message.text
     if answer == BUTTONS["cancel"]:
         await message.answer(
             MESSAGES["project_name"], reply_markup=get_back_menu_keyboard()
         )
         await SellProjectStates.project_name.set()
+    elif answer == BUTTONS["back_to_sell_menu"]:
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=MESSAGES["sell_menu"],
+            reply_markup=get_main_sell_keyboard(),
+        )
+        await state.finish()
+    else:
+        await state.update_data(link=answer)
+        await message.answer(
+            MESSAGES["price"], reply_markup=get_cancel_menu_keyboard()
+        )
+        await SellProjectStates.price.set()
+
+
+async def price_state(message: Message, state: FSMContext):
+    answer = message.text
+    if answer == BUTTONS["cancel"]:
+        await message.answer(
+            MESSAGES["link"], reply_markup=get_back_menu_keyboard()
+        )
+        await SellProjectStates.link.set()
     elif answer == BUTTONS["back_to_sell_menu"]:
         await bot.send_message(
             chat_id=message.chat.id,
@@ -312,6 +335,7 @@ async def status_state(message: Message, state: FSMContext):
                 comm=data["comment"],
                 seller=message.from_user.username + ' 🌟',
                 price=data["price"],
+                link=data["link"],
             )
             await message.answer(
                 text=project_info, reply_markup=get_project_confirmation_menu_keyboard()
@@ -331,6 +355,7 @@ async def status_state(message: Message, state: FSMContext):
                 comm=data["comment"],
                 seller=message.from_user.username,
                 price=data["price"],
+                link=data["link"],
             )
             await message.answer(
                 text=project_info, reply_markup=get_project_confirmation_menu_keyboard()
@@ -377,6 +402,7 @@ async def moderators_confirm_state(message: Message, state: FSMContext):
                 comm=data["comment"],
                 seller=message.from_user.username,
                 price=data["price"],
+                link=data["link"],
             )
             dict_id = str(message.chat.id) + " " + data["project_name"]
             moderation_dict[dict_id] = data
@@ -477,6 +503,8 @@ async def checkout_process(pre_checkout_query: PreCheckoutQuery):
 
 
 async def successful_payment(message: Message):
+    #if
+    #current_datetime = datetime.now()
     new_projects_dict[message.from_user.username].save_new_project()
     new_projects_dict.pop(message.from_user.username)
     await bot.send_message(
@@ -489,12 +517,16 @@ async def successful_payment(message: Message):
     )
 
 
+
+
+
 def register_sell_handlers(dp: Dispatcher):
     dp.register_message_handler(show_main_sell_keyboard, text=[BUTTONS["sell_menu"]])
     dp.register_message_handler(put_up_for_sale, text=[BUTTONS["sell_project"]])
     dp.register_message_handler(
         project_name_state, state=SellProjectStates.project_name
     )
+    dp.register_message_handler(link_state, state=SellProjectStates.link)
     dp.register_message_handler(price_state, state=SellProjectStates.price)
     dp.register_message_handler(subscribers_state, state=SellProjectStates.subscribers)
     dp.register_message_handler(

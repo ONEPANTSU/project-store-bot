@@ -80,6 +80,7 @@ def get_project_info(project_data, themes_str, guarantee):
         comm=project_data.comment,
         seller=project_data.seller_name,
         price=project_data.price,
+        link=project_data.link,
         guarantee=guarantee,
     )
     return project_info
