@@ -91,6 +91,7 @@ moderator_confirm_message = (
 )
 rejected_project_message = "К сожалению, ваш проект '%s' не прошёл модерацию! ☹"
 empty_username_message = "У вас не задано имя пользователя в телеграме! Измените настройки и возвращайтесь! 😊"
+already_in_moderation_message = "Ваш проект находится на модерации! Ожидайте ответа!"
 
 MESSAGES = {
     "start": start_message,
@@ -151,4 +152,5 @@ MESSAGES = {
     "moderator_confirm": moderator_confirm_message,
     "rejected_project": rejected_project_message,
     "empty_username": empty_username_message,
+    "already_in_moderation": already_in_moderation_message,
 }

@@ -1,5 +1,4 @@
 from useful.instruments import db_manager
-import datetime
 
 
 class Project:

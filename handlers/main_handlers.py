@@ -1,10 +1,10 @@
 from aiogram import Dispatcher
 from aiogram.types import KeyboardButton, Message, ReplyKeyboardMarkup
 
+from data_base.db_functions import get_moderator_id
 from texts.buttons import BUTTONS
 from texts.commands import COMMANDS
 from texts.messages import MESSAGES
-from useful.instruments import db_manager
 
 
 def get_main_keyboard(is_moderator=False):
@@ -33,10 +33,8 @@ async def back_by_command(message: Message):
 
 async def main_menu(message, message_text):
     is_moderator = False
-    moderators = db_manager.get_moderators_names()
-    for moderator in moderators:
-        if message.from_user.id == moderator[0]:
-            is_moderator = True
+    if message.from_user.id == get_moderator_id():
+        is_moderator = True
     await message.answer(
         text=message_text,
         reply_markup=get_main_keyboard(is_moderator=is_moderator),

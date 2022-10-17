@@ -171,19 +171,6 @@ class DBManager:
         else:
             return True
 
-    def get_moderators_names(self):
-        """
-        This function creates SELECT query for getting moderators's names of `moderators` table.
-
-        :return: list with names of the sellers
-        :rtype: :list:`str`
-        """
-        get_moderators_names_query = QUERIES["select_moderators"]
-        moderators_names = self.execute_read_query(
-            self.connection, get_moderators_names_query
-        )
-        return moderators_names
-
     def get_seller_name(self, seller_id):
         """
         This function creates SELECT query for getting seller's name of `seller` table by id.

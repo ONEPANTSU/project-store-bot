@@ -163,6 +163,16 @@ def to_parse_project_list(projects_info):
     return project_list
 
 
+def get_moderator_id():
+    """
+    This function returns moderator's id from `settings` table.
+
+    :return: id of the moderator
+    :rtype: :obj:`int`
+    """
+    return db_manager.get_settings_info()[0]
+
+
 def get_guarantee_name():
     """
     This function returns telegram name of the guarantee from `settings` table.
@@ -170,7 +180,7 @@ def get_guarantee_name():
     :return: name of guarantee
     :rtype: :obj:`str`
     """
-    return db_manager.get_settings_info()[0]
+    return db_manager.get_settings_info()[1]
 
 
 def get_guarantee_reviews():
@@ -180,7 +190,7 @@ def get_guarantee_reviews():
     :return: telegram channel name with reviews
     :rtype: :obj:`str`
     """
-    return db_manager.get_settings_info()[1]
+    return db_manager.get_settings_info()[2]
 
 
 def get_need_payment():
@@ -190,7 +200,7 @@ def get_need_payment():
     :return: 0=False, 1=True
     :rtype: :obj:`int`
     """
-    return db_manager.get_settings_info()[2]
+    return db_manager.get_settings_info()[3]
 
 
 def get_to_sell_price():
@@ -200,4 +210,4 @@ def get_to_sell_price():
     :return: selling price
     :rtype: :obj:`int`
     """
-    return db_manager.get_settings_info()[3]
+    return db_manager.get_settings_info()[4]
