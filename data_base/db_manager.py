@@ -335,6 +335,18 @@ class DBManager:
 
         return projects_id
 
+    def get_vip_projects_id(self):
+        """
+        This function creates SELECT query for getting vip projects's ids
+
+        :return: ids of the vip projects
+        :rtype: :list:`int`
+        """
+        get_project_query = QUERIES["select_vip_projects_id"]
+        projects_id = self.execute_read_query(self.connection, get_project_query)
+
+        return projects_id
+
     def get_projects_id_by_prices(self, price_from, price_up_to):
         """
         This function creates SELECT query for getting projects's ids by price filter

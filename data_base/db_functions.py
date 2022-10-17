@@ -87,6 +87,18 @@ def create_all_projects_info(projects_id):
     return projects_info
 
 
+def get_vip_project_list():
+    """
+    This function creates SELECT query for getting VIP Project class's objects.
+
+    :return: list of the Project class's objects with VIP status
+    :rtype: :list::class:`data_base.project.Project`
+    """
+    projects_id = db_manager.get_vip_projects_id()
+    projects_info = create_all_projects_info(projects_id)
+    return get_parsed_project_list(projects_info)
+
+
 def get_project_list_by_filter(theme_id="None", price_from="None", price_up_to="None"):
     """
     This function creates SELECT query for getting all Project class's objects by filter.
@@ -119,9 +131,9 @@ def filter_list_appending(price_from, price_up_to, projects_list):
     filtered_list = list()
     for project in projects_list:
         if (
-            price_from != "None"
-            and price_up_to != "None"
-            and int(price_from) <= project.price <= int(price_up_to)
+                price_from != "None"
+                and price_up_to != "None"
+                and int(price_from) <= project.price <= int(price_up_to)
         ):
             filtered_list.append(project)
         elif price_up_to != "None" and project.price <= int(price_up_to):
