@@ -28,7 +28,7 @@ from states import SellProjectStates
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
 from useful.instruments import bot, db_manager
-from datetime import datetime
+from datetime import datetime, timedelta
 
 projects_in_moderation = list()
 moderation_dict = {}
@@ -518,8 +518,10 @@ async def checkout_process(pre_checkout_query: PreCheckoutQuery):
 
 
 async def successful_payment(message: Message):
-    # if
-    # current_datetime = datetime.now()
+
+    if new_projects_dict[message.from_user.username].status_id == 1:
+        new_projects_dict[message.from_user.username].vip_ending = datetime.now() + timedelta(days=7)
+
     new_projects_dict[message.from_user.username].save_new_project()
     new_projects_dict.pop(message.from_user.username)
     is_moderator = False
