@@ -28,12 +28,12 @@ insert_seller_query = """
         (%s);
         """
 
-select_moderators_query = "SELECT `id` from `moderators`"
-select_all_projects_id_query = "SELECT id FROM `project`"
+select_moderators_query = "SELECT `id` from `moderators`;"
+select_all_projects_id_query = "SELECT id FROM `project` ORDER BY `status_id` DESC, `vip_ending` DESC;"
 select_projects_id_by_prices_query = (
-    "SELECT id FROM `project` WHERE price >= '%s' AND price <= '%s'"
+    "SELECT id FROM `project` WHERE price >= '%s' AND price <= '%s'  ORDER BY `status_id`, `vip_ending` DESC;"
 )
-select_project_by_id_query = "SELECT * FROM `project` WHERE `id` = '%s';"
+select_project_by_id_query = "SELECT * FROM `project` WHERE `id` = '%s' ORDER BY `status_id`, `vip_ending` DESC;"
 select_seller_name_by_seller_id_query = (
     "SELECT `telegram_name` FROM `seller` WHERE `id` = '%s';"
 )
@@ -43,11 +43,13 @@ select_seller_id_by_project_id_query = (
 select_seller_id_by_seller_name_query = (
     "SELECT `id` FROM `seller` WHERE `telegram_name` = '%s';"
 )
-select_project_by_seller_id_query = "SELECT * FROM `project` WHERE `seller_id` = '%s';"
+select_project_by_seller_id_query = (
+    "SELECT * FROM `project` WHERE `seller_id` = '%s' ORDER BY `status_id`, `vip_ending` DESC;"
+)
 select_project_by_seller_name_query = (
     "SELECT project.id FROM `project` "
     "INNER JOIN `seller` ON project.seller_id = seller.id  "
-    "WHERE `telegram_name` = '%s';"
+    "WHERE `telegram_name` = '%s' ORDER BY project.`status_id`, `vip_ending` DESC;"
 )
 select_projects_id_by_theme_id_query = (
     "SELECT `project_id` FROM `project_theme` WHERE `theme_id` = '%s';"
@@ -62,7 +64,7 @@ select_all_project_info_by_id_query = (
     "INNER JOIN `project_theme` ON project.id = project_theme.project_id "
     "INNER JOIN `theme` ON project_theme.theme_id = theme.id "
     "INNER JOIN `status` ON project.status_id = status.id "
-    "WHERE project.id = '%s';"
+    "WHERE project.id = '%s' ORDER BY `status_id`, `vip_ending` DESC;"
 )
 select_theme_name_by_theme_id_query = (
     "SELECT `theme_name` FROM `theme` WHERE `id` = '%s';"
