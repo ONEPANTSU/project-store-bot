@@ -355,11 +355,16 @@ async def status_state(message: Message, state: FSMContext):
         elif answer == BUTTONS["no"]:
             await state.update_data(status=0)
             data = await state.get_data()
+            if data["status"] == 1:
+                data_status = MESSAGES["vip_project"]
+            else:
+                data_status = MESSAGES["regular_project"]
             themes_str = ""
             for i in data["themes"]:
                 themes_str += "#" + str(i) + " "
             project_info = MESSAGES["confirm"].format(
                 name=data["project_name"],
+                status=data_status,
                 themes=themes_str,
                 subs=data["subscribers"],
                 income=data["income"],
@@ -399,11 +404,16 @@ async def moderators_confirm_state(message: Message, state: FSMContext):
                 reply_markup=get_main_keyboard(),
             )
             data = await state.get_data()
+            if data["status"] == 1:
+                data_status = MESSAGES["vip_project"]
+            else:
+                data_status = MESSAGES["regular_project"]
             themes_str = ""
             for i in data["themes"]:
                 themes_str += "#" + str(i) + " "
             project_info = MESSAGES["moderator_confirm"].format(
                 name=data["project_name"],
+                status=data_status,
                 themes=themes_str,
                 subs=data["subscribers"],
                 income=data["income"],
