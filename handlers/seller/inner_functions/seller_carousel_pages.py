@@ -1,6 +1,10 @@
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, Message
 
-from data_base.db_functions import get_guarantee_name, get_projects_list_by_seller_name
+from data_base.db_functions import (
+    get_all_project_list,
+    get_guarantee_name,
+    get_projects_list_by_seller_name,
+)
 from handlers.seller.inner_functions.seller_carousel_keyboard import (
     get_my_projects_keyboard,
 )
@@ -9,31 +13,53 @@ from texts.messages import MESSAGES
 from useful.instruments import bot
 
 
+async def my_project_index(message: Message, project_list, is_moderator):
+    if len(project_list) != 0:
+        await create_project_page(
+            chat_id=message.chat.id,
+            project_list=project_list,
+            page=0,
+            is_moderator=is_moderator,
+        )
+    else:
+        await bot.send_message(chat_id=message.chat.id, text=MESSAGES["empty_projects"])
+
+
 async def refresh_pages(query: CallbackQuery, callback_data: dict):
     page = int(callback_data.get("page"))
-    project_list = get_projects_list_by_seller_name(query.from_user.username)
-    await update_page(page, project_list, query)
+    is_moderator_str = callback_data.get("is_moderator")
+    if is_moderator_str == "True":
+        is_moderator = True
+    else:
+        is_moderator = False
+    if is_moderator:
+        project_list = get_all_project_list()
+    else:
+        project_list = get_projects_list_by_seller_name(query.from_user.username)
+    await update_page(page, project_list, query, is_moderator)
 
 
-async def update_page(page, project_list, query):
+async def update_page(page, project_list, query, is_moderator):
     if len(project_list) != 0:
-        await edit_project_page(query=query, project_list=project_list, page=page)
+        await edit_project_page(
+            query=query, project_list=project_list, page=page, is_moderator=is_moderator
+        )
     else:
         await query.message.edit_text(
             text=MESSAGES["empty_projects"], reply_markup=None
         )
 
 
-async def edit_project_page(query: CallbackQuery, project_list, page):
-    keyboard, project_info = get_page_content(page, project_list)
+async def edit_project_page(query: CallbackQuery, project_list, page, is_moderator):
+    keyboard, project_info = get_page_content(page, project_list, is_moderator)
     await query.message.edit_text(
         text=project_info,
         reply_markup=keyboard,
     )
 
 
-async def create_project_page(chat_id, project_list, page):
-    keyboard, project_info = get_page_content(page, project_list)
+async def create_project_page(chat_id, project_list, page, is_moderator):
+    keyboard, project_info = get_page_content(page, project_list, is_moderator)
     await bot.send_message(
         chat_id=chat_id,
         text=project_info,
@@ -42,9 +68,11 @@ async def create_project_page(chat_id, project_list, page):
     )
 
 
-def get_page_content(page, project_list):
+def get_page_content(page, project_list, is_moderator):
     project_info = create_project_info(project_list[page])
-    keyboard = get_my_projects_keyboard(project_list=project_list, page=page)
+    keyboard = get_my_projects_keyboard(
+        project_list=project_list, page=page, is_moderator=is_moderator
+    )
     return keyboard, project_info
 
 
@@ -63,6 +91,7 @@ def get_project_info(project_data, themes_str, guarantee):
         comm=project_data.comment,
         seller=project_data.seller_name,
         price=project_data.price,
+        link=project_data.link,
         guarantee=guarantee,
     )
     return project_info

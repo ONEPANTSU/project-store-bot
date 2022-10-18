@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import (
@@ -15,7 +17,12 @@ from aiogram.types import (
 from aiogram.utils.callback_data import CallbackData
 
 from config import PAYMENTS_TOKEN
-from data_base.db_functions import get_need_payment, get_to_sell_price
+from data_base.db_functions import (
+    get_moderator_id,
+    get_need_payment,
+    get_regular_sell_price,
+    get_vip_sell_price,
+)
 from data_base.project import Project
 from handlers.main_handlers import get_main_keyboard
 from handlers.seller.inner_functions.seller_keyboard_markups import (
@@ -29,6 +36,7 @@ from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
 from useful.instruments import bot, db_manager
 
+projects_in_moderation = list()
 moderation_dict = {}
 new_projects_dict = {}
 moderators_confirm_callback = CallbackData(
@@ -48,11 +56,18 @@ async def show_main_sell_keyboard(message: Message):
 
 async def put_up_for_sale(message: Message):
     if message.from_user.username is not None:
-        await message.answer(text=MESSAGES["put_up_for_sale"])
-        await message.answer(
-            text=MESSAGES["project_name"], reply_markup=get_back_menu_keyboard()
-        )
-        await SellProjectStates.project_name.set()
+        if message.chat.id in projects_in_moderation:
+            await bot.send_message(
+                chat_id=message.chat.id,
+                text=MESSAGES["already_in_moderation"],
+                reply_markup=get_main_sell_keyboard(),
+            )
+        else:
+            await message.answer(text=MESSAGES["put_up_for_sale"])
+            await message.answer(
+                text=MESSAGES["project_name"], reply_markup=get_back_menu_keyboard()
+            )
+            await SellProjectStates.project_name.set()
     else:
         await bot.send_message(
             chat_id=message.chat.id,
@@ -63,7 +78,6 @@ async def put_up_for_sale(message: Message):
 
 async def project_name_state(message: Message, state: FSMContext):
     await state.update_data(seller=message.from_user.username)
-    print(message.date)
     answer = message.text
     if answer == BUTTONS["back_to_sell_menu"]:
         await bot.send_message(
@@ -76,9 +90,9 @@ async def project_name_state(message: Message, state: FSMContext):
         if len(answer) < 50:
             await state.update_data(project_name=answer)
             await message.answer(
-                MESSAGES["price"], reply_markup=get_cancel_menu_keyboard()
+                MESSAGES["link"], reply_markup=get_cancel_menu_keyboard()
             )
-            await SellProjectStates.price.set()
+            await SellProjectStates.link.set()
         else:
             await message.answer(
                 text=MESSAGES["name_so_big"], reply_markup=get_back_menu_keyboard()
@@ -86,13 +100,31 @@ async def project_name_state(message: Message, state: FSMContext):
             await SellProjectStates.project_name.set()
 
 
-async def price_state(message: Message, state: FSMContext):
+async def link_state(message: Message, state: FSMContext):
     answer = message.text
     if answer == BUTTONS["cancel"]:
         await message.answer(
             MESSAGES["project_name"], reply_markup=get_back_menu_keyboard()
         )
         await SellProjectStates.project_name.set()
+    elif answer == BUTTONS["back_to_sell_menu"]:
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=MESSAGES["sell_menu"],
+            reply_markup=get_main_sell_keyboard(),
+        )
+        await state.finish()
+    else:
+        await state.update_data(link=answer)
+        await message.answer(MESSAGES["price"], reply_markup=get_cancel_menu_keyboard())
+        await SellProjectStates.price.set()
+
+
+async def price_state(message: Message, state: FSMContext):
+    answer = message.text
+    if answer == BUTTONS["cancel"]:
+        await message.answer(MESSAGES["link"], reply_markup=get_back_menu_keyboard())
+        await SellProjectStates.link.set()
     elif answer == BUTTONS["back_to_sell_menu"]:
         await bot.send_message(
             chat_id=message.chat.id,
@@ -261,7 +293,9 @@ async def comment_state(message: Message, state: FSMContext):
     answer = message.text
     if answer == BUTTONS["cancel"]:
         await state.update_data(themes=[])
-        await message.answer(MESSAGES["income"], reply_markup=get_cancel_menu_keyboard())
+        await message.answer(
+            MESSAGES["income"], reply_markup=get_cancel_menu_keyboard()
+        )
         await SellProjectStates.income.set()
     elif answer == BUTTONS["back_to_sell_menu"]:
         await bot.send_message(
@@ -301,17 +335,23 @@ async def status_state(message: Message, state: FSMContext):
         if answer == BUTTONS["yes"]:
             await state.update_data(status=1)
             data = await state.get_data()
+            if data["status"] == 1:
+                data_status = MESSAGES["vip_project"]
+            else:
+                data_status = MESSAGES["regular_project"]
             themes_str = ""
             for i in data["themes"]:
                 themes_str += "#" + str(i) + " "
             project_info = MESSAGES["confirm"].format(
                 name=data["project_name"],
                 themes=themes_str,
+                status=data_status,
                 subs=data["subscribers"],
                 income=data["income"],
                 comm=data["comment"],
-                seller=message.from_user.username + ' 🌟',
+                seller=message.from_user.username,
                 price=data["price"],
+                link=data["link"],
             )
             await message.answer(
                 text=project_info, reply_markup=get_project_confirmation_menu_keyboard()
@@ -320,17 +360,23 @@ async def status_state(message: Message, state: FSMContext):
         elif answer == BUTTONS["no"]:
             await state.update_data(status=0)
             data = await state.get_data()
+            if data["status"] == 1:
+                data_status = MESSAGES["vip_project"]
+            else:
+                data_status = MESSAGES["regular_project"]
             themes_str = ""
             for i in data["themes"]:
                 themes_str += "#" + str(i) + " "
             project_info = MESSAGES["confirm"].format(
                 name=data["project_name"],
+                status=data_status,
                 themes=themes_str,
                 subs=data["subscribers"],
                 income=data["income"],
                 comm=data["comment"],
                 seller=message.from_user.username,
                 price=data["price"],
+                link=data["link"],
             )
             await message.answer(
                 text=project_info, reply_markup=get_project_confirmation_menu_keyboard()
@@ -346,9 +392,7 @@ async def status_state(message: Message, state: FSMContext):
 async def moderators_confirm_state(message: Message, state: FSMContext):
     answer = message.text
     if answer == BUTTONS["cancel"]:
-        await message.answer(
-            MESSAGES["status"], reply_markup=yes_or_no_keyboard()
-        )
+        await message.answer(MESSAGES["status"], reply_markup=yes_or_no_keyboard())
         await SellProjectStates.status.set()
     elif answer == BUTTONS["back_to_sell_menu"]:
         await bot.send_message(
@@ -365,22 +409,27 @@ async def moderators_confirm_state(message: Message, state: FSMContext):
                 reply_markup=get_main_keyboard(),
             )
             data = await state.get_data()
-            await state.finish()
+            if data["status"] == 1:
+                data_status = MESSAGES["vip_project"]
+            else:
+                data_status = MESSAGES["regular_project"]
             themes_str = ""
             for i in data["themes"]:
                 themes_str += "#" + str(i) + " "
             project_info = MESSAGES["moderator_confirm"].format(
                 name=data["project_name"],
+                status=data_status,
                 themes=themes_str,
                 subs=data["subscribers"],
                 income=data["income"],
                 comm=data["comment"],
                 seller=message.from_user.username,
                 price=data["price"],
+                link=data["link"],
             )
-            dict_id = str(message.chat.id) + " " + data["project_name"]
+            dict_id = str(message.chat.id)
             moderation_dict[dict_id] = data
-            moderators = db_manager.get_moderators_names()
+            projects_in_moderation.append(message.chat.id)
             keyboard = InlineKeyboardMarkup(row_width=1)
             reject_button = InlineKeyboardButton(
                 text=BUTTONS["reject"],
@@ -396,23 +445,25 @@ async def moderators_confirm_state(message: Message, state: FSMContext):
             )
             keyboard.add(confirm_button)
             keyboard.add(reject_button)
-            for moderator in moderators:
-                moderator_id = moderator[0]
-                await bot.send_message(
-                    chat_id=moderator_id, text=project_info, reply_markup=keyboard
-                )
-        elif answer == BUTTONS["cancellation"]:
-            await state.finish()
             await bot.send_message(
-                chat_id=message.chat.id,
-                text=MESSAGES["main_menu"].format(message.from_user),
-                reply_markup=get_main_keyboard(),
+                chat_id=get_moderator_id(), text=project_info, reply_markup=keyboard
             )
+        elif answer == BUTTONS["cancellation"]:
+            is_moderator = False
+            if message.chat.id == get_moderator_id():
+                is_moderator = True
+            await bot.send_message(
+                message.chat.id,
+                MESSAGES["main_menu"].format(message.from_user),
+                reply_markup=get_main_keyboard(is_moderator=is_moderator),
+            )
+
+        await state.finish()
 
 
 async def moderators_confirm(query: CallbackQuery, callback_data: dict):
     await query.message.delete()
-    user_id = callback_data.get("user_id")
+    user_id = int(callback_data.get("user_id"))
     data_id = callback_data.get("project_data_id")
     data = moderation_dict[data_id]
     moderation_dict.pop(data_id)
@@ -425,9 +476,15 @@ async def moderators_confirm(query: CallbackQuery, callback_data: dict):
     new_project.themes_names = data["themes"]
     new_project.income = data["income"]
     new_project.comment = data["comment"]
+    new_project.link = data["link"]
     need_payment = get_need_payment()
+    projects_in_moderation.remove(user_id)
     if need_payment == 1:
-        price_amount = get_to_sell_price()
+        price_amount = 0
+        if new_project.status_id == 0:
+            price_amount = get_regular_sell_price()
+        elif new_project.status_id == 1:
+            price_amount = get_vip_sell_price()
         prices = [LabeledPrice(label=MESSAGES["sell_payment"], amount=price_amount)]
         new_projects_dict[new_project.seller_name] = new_project
         await bot.send_invoice(
@@ -443,16 +500,19 @@ async def moderators_confirm(query: CallbackQuery, callback_data: dict):
         )
     elif need_payment == 0:
         new_project.save_new_project()
+        is_moderator = False
+        if user_id == get_moderator_id():
+            is_moderator = True
         await bot.send_message(
             user_id,
             MESSAGES["save_project"],
-            reply_markup=ReplyKeyboardRemove(),
+            reply_markup=get_main_keyboard(is_moderator=is_moderator),
         )
 
 
 async def moderators_reject(query: CallbackQuery, callback_data: dict):
     await query.message.delete()
-    user_id = callback_data.get("user_id")
+    user_id = int(callback_data.get("user_id"))
     data_id = callback_data.get("project_data_id")
     data = moderation_dict[data_id]
     moderation_dict.pop(data_id)
@@ -465,10 +525,14 @@ async def moderators_reject(query: CallbackQuery, callback_data: dict):
     new_project.themes_names = data["themes"]
     new_project.income = data["income"]
     new_project.comment = data["comment"]
+    projects_in_moderation.remove(user_id)
+    is_moderator = False
+    if user_id == get_moderator_id():
+        is_moderator = True
     await bot.send_message(
         user_id,
         MESSAGES["rejected_project"] % new_project.name,
-        reply_markup=ReplyKeyboardRemove(),
+        reply_markup=get_main_keyboard(is_moderator=is_moderator),
     )
 
 
@@ -477,15 +541,28 @@ async def checkout_process(pre_checkout_query: PreCheckoutQuery):
 
 
 async def successful_payment(message: Message):
+
+    if new_projects_dict[message.from_user.username].status_id == 1:
+        new_projects_dict[
+            message.from_user.username
+        ].vip_ending = datetime.now() + timedelta(days=7)
+    else:
+        new_projects_dict[
+            message.from_user.username
+        ].vip_ending = datetime(year=1900, month=1, day=1)
+
     new_projects_dict[message.from_user.username].save_new_project()
     new_projects_dict.pop(message.from_user.username)
+    is_moderator = False
+    if message.chat.id == get_moderator_id():
+        is_moderator = True
     await bot.send_message(
         message.chat.id,
         MESSAGES["successful_payment"].format(
             total_amount=message.successful_payment.total_amount // 100,
             currency=message.successful_payment.currency,
         ),
-        reply_markup=get_main_sell_keyboard(),
+        reply_markup=get_main_keyboard(is_moderator=is_moderator),
     )
 
 
@@ -495,6 +572,7 @@ def register_sell_handlers(dp: Dispatcher):
     dp.register_message_handler(
         project_name_state, state=SellProjectStates.project_name
     )
+    dp.register_message_handler(link_state, state=SellProjectStates.link)
     dp.register_message_handler(price_state, state=SellProjectStates.price)
     dp.register_message_handler(subscribers_state, state=SellProjectStates.subscribers)
     dp.register_message_handler(

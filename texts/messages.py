@@ -10,6 +10,7 @@ project_name_question = "Напишите название вашего прое
 name_so_big_question = (
     "Ваше имя слишком длинное. Напишите название вашего проекта до 50 символов! "
 )
+link_question = "Оставьте ссылку на ваш проект"
 price_question = "Напишите цену вашего проекта"
 price_check_question = "Цена должна быть числом. Напишите цену вашего проекта:"
 subscribers_question = "Сколько подписчиков у вашего проекта?"
@@ -19,7 +20,7 @@ to_many_subscribers_question = (
 )
 income_question = "Какой доход у вашего проекта?"
 income_check_question = "Укажите доход проекта числом. Какой доход у вашего проекта:"
-themes_question = "Выберете не более 3-х тематик вашего проекта:"
+themes_question = "Выберите не более 3-х тематик вашего проекта:"
 themes_warn_question = "Такой темы нет в списке! Выберите тему из списка"
 themes_warn_2_question = "Данная тема уже добавлена!"
 themes_plus_1_question = "Выберите ещё одну тему"
@@ -36,9 +37,9 @@ status_yes_question = "Ура, теперь вы счталивый облада
 confirm_question = (
     "Данные введены верно? Если да, то перейдите к оплате. "
     "При нажатии кнопки 'Отмена' Вы вернётесь в главное меню.\n\n"
-    "<b>Название:</b> {name}\n<b>Тематика:</b> {themes}\n<b>Подписчиков:</b> {subs}\n<b>Доход в "
-    "месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> @{"
-    "seller}\n\n<b>Цена:</b> {price}"
+    '<b>Название:</b> <a href = "{link}"> {name}</a>\n<b>Статус:</b> {status}\n<b>Тематика:</b> {themes}\n'
+    "<b>Подписчиков:</b> {subs}\n<b>Доход в месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n"
+    "\n<b>Продавец:</b> @{seller}\n\n<b>Цена:</b> {price}"
 )
 payment_message = "Начинается процесс оплаты"
 
@@ -49,16 +50,20 @@ get_list_of_projects_message = "🗄 Выставленные на продаж�
 
 buy_menu_message = "💰 Поиск предложений 💰"
 chose_themes_message = "Выберите интересные тематики"
-back_to_buy_menu_message = "Вернуться назад?"
 question_theme_message = "Хотите выбрать тематику?"
 themes_list_message = "Список тематик"
+themes_list_smile_message = "📋"
 question_price_message = "Хотите выбрать цену?"
 chose_price_from_message = "Введите цену от: "
 chose_price_up_to_message = "Введите цену до: "
 show_all_projects_message = "Показать все предложения"
+all_projects_message = "Все предложения"
 not_recognized_message = "Сообщение не распознано. Попробуйте еще раз!"
-error_not_digit_price_from_message = "Ответ должен быть числом! Введите цену от: "
-error_not_digit_price_upto_message = "Ответ должен быть числом! Введите цену до: "
+error_not_digit_price_from_message = "Ответ должен быть положительным числом! Введите цену от: "
+error_not_digit_price_upto_message = "Ответ должен быть положительным числом! Введите цену до: "
+error_upto_bigger_then_from_message = "Цена \'до\' должна быть больше цены \'от\'. Введите цену до: "
+list_is_empty_message = "Проектов по вашему запросу не найдено"
+
 
 sell_payment_label = "Разместить объявление!"
 sell_payment_title = "Оплата"
@@ -66,8 +71,8 @@ sell_payment_description = "Оплата за размещение объявл�
 successful_payment_message = "Оплата произведена успешно!"
 
 show_project_message = (
-    "<b>Название:</b> {name}\n<b>Тематика:</b> {theme}\n<b>Подписчиков:</b> {subs}\n<b>Доход в "
-    "месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> @{"
+    '<b>Название:</b> <a href = \"{link}\"> {name}</a>\n<b>Тематика:</b> {theme}\n<b>Подписчиков:</b> {subs}\n'
+    "<b>Доход в месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> @{"
     "seller}\n\n<b>Цена:</b> {price}\n\nГарантируем 100% безопасность при сделках в "
     "Telegram.\n<b>Гарант:</b> {guarantee} "
 )
@@ -82,12 +87,16 @@ command_error_message = "Сообщение не распознано ☹️"
 moderation_message = "Ожидайте. Ваша заявка на модерации!"
 moderator_confirm_message = (
     "Новая заявка на размещение объявления ждёт подтверждения!\n\n"
-    "<b>Название:</b> {name}\n<b>Тематика:</b> {themes}\n<b>Подписчиков:</b> {"
-    "subs}\n<b>Доход в месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> "
+    "<b>Название:</b> <a href = \"{link}\">  {name}</a>\n<b>Статус:</b> {status}\n<b>Тематика:</b> {themes}\n"
+    "<b>Подписчиков:</b> {subs}\n<b>Доход в месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> "
     "@{seller}\n\n<b>Цена:</b> {price}"
 )
 rejected_project_message = "К сожалению, ваш проект '%s' не прошёл модерацию! ☹"
 empty_username_message = "У вас не задано имя пользователя в телеграме! Измените настройки и возвращайтесь! 😊"
+already_in_moderation_message = "Ваш проект находится на модерации! Ожидайте ответа!"
+
+vip_project = "VIP 👑"
+regular_project = "Обычный 🗿"
 
 MESSAGES = {
     "start": start_message,
@@ -95,6 +104,7 @@ MESSAGES = {
     "put_up_for_sale": put_up_for_sale_massage,
     "project_name": project_name_question,
     "name_so_big": name_so_big_question,
+    "link": link_question,
     "price": price_question,
     "price_check": price_check_question,
     "subscribers": subscribers_question,
@@ -136,14 +146,20 @@ MESSAGES = {
     "command_error": command_error_message,
     "error_not_digit_price_from": error_not_digit_price_from_message,
     "error_not_digit_price_upto": error_not_digit_price_upto_message,
+    "error_upto_bigger_then_from": error_upto_bigger_then_from_message,
     "question_theme": question_theme_message,
-    "back_to_buy_menu": back_to_buy_menu_message,
     "question_price": question_price_message,
     "show_all_projects": show_all_projects_message,
+    "all_projects": all_projects_message,
     "not_recognized": not_recognized_message,
+    "list_is_empty": list_is_empty_message,
     "themes_list": themes_list_message,
+    "themes_list_smile": themes_list_smile_message,
     "moderation": moderation_message,
     "moderator_confirm": moderator_confirm_message,
     "rejected_project": rejected_project_message,
     "empty_username": empty_username_message,
+    "already_in_moderation": already_in_moderation_message,
+    "vip_project": vip_project,
+    "regular_project": regular_project
 }

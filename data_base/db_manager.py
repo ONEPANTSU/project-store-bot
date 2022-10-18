@@ -79,6 +79,10 @@ class DBManager:
             + str(project.income)
             + ", '"
             + project.comment
+            + "', '"
+            + str(project.vip_ending)
+            + "', '"
+            + project.link
             + "'"
         )
 
@@ -166,19 +170,6 @@ class DBManager:
             return False
         else:
             return True
-
-    def get_moderators_names(self):
-        """
-        This function creates SELECT query for getting moderators's names of `moderators` table.
-
-        :return: list with names of the sellers
-        :rtype: :list:`str`
-        """
-        get_moderators_names_query = QUERIES["select_moderators"]
-        moderators_names = self.execute_read_query(
-            self.connection, get_moderators_names_query
-        )
-        return moderators_names
 
     def get_seller_name(self, seller_id):
         """
@@ -344,6 +335,18 @@ class DBManager:
 
         return projects_id
 
+    def get_vip_projects_id(self):
+        """
+        This function creates SELECT query for getting vip projects's ids
+
+        :return: ids of the vip projects
+        :rtype: :list:`int`
+        """
+        get_project_query = QUERIES["select_vip_projects_id"]
+        projects_id = self.execute_read_query(self.connection, get_project_query)
+
+        return projects_id
+
     def get_projects_id_by_prices(self, price_from, price_up_to):
         """
         This function creates SELECT query for getting projects's ids by price filter
@@ -505,7 +508,9 @@ class DBManager:
             str(project.subscribers),
             str(project.income),
             str(project.comment),
-            str(project_id),
+            str(project.vip_ending),
+            str(project.link),
+            str(project_id)
         )
         self.update_project_themes(project_id, project.themes_id)
         self.execute_query(self.connection, update_project)

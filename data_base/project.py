@@ -27,6 +27,8 @@ class Project:
         self.subscribers = None
         self.income = None
         self.comment = None
+        self.vip_ending = None
+        self.link = None
 
     def set_params(
         self,
@@ -39,6 +41,8 @@ class Project:
         themes_id,
         income,
         comment,
+        vip_ending,
+        link,
     ):
         """
         This function sets values of all params to the Project's object.
@@ -70,6 +74,12 @@ class Project:
 
         :param comment: project description and comment
         :type comment: :obj: `str`
+
+        :param vip_ending: vip subscription expiration date
+        :type vip_ending: :obj: `datetime`
+
+        :param link: link to project
+        :type link: :obj: `str`
         """
 
         self.params_are_not_none = True
@@ -84,6 +94,8 @@ class Project:
         self.income = income  # доход в месяц
         self.comment = comment
         self._set_seller_info(seller_name, seller_id)
+        self.vip_ending = vip_ending  # дата окончания вип-подписки
+        self.link = link
 
     def _set_seller_info(self, seller_name, seller_id):
         if seller_name is not None:
@@ -132,6 +144,8 @@ class Project:
             income=project_sql_row[6],
             comment=project_sql_row[7],
             themes_id=themes_id,
+            vip_ending=project_sql_row[8],
+            link=project_sql_row[9],
         )
 
     def set_id(self, project_id):
@@ -177,6 +191,8 @@ class Project:
             and len(self.themes_id) != 0
             and self.income is not None
             and self.comment is not None
+            and self.vip_ending is not None
+            and self.link is not None
         ):
             self.params_are_not_none = True
         else:

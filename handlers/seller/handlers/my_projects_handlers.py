@@ -3,9 +3,10 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from data_base.db_functions import get_projects_list_by_seller_name
+from handlers.main_handlers import get_main_keyboard
 from handlers.seller.inner_functions.seller_carousel_pages import (
-    create_project_page,
     get_delete_project_dict_info,
+    my_project_index,
     refresh_pages,
 )
 from handlers.seller.inner_functions.seller_keyboard_markups import (
@@ -16,7 +17,10 @@ from handlers.seller.instruments.seller_callbacks import (
     delete_project_callback,
     my_projects_callback,
 )
-from handlers.seller.instruments.seller_dicts import delete_project_dict
+from handlers.seller.instruments.seller_dicts import (
+    delete_project_dict,
+    is_moderator_dict,
+)
 from states import DeleteProjectStates
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
@@ -25,12 +29,9 @@ from useful.instruments import bot, db_manager
 
 async def my_project_index_handler(message: Message):
     project_list = get_projects_list_by_seller_name(message.from_user.username)
-    if len(project_list) != 0:
-        await create_project_page(
-            chat_id=message.chat.id, project_list=project_list, page=0
-        )
-    else:
-        await bot.send_message(chat_id=message.chat.id, text=MESSAGES["empty_projects"])
+    await my_project_index(
+        message=message, project_list=project_list, is_moderator=False
+    )
 
 
 async def my_project_page_handler(query: CallbackQuery, callback_data: dict):
@@ -43,6 +44,12 @@ async def delete_project_handler(query: CallbackQuery, callback_data: dict):
         text=MESSAGES["confirm_deleting"],
         reply_markup=get_project_confirmation_menu_keyboard(back_button=False),
     )
+    is_moderator_str = callback_data.get("is_moderator")
+    if is_moderator_str == "True":
+        is_moderator = True
+    else:
+        is_moderator = False
+    is_moderator_dict[query.message.chat.id] = is_moderator
     delete_project_dict[query.message.chat.id] = [
         int(callback_data.get("id")),
         query,
@@ -76,12 +83,19 @@ async def deleting_command_error(message):
 
 
 async def canceled_deleting(message, state):
+    if is_moderator_dict[message.chat.id]:
+        reply_markup = get_main_keyboard(
+            is_moderator=is_moderator_dict[message.chat.id]
+        )
+    else:
+        reply_markup = get_main_sell_keyboard()
+        await my_project_index_handler(message=message)
+    is_moderator_dict.pop(message.chat.id)
     await bot.send_message(
         chat_id=message.chat.id,
         text=MESSAGES["not_deleted_project"],
-        reply_markup=get_main_sell_keyboard(),
+        reply_markup=reply_markup,
     )
-    await my_project_index_handler(message=message)
     delete_project_dict.pop(message.chat.id)
     await state.finish()
 
@@ -89,10 +103,17 @@ async def canceled_deleting(message, state):
 async def confirmed_deleting(message, state):
     callback_data, project_id, query = get_delete_project_dict_info(message.chat.id)
     db_manager.delete_project(project_id)
+    if is_moderator_dict[message.chat.id]:
+        reply_markup = get_main_keyboard(
+            is_moderator=is_moderator_dict[message.chat.id]
+        )
+    else:
+        reply_markup = get_main_sell_keyboard()
+    is_moderator_dict.pop(message.chat.id)
     await bot.send_message(
         chat_id=query.message.chat.id,
         text=MESSAGES["deleted_project"],
-        reply_markup=get_main_sell_keyboard(),
+        reply_markup=reply_markup,
     )
     await refresh_pages(query=query, callback_data=callback_data)
     await state.finish()

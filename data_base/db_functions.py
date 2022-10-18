@@ -85,6 +85,18 @@ def create_all_projects_info(projects_id):
     return projects_info
 
 
+def get_vip_project_list():
+    """
+    This function creates SELECT query for getting VIP Project class's objects.
+
+    :return: list of the Project class's objects with VIP status
+    :rtype: :list::class:`data_base.project.Project`
+    """
+    projects_id = db_manager.get_vip_projects_id()
+    projects_info = create_all_projects_info(projects_id)
+    return get_parsed_project_list(projects_info)
+
+
 def get_project_list_by_filter(theme_id="None", price_from="None", price_up_to="None"):
     """
     This function creates SELECT query for getting all Project class's objects by filter.
@@ -122,9 +134,9 @@ def filter_list_appending(price_from, price_up_to, projects_list):
             and int(price_from) <= project.price <= int(price_up_to)
         ):
             filtered_list.append(project)
-        elif price_up_to != "None" and project.price <= int(price_up_to):
+        elif price_from == "None" and price_up_to != "None" and project.price <= int(price_up_to):
             filtered_list.append(project)
-        elif price_from != "None" and project.price >= int(price_from):
+        elif price_up_to == "None" and price_from != "None" and project.price >= int(price_from):
             filtered_list.append(project)
     return filtered_list
 
@@ -151,12 +163,24 @@ def to_parse_project_list(projects_info):
         new_project.comment = project_info[0][7]
         new_project.seller_name = project_info[0][8]
         new_project.status = project_info[0][9]
+        new_project.vip_ending = project_info[0][12]
+        new_project.link = project_info[0][13]
         for i in range(len(project_info)):
             new_project.themes_id.append(project_info[i][10])
             new_project.themes_names.append(project_info[i][11])
         new_project.params_are_not_none = True
         project_list.append(new_project)
     return project_list
+
+
+def get_moderator_id():
+    """
+    This function returns moderator's id from `settings` table.
+
+    :return: id of the moderator
+    :rtype: :obj:`int`
+    """
+    return db_manager.get_settings_info()[0]
 
 
 def get_guarantee_name():
@@ -166,7 +190,7 @@ def get_guarantee_name():
     :return: name of guarantee
     :rtype: :obj:`str`
     """
-    return db_manager.get_settings_info()[0]
+    return db_manager.get_settings_info()[1]
 
 
 def get_guarantee_reviews():
@@ -176,7 +200,7 @@ def get_guarantee_reviews():
     :return: telegram channel name with reviews
     :rtype: :obj:`str`
     """
-    return db_manager.get_settings_info()[1]
+    return db_manager.get_settings_info()[2]
 
 
 def get_need_payment():
@@ -186,14 +210,24 @@ def get_need_payment():
     :return: 0=False, 1=True
     :rtype: :obj:`int`
     """
-    return db_manager.get_settings_info()[2]
+    return db_manager.get_settings_info()[3]
 
 
-def get_to_sell_price():
+def get_regular_sell_price():
     """
-    This function returns selling price from `settings` table.
+    This function returns regular selling price from `settings` table.
 
     :return: selling price
     :rtype: :obj:`int`
     """
-    return db_manager.get_settings_info()[3]
+    return db_manager.get_settings_info()[4]
+
+
+def get_vip_sell_price():
+    """
+    This function returns vip selling price from `settings` table.
+
+    :return: selling price
+    :rtype: :obj:`int`
+    """
+    return db_manager.get_settings_info()[5]
