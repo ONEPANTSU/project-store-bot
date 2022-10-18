@@ -1,6 +1,10 @@
 from aiogram.types import CallbackQuery, Message
 
-from data_base.db_functions import get_guarantee_name, get_projects_list_by_seller_name, get_all_project_list
+from data_base.db_functions import (
+    get_all_project_list,
+    get_guarantee_name,
+    get_projects_list_by_seller_name,
+)
 from handlers.seller.inner_functions.seller_carousel_keyboard import (
     get_my_projects_keyboard,
 )
@@ -12,7 +16,10 @@ from useful.instruments import bot
 async def my_project_index(message: Message, project_list, is_moderator):
     if len(project_list) != 0:
         await create_project_page(
-            chat_id=message.chat.id, project_list=project_list, page=0, is_moderator=is_moderator
+            chat_id=message.chat.id,
+            project_list=project_list,
+            page=0,
+            is_moderator=is_moderator,
         )
     else:
         await bot.send_message(chat_id=message.chat.id, text=MESSAGES["empty_projects"])
@@ -34,7 +41,9 @@ async def refresh_pages(query: CallbackQuery, callback_data: dict):
 
 async def update_page(page, project_list, query, is_moderator):
     if len(project_list) != 0:
-        await edit_project_page(query=query, project_list=project_list, page=page, is_moderator=is_moderator)
+        await edit_project_page(
+            query=query, project_list=project_list, page=page, is_moderator=is_moderator
+        )
     else:
         await query.message.edit_text(
             text=MESSAGES["empty_projects"], reply_markup=None
@@ -61,7 +70,9 @@ async def create_project_page(chat_id, project_list, page, is_moderator):
 
 def get_page_content(page, project_list, is_moderator):
     project_info = create_project_info(project_list[page])
-    keyboard = get_my_projects_keyboard(project_list=project_list, page=page, is_moderator=is_moderator)
+    keyboard = get_my_projects_keyboard(
+        project_list=project_list, page=page, is_moderator=is_moderator
+    )
     return keyboard, project_info
 
 

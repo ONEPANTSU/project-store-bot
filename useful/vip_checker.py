@@ -10,4 +10,3 @@ def check_vip():
         if project.vip_ending < now:
             project.status_id = 0
             project.save_changes_to_existing_project()
-

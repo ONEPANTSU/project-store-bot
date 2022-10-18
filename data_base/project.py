@@ -82,8 +82,6 @@ class Project:
         :type link: :obj: `str`
         """
 
-
-
         self.params_are_not_none = True
 
         self.name = name
@@ -96,7 +94,7 @@ class Project:
         self.income = income  # доход в месяц
         self.comment = comment
         self._set_seller_info(seller_name, seller_id)
-        self.vip_ending = vip_ending # дата окончания вип-подписки
+        self.vip_ending = vip_ending  # дата окончания вип-подписки
         self.link = link
 
     def _set_seller_info(self, seller_name, seller_id):
@@ -147,7 +145,7 @@ class Project:
             comment=project_sql_row[7],
             themes_id=themes_id,
             vip_ending=project_sql_row[8],
-            link=project_sql_row[9]
+            link=project_sql_row[9],
         )
 
     def set_id(self, project_id):
@@ -184,6 +182,8 @@ class Project:
         self._check_themes()
 
     def _set_params_are_not_none(self):
+        if self.vip_ending is None:
+            self.vip_ending = "NULL"
         if (
             self.name is not None
             and self.seller_name is not None
