@@ -183,11 +183,12 @@ async def price_up_to_state(message: Message, state: FSMContext):
                 await message.reply(text=MESSAGES["themes_list"],
                                     reply_markup=chose_themes_keyboard(price_from, price_up_to))  # вывод клавы тем
             await state.finish()
-            await message.answer(text=MESSAGES["error_upto_bigger_then_from"].format(message.from_user),
-                                 reply_markup=buy_menu())
-            await BuyProjectStates.price_up_to.set()
         else:
-
+            await message.answer(
+                text=MESSAGES["error_upto_bigger_then_from"].format(message.from_user),
+                reply_markup=buy_menu(),
+            )
+            await BuyProjectStates.price_up_to.set()
     else:
         await message.answer(
             text=MESSAGES["error_not_digit_price_upto"].format(message.from_user),
