@@ -20,7 +20,7 @@ to_many_subscribers_question = (
 )
 income_question = "Какой доход у вашего проекта?"
 income_check_question = "Укажите доход проекта числом. Какой доход у вашего проекта:"
-themes_question = "Выберете не более 3-х тематик вашего проекта:"
+themes_question = "Выберите не более 3-х тематик вашего проекта:"
 themes_warn_question = "Такой темы нет в списке! Выберите тему из списка"
 themes_warn_2_question = "Данная тема уже добавлена!"
 themes_plus_1_question = "Выберите ещё одну тему"
@@ -85,7 +85,7 @@ command_error_message = "Сообщение не распознано ☹️"
 moderation_message = "Ожидайте. Ваша заявка на модерации!"
 moderator_confirm_message = (
     "Новая заявка на размещение объявления ждёт подтверждения!\n\n"
-    "<b>Название:</b> {name}\n<b>Тематика:</b> {themes}\n<b>Подписчиков:</b> {"
+    "<b>Название:</b> <a href = \"{link}\">  {name}</a>\n<b>Тематика:</b> {themes}\n<b>Подписчиков:</b> {"
     "subs}\n<b>Доход в месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> "
     "@{seller}\n\n<b>Цена:</b> {price}"
 )
