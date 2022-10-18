@@ -1,5 +1,3 @@
-import datetime
-
 from data_base.project import Project
 from useful.instruments import db_manager
 
@@ -131,9 +129,9 @@ def filter_list_appending(price_from, price_up_to, projects_list):
     filtered_list = list()
     for project in projects_list:
         if (
-                price_from != "None"
-                and price_up_to != "None"
-                and int(price_from) <= project.price <= int(price_up_to)
+            price_from != "None"
+            and price_up_to != "None"
+            and int(price_from) <= project.price <= int(price_up_to)
         ):
             filtered_list.append(project)
         elif price_up_to != "None" and project.price <= int(price_up_to):

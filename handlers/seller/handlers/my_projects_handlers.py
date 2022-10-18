@@ -6,7 +6,8 @@ from data_base.db_functions import get_projects_list_by_seller_name
 from handlers.main_handlers import get_main_keyboard
 from handlers.seller.inner_functions.seller_carousel_pages import (
     get_delete_project_dict_info,
-    refresh_pages, my_project_index,
+    my_project_index,
+    refresh_pages,
 )
 from handlers.seller.inner_functions.seller_keyboard_markups import (
     get_main_sell_keyboard,
@@ -16,7 +17,10 @@ from handlers.seller.instruments.seller_callbacks import (
     delete_project_callback,
     my_projects_callback,
 )
-from handlers.seller.instruments.seller_dicts import delete_project_dict, is_moderator_dict
+from handlers.seller.instruments.seller_dicts import (
+    delete_project_dict,
+    is_moderator_dict,
+)
 from states import DeleteProjectStates
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
@@ -25,7 +29,9 @@ from useful.instruments import bot, db_manager
 
 async def my_project_index_handler(message: Message):
     project_list = get_projects_list_by_seller_name(message.from_user.username)
-    await my_project_index(message=message, project_list=project_list, is_moderator=False)
+    await my_project_index(
+        message=message, project_list=project_list, is_moderator=False
+    )
 
 
 async def my_project_page_handler(query: CallbackQuery, callback_data: dict):
@@ -78,7 +84,9 @@ async def deleting_command_error(message):
 
 async def canceled_deleting(message, state):
     if is_moderator_dict[message.chat.id]:
-        reply_markup = get_main_keyboard(is_moderator=is_moderator_dict[message.chat.id])
+        reply_markup = get_main_keyboard(
+            is_moderator=is_moderator_dict[message.chat.id]
+        )
     else:
         reply_markup = get_main_sell_keyboard()
         await my_project_index_handler(message=message)
@@ -96,7 +104,9 @@ async def confirmed_deleting(message, state):
     callback_data, project_id, query = get_delete_project_dict_info(message.chat.id)
     db_manager.delete_project(project_id)
     if is_moderator_dict[message.chat.id]:
-        reply_markup = get_main_keyboard(is_moderator=is_moderator_dict[message.chat.id])
+        reply_markup = get_main_keyboard(
+            is_moderator=is_moderator_dict[message.chat.id]
+        )
     else:
         reply_markup = get_main_sell_keyboard()
     is_moderator_dict.pop(message.chat.id)

@@ -12,7 +12,9 @@ async def moderator_handler(message: Message):
         is_moderator = True
     if is_moderator:
         project_list = get_all_project_list()
-        await my_project_index(message=message, project_list=project_list, is_moderator=is_moderator)
+        await my_project_index(
+            message=message, project_list=project_list, is_moderator=is_moderator
+        )
 
 
 def register_moderator_handlers(dp: Dispatcher):
