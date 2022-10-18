@@ -445,9 +445,8 @@ async def moderators_confirm_state(message: Message, state: FSMContext):
 
 
 async def moderators_confirm(query: CallbackQuery, callback_data: dict):
-    projects_in_moderation.remove(query.message.chat.id)
     await query.message.delete()
-    user_id = callback_data.get("user_id")
+    user_id = int(callback_data.get("user_id"))
     data_id = callback_data.get("project_data_id")
     data = moderation_dict[data_id]
     moderation_dict.pop(data_id)
@@ -461,6 +460,7 @@ async def moderators_confirm(query: CallbackQuery, callback_data: dict):
     new_project.income = data["income"]
     new_project.comment = data["comment"]
     need_payment = get_need_payment()
+    projects_in_moderation.remove(user_id)
     if need_payment == 1:
         price_amount = 0
         if new_project.status_id == 0:
@@ -493,9 +493,8 @@ async def moderators_confirm(query: CallbackQuery, callback_data: dict):
 
 
 async def moderators_reject(query: CallbackQuery, callback_data: dict):
-    projects_in_moderation.remove(query.message.chat.id)
     await query.message.delete()
-    user_id = callback_data.get("user_id")
+    user_id = int(callback_data.get("user_id"))
     data_id = callback_data.get("project_data_id")
     data = moderation_dict[data_id]
     moderation_dict.pop(data_id)
@@ -508,7 +507,7 @@ async def moderators_reject(query: CallbackQuery, callback_data: dict):
     new_project.themes_names = data["themes"]
     new_project.income = data["income"]
     new_project.comment = data["comment"]
-
+    projects_in_moderation.remove(user_id)
     is_moderator = False
     if user_id == get_moderator_id():
         is_moderator = True

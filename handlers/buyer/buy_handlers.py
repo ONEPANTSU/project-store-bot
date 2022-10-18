@@ -218,6 +218,7 @@ def get_project_info(project_data):  # Page: 0
     for theme_name in project_data.themes_names:
         themes_str += "#" + str(theme_name) + " "
     project_info = MESSAGES["show_project"].format(
+        link=project_data.link,
         name=project_data.name,
         theme=themes_str,
         subs=project_data.subscribers,
