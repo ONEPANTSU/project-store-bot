@@ -531,6 +531,10 @@ async def successful_payment(message: Message):
         new_projects_dict[
             message.from_user.username
         ].vip_ending = datetime.now() + timedelta(days=7)
+    else:
+        new_projects_dict[
+            message.from_user.username
+        ].vip_ending = datetime(year=1900, month=1, day=1)
 
     new_projects_dict[message.from_user.username].save_new_project()
     new_projects_dict.pop(message.from_user.username)

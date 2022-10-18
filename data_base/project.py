@@ -182,8 +182,6 @@ class Project:
         self._check_themes()
 
     def _set_params_are_not_none(self):
-        if self.vip_ending is None:
-            self.vip_ending = "NULL"
         if (
             self.name is not None
             and self.seller_name is not None
@@ -193,6 +191,7 @@ class Project:
             and len(self.themes_id) != 0
             and self.income is not None
             and self.comment is not None
+            and self.vip_ending is not None
             and self.link is not None
         ):
             self.params_are_not_none = True
