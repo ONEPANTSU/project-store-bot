@@ -90,6 +90,11 @@ async def analyse_answers_state(message: Message, state: FSMContext):
         elif price_ans == 'Да' and theme_ans == 'Да':
             await message.answer(text=MESSAGES["chose_price_from"], reply_markup=buy_menu())
             await BuyProjectStates.price_from.set()
+
+        elif price_ans == 'Нет' and theme_ans == 'Нет':
+            await message.answer(text=MESSAGES["all_projects"], reply_markup=buy_menu())
+            await buy_project_index(chat_id=message.chat.id, theme_id="None", price_from="None", price_up_to="None")
+            await state.finish()
     else:
         await message.answer(text=MESSAGES["yes_or_no"].format(message.from_user), reply_markup=yes_no_menu())
         await BuyProjectStates.analyse_answers.set()
@@ -115,7 +120,7 @@ async def price_from_state(message: Message, state: FSMContext):
         await state.finish()
         return 0
 
-    elif answer.isdigit():
+    elif answer.isdigit() and int(answer) >= 0:
         await state.update_data(price_from=answer)
         await message.answer(MESSAGES["chose_price_up_to"])
         await BuyProjectStates.price_up_to.set()
@@ -134,23 +139,27 @@ async def price_up_to_state(message: Message, state: FSMContext):
     elif answer == BUTTONS['back']:
         await main_menu(message, message_text=MESSAGES["main_menu"])
         return 0
+    data = await state.get_data()
+    if answer.isdigit() and int(answer) >= 0:
+        if int(answer) >= int(data["price_from"]):
+            await state.update_data(price_up_to=answer)
+            price_from = data["price_from"]
+            price_up_to = answer
+            theme_ans = data["theme_ans"]
 
-    if answer.isdigit():
-        await state.update_data(price_up_to=answer)
-        data = await state.get_data()
-        price_from = data["price_from"]
-        price_up_to = data["price_up_to"]
-        theme_ans = data["theme_ans"]
+            if theme_ans == "Нет":
+                # Если только цена, то вывод следующий(отправляю в колбэк только цены)
+                await buy_project_index(chat_id=message.chat.id, theme_id="None", price_from=price_from,
+                                        price_up_to=price_up_to)
 
-        if theme_ans == "Нет":
-            # Если только цена, то вывод следующий(отправляю в колбэк только цены)
-            await buy_project_index(chat_id=message.chat.id, theme_id="None", price_from=price_from,
-                                    price_up_to=price_up_to)
-
-        elif theme_ans == "Да":
-            await message.reply(text=MESSAGES["themes_list"],
-                                reply_markup=chose_themes_keyboard(price_from, price_up_to))  # вывод клавы тем
-        await state.finish()
+            elif theme_ans == "Да":
+                await message.reply(text=MESSAGES["themes_list"],
+                                    reply_markup=chose_themes_keyboard(price_from, price_up_to))  # вывод клавы тем
+            await state.finish()
+        else:
+            await message.answer(text=MESSAGES["error_upto_bigger_then_from"].format(message.from_user),
+                                 reply_markup=buy_menu())
+            await BuyProjectStates.price_up_to.set()
 
     else:
         await message.answer(text=MESSAGES["error_not_digit_price_upto"].format(message.from_user),
@@ -220,7 +229,6 @@ def get_project_info(project_data):  # Page: 0
     project_info = MESSAGES["show_project"].format(
         link=project_data.link,
         name=project_data.name,
-        link=project_data.link,
         theme=themes_str,
         subs=project_data.subscribers,
         income=project_data.income,

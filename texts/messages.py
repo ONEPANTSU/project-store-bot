@@ -57,9 +57,11 @@ question_price_message = "Хотите выбрать цену?"
 chose_price_from_message = "Введите цену от: "
 chose_price_up_to_message = "Введите цену до: "
 show_all_projects_message = "Показать все предложения"
+all_projects_message = "Все предложения"
 not_recognized_message = "Сообщение не распознано. Попробуйте еще раз!"
-error_not_digit_price_from_message = "Ответ должен быть числом! Введите цену от: "
-error_not_digit_price_upto_message = "Ответ должен быть числом! Введите цену до: "
+error_not_digit_price_from_message = "Ответ должен быть положительным числом! Введите цену от: "
+error_not_digit_price_upto_message = "Ответ должен быть положительным числом! Введите цену до: "
+error_upto_bigger_then_from_message = "Цена \'до\' должна быть больше цены \'от\'. Введите цену до: "
 list_is_empty_message = "Проектов по вашему запросу не найдено"
 
 
@@ -141,9 +143,11 @@ MESSAGES = {
     "command_error": command_error_message,
     "error_not_digit_price_from": error_not_digit_price_from_message,
     "error_not_digit_price_upto": error_not_digit_price_upto_message,
+    "error_upto_bigger_then_from": error_upto_bigger_then_from_message,
     "question_theme": question_theme_message,
     "question_price": question_price_message,
     "show_all_projects": show_all_projects_message,
+    "all_projects": all_projects_message,
     "not_recognized": not_recognized_message,
     "list_is_empty": list_is_empty_message,
     "themes_list": themes_list_message,
