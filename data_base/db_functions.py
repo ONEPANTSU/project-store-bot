@@ -134,9 +134,9 @@ def filter_list_appending(price_from, price_up_to, projects_list):
             and int(price_from) <= project.price <= int(price_up_to)
         ):
             filtered_list.append(project)
-        elif price_up_to != "None" and project.price <= int(price_up_to):
+        elif price_from == "None" and price_up_to != "None" and project.price <= int(price_up_to):
             filtered_list.append(project)
-        elif price_from != "None" and project.price >= int(price_from):
+        elif price_up_to == "None" and price_from != "None" and project.price >= int(price_from):
             filtered_list.append(project)
     return filtered_list
 
