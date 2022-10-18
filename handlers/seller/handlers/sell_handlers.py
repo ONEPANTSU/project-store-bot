@@ -335,16 +335,21 @@ async def status_state(message: Message, state: FSMContext):
         if answer == BUTTONS["yes"]:
             await state.update_data(status=1)
             data = await state.get_data()
+            if data["status"] == 1:
+                data_status = MESSAGES["vip_project"]
+            else:
+                data_status = MESSAGES["regular_project"]
             themes_str = ""
             for i in data["themes"]:
                 themes_str += "#" + str(i) + " "
             project_info = MESSAGES["confirm"].format(
                 name=data["project_name"],
                 themes=themes_str,
+                status=data_status,
                 subs=data["subscribers"],
                 income=data["income"],
                 comm=data["comment"],
-                seller=message.from_user.username + " 🌟",
+                seller=message.from_user.username,
                 price=data["price"],
                 link=data["link"],
             )
