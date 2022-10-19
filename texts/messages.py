@@ -4,6 +4,8 @@ start_message = (
 
 main_menu_massage = "📌 Главное меню 📌"
 
+information_message = "Вся информация о боте доступна в телеграм канале: t.me"
+
 sell_menu_message = "🗄 Мои предложения 🗄"
 put_up_for_sale_massage = "🖊Заполните анкету🖊"
 project_name_question = "Напишите название вашего проекта:"
@@ -100,6 +102,7 @@ regular_project = "Обычный 🗿"
 
 MESSAGES = {
     "start": start_message,
+    "information": information_message,
     "sell_menu": sell_menu_message,
     "put_up_for_sale": put_up_for_sale_massage,
     "project_name": project_name_question,
