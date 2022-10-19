@@ -67,13 +67,15 @@ error_upto_bigger_then_from_message = "Цена \'до\' должна быть �
 list_is_empty_message = "Проектов по вашему запросу не найдено"
 
 
+vip_payment_label = "Установить VIP татус проекту!"
 sell_payment_label = "Разместить объявление!"
 sell_payment_title = "Оплата"
 sell_payment_description = "Оплата за размещение объявления"
 successful_payment_message = "Оплата произведена успешно!"
 
 show_project_message = (
-    '<b>Название:</b> <a href = \"{link}\"> {name}</a>\n<b>Тематика:</b> {theme}\n<b>Подписчиков:</b> {subs}\n'
+    '<b>Название:</b> <a href = \"{link}\"> {name}</a>\n<b>Статус:</b> {status}\n'
+    '<b>Тематика:</b> {theme}\n<b>Подписчиков:</b> {subs}\n'
     "<b>Доход в месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> @{"
     "seller}\n\n<b>Цена:</b> {price}\n\nГарантируем 100% безопасность при сделках в "
     "Telegram.\n<b>Гарант:</b> {guarantee} "
@@ -136,6 +138,7 @@ MESSAGES = {
     "chose_themes": chose_themes_message,
     "chose_price_from": chose_price_from_message,
     "chose_price_up_to": chose_price_up_to_message,
+    "vip_payment": vip_payment_label,
     "sell_payment": sell_payment_label,
     "sell_payment_title": sell_payment_title,
     "sell_payment_description": sell_payment_description,

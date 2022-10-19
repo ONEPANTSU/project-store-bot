@@ -134,6 +134,8 @@ class Project:
     def _set_exist_params(self):
         project_sql_row = db_manager.get_project_by_id(self.id)
         themes_id = db_manager.get_themes_id(self.id)
+        for index in range(len(themes_id)):
+            themes_id[index] = themes_id[index][0]
         self.set_params(
             seller_id=project_sql_row[1],
             seller_name=None,
@@ -222,6 +224,8 @@ class Project:
         This function updates already existing row of
         data base by new params of the Project's object.
         """
+
+        self._check_is_not_none()
         if self.params_are_not_none is False:
             print("Error: Project's params are empty")
         elif self.id is None:

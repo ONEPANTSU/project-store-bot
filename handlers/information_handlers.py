@@ -6,14 +6,14 @@ from texts.messages import MESSAGES
 
 
 async def information_handler(message: Message):
-    await help(message)
+    await help_inform(message)
 
 
 async def help_command(message: Message):
-    await help(message)
+    await help_inform(message)
 
 
-async def help(message: Message):
+async def help_inform(message: Message):
     await message.answer(
         text=MESSAGES["information"]
     )

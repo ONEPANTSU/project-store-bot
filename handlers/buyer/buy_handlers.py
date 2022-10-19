@@ -263,11 +263,16 @@ def get_buy_projects_price_keyboard(
 
 def get_project_info(project_data):  # Page: 0
     guarantee = get_guarantee_name()
+    if project_data.status_id == 1:
+        data_status = MESSAGES["vip_project"]
+    else:
+        data_status = MESSAGES["regular_project"]
     themes_str = ""
     for theme_name in project_data.themes_names:
         themes_str += "#" + str(theme_name) + " "
     project_info = MESSAGES["show_project"].format(
         link=project_data.link,
+        status=data_status,
         name=project_data.name,
         theme=themes_str,
         subs=project_data.subscribers,
