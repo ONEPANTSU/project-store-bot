@@ -510,7 +510,7 @@ class DBManager:
             str(project.comment),
             str(project.vip_ending),
             str(project.link),
-            str(project_id)
+            str(project_id),
         )
         self.update_project_themes(project_id, project.themes_id)
         self.execute_query(self.connection, update_project)

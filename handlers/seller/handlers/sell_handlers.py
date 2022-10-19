@@ -549,9 +549,9 @@ async def successful_payment(message: Message):
                 message.from_user.username
             ].vip_ending = datetime.now() + timedelta(days=7)
         else:
-            new_projects_dict[
-                message.from_user.username
-            ].vip_ending = datetime(year=1900, month=1, day=1)
+            new_projects_dict[message.from_user.username].vip_ending = datetime(
+                year=1900, month=1, day=1
+            )
 
         new_projects_dict[message.from_user.username].save_new_project()
         new_projects_dict.pop(message.from_user.username)
@@ -560,7 +560,7 @@ async def successful_payment(message: Message):
         project = vip_project_dict[message.chat.id]
         vip_project_dict.pop(message.chat.id)
         project.status_id = 1
-        project.status = 'VIP'
+        project.status = "VIP"
         project.vip_ending = datetime.now() + timedelta(days=7)
         project.save_changes_to_existing_project()
 

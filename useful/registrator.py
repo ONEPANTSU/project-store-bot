@@ -1,6 +1,6 @@
 from aiogram import Dispatcher
 
-from handlers import main_handlers, moderator_handlers, information_handlers
+from handlers import information_handlers, main_handlers, moderator_handlers
 from handlers.buyer import buy_handlers
 from handlers.seller.handlers import my_projects_handlers, sell_handlers
 

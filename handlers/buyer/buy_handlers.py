@@ -114,9 +114,14 @@ async def analyse_answers_state(message: Message, state: FSMContext):
             )
             await BuyProjectStates.price_from.set()
 
-        elif price_ans == 'Нет' and theme_ans == 'Нет':
+        elif price_ans == "Нет" and theme_ans == "Нет":
             await message.answer(text=MESSAGES["all_projects"], reply_markup=buy_menu())
-            await buy_project_index(chat_id=message.chat.id, theme_id="None", price_from="None", price_up_to="None")
+            await buy_project_index(
+                chat_id=message.chat.id,
+                theme_id="None",
+                price_from="None",
+                price_up_to="None",
+            )
             await state.finish()
     else:
         await message.answer(
@@ -176,12 +181,18 @@ async def price_up_to_state(message: Message, state: FSMContext):
 
             if theme_ans == "Нет":
                 # Если только цена, то вывод следующий(отправляю в колбэк только цены)
-                await buy_project_index(chat_id=message.chat.id, theme_id="None", price_from=price_from,
-                                        price_up_to=price_up_to)
+                await buy_project_index(
+                    chat_id=message.chat.id,
+                    theme_id="None",
+                    price_from=price_from,
+                    price_up_to=price_up_to,
+                )
 
             elif theme_ans == "Да":
-                await message.reply(text=MESSAGES["themes_list"],
-                                    reply_markup=chose_themes_keyboard(price_from, price_up_to))  # вывод клавы тем
+                await message.reply(
+                    text=MESSAGES["themes_list"],
+                    reply_markup=chose_themes_keyboard(price_from, price_up_to),
+                )  # вывод клавы тем
             await state.finish()
         else:
             await message.answer(

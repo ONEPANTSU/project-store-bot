@@ -1,6 +1,6 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery, Message, LabeledPrice
+from aiogram.types import CallbackQuery, LabeledPrice, Message
 
 from config import PAYMENTS_TOKEN
 from data_base.db_functions import get_projects_list_by_seller_name, get_vip_sell_price
@@ -17,11 +17,13 @@ from handlers.seller.inner_functions.seller_keyboard_markups import (
 )
 from handlers.seller.instruments.seller_callbacks import (
     delete_project_callback,
-    my_projects_callback, vip_project_callback,
+    my_projects_callback,
+    vip_project_callback,
 )
 from handlers.seller.instruments.seller_dicts import (
     delete_project_dict,
-    is_moderator_dict, vip_project_dict,
+    is_moderator_dict,
+    vip_project_dict,
 )
 from states import DeleteProjectStates
 from texts.buttons import BUTTONS

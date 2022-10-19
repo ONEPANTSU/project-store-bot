@@ -29,11 +29,13 @@ insert_seller_query = """
         """
 
 select_vip_projects_id_query = "SELECT id FROM `project` WHERE `status_id` = 1;"
-select_all_projects_id_query = "SELECT id FROM `project` ORDER BY `status_id` DESC, `vip_ending` DESC;"
-select_projects_id_by_prices_query = (
-    "SELECT id FROM `project` WHERE price >= '%s' AND price <= '%s'  ORDER BY `status_id`, `vip_ending` DESC;"
+select_all_projects_id_query = (
+    "SELECT id FROM `project` ORDER BY `status_id` DESC, `vip_ending` DESC;"
 )
-select_project_by_id_query = "SELECT * FROM `project` WHERE `id` = '%s' ORDER BY `status_id`, `vip_ending` DESC;"
+select_projects_id_by_prices_query = "SELECT id FROM `project` WHERE price >= '%s' AND price <= '%s'  ORDER BY `status_id`, `vip_ending` DESC;"
+select_project_by_id_query = (
+    "SELECT * FROM `project` WHERE `id` = '%s' ORDER BY `status_id`, `vip_ending` DESC;"
+)
 select_seller_name_by_seller_id_query = (
     "SELECT `telegram_name` FROM `seller` WHERE `id` = '%s';"
 )
@@ -43,9 +45,7 @@ select_seller_id_by_project_id_query = (
 select_seller_id_by_seller_name_query = (
     "SELECT `id` FROM `seller` WHERE `telegram_name` = '%s';"
 )
-select_project_by_seller_id_query = (
-    "SELECT * FROM `project` WHERE `seller_id` = '%s' ORDER BY `status_id`, `vip_ending` DESC;"
-)
+select_project_by_seller_id_query = "SELECT * FROM `project` WHERE `seller_id` = '%s' ORDER BY `status_id`, `vip_ending` DESC;"
 select_project_by_seller_name_query = (
     "SELECT project.id FROM `project` "
     "INNER JOIN `seller` ON project.seller_id = seller.id  "
