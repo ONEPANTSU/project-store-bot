@@ -83,8 +83,13 @@ def create_project_info(project_data):
 
 
 def get_project_info(project_data, themes_str, guarantee):
+    if project_data.status_id == 1:
+        data_status = MESSAGES["vip_project"]
+    else:
+        data_status = MESSAGES["regular_project"]
     project_info = MESSAGES["show_project"].format(
         name=project_data.name,
+        status=data_status,
         theme=themes_str,
         subs=project_data.subscribers,
         income=project_data.income,

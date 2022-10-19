@@ -31,8 +31,10 @@ from handlers.seller.inner_functions.seller_keyboard_markups import (
     get_main_sell_keyboard,
     get_project_confirmation_menu_keyboard,
 )
+from handlers.seller.instruments.seller_dicts import vip_project_dict
 from states import SellProjectStates
 from texts.buttons import BUTTONS
+from texts.invoice_payload import INVOICE_PAYLOAD
 from texts.messages import MESSAGES
 from useful.instruments import bot, db_manager
 
@@ -484,7 +486,7 @@ async def moderators_confirm(query: CallbackQuery, callback_data: dict):
         if new_project.status_id == 0:
             price_amount = get_regular_sell_price()
         elif new_project.status_id == 1:
-            price_amount = get_vip_sell_price()
+            price_amount = get_regular_sell_price() + get_vip_sell_price()
         prices = [LabeledPrice(label=MESSAGES["sell_payment"], amount=price_amount)]
         new_projects_dict[new_project.seller_name] = new_project
         await bot.send_invoice(
@@ -496,7 +498,7 @@ async def moderators_confirm(query: CallbackQuery, callback_data: dict):
             is_flexible=False,
             prices=prices,
             start_parameter="example",
-            payload="some_invoice",
+            payload=INVOICE_PAYLOAD["sell"],
         )
     elif need_payment == 0:
         new_project.save_new_project()
@@ -541,18 +543,27 @@ async def checkout_process(pre_checkout_query: PreCheckoutQuery):
 
 
 async def successful_payment(message: Message):
+    if message.successful_payment.invoice_payload == INVOICE_PAYLOAD["sell"]:
+        if new_projects_dict[message.from_user.username].status_id == 1:
+            new_projects_dict[
+                message.from_user.username
+            ].vip_ending = datetime.now() + timedelta(days=7)
+        else:
+            new_projects_dict[
+                message.from_user.username
+            ].vip_ending = datetime(year=1900, month=1, day=1)
 
-    if new_projects_dict[message.from_user.username].status_id == 1:
-        new_projects_dict[
-            message.from_user.username
-        ].vip_ending = datetime.now() + timedelta(days=7)
-    else:
-        new_projects_dict[
-            message.from_user.username
-        ].vip_ending = datetime(year=1900, month=1, day=1)
+        new_projects_dict[message.from_user.username].save_new_project()
+        new_projects_dict.pop(message.from_user.username)
 
-    new_projects_dict[message.from_user.username].save_new_project()
-    new_projects_dict.pop(message.from_user.username)
+    elif message.successful_payment.invoice_payload == INVOICE_PAYLOAD["vip"]:
+        project = vip_project_dict[message.chat.id]
+        vip_project_dict.pop(message.chat.id)
+        project.status_id = 1
+        project.status = 'VIP'
+        project.vip_ending = datetime.now() + timedelta(days=7)
+        project.save_changes_to_existing_project()
+
     is_moderator = False
     if message.chat.id == get_moderator_id():
         is_moderator = True

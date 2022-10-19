@@ -1,8 +1,10 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, LabeledPrice
 
-from data_base.db_functions import get_projects_list_by_seller_name
+from config import PAYMENTS_TOKEN
+from data_base.db_functions import get_projects_list_by_seller_name, get_vip_sell_price
+from data_base.project import Project
 from handlers.main_handlers import get_main_keyboard
 from handlers.seller.inner_functions.seller_carousel_pages import (
     get_delete_project_dict_info,
@@ -15,14 +17,15 @@ from handlers.seller.inner_functions.seller_keyboard_markups import (
 )
 from handlers.seller.instruments.seller_callbacks import (
     delete_project_callback,
-    my_projects_callback,
+    my_projects_callback, vip_project_callback,
 )
 from handlers.seller.instruments.seller_dicts import (
     delete_project_dict,
-    is_moderator_dict,
+    is_moderator_dict, vip_project_dict,
 )
 from states import DeleteProjectStates
 from texts.buttons import BUTTONS
+from texts.invoice_payload import INVOICE_PAYLOAD
 from texts.messages import MESSAGES
 from useful.instruments import bot, db_manager
 
@@ -36,6 +39,25 @@ async def my_project_index_handler(message: Message):
 
 async def my_project_page_handler(query: CallbackQuery, callback_data: dict):
     await refresh_pages(query=query, callback_data=callback_data)
+
+
+async def vip_project_handler(query: CallbackQuery, callback_data: dict):
+    price_amount = get_vip_sell_price()
+    prices = [LabeledPrice(label=MESSAGES["vip_payment"], amount=price_amount)]
+    project = Project()
+    project.set_params_by_id(callback_data.get("id"))
+    vip_project_dict[query.message.chat.id] = project
+    await bot.send_invoice(
+        query.message.chat.id,
+        title=MESSAGES["sell_payment_title"],
+        description=MESSAGES["sell_payment_description"],
+        provider_token=PAYMENTS_TOKEN,
+        currency="rub",
+        is_flexible=False,
+        prices=prices,
+        start_parameter="example",
+        payload=INVOICE_PAYLOAD["vip"],
+    )
 
 
 async def delete_project_handler(query: CallbackQuery, callback_data: dict):
@@ -126,6 +148,9 @@ def register_my_projects_handlers(dp: Dispatcher):
     )
     dp.register_callback_query_handler(
         delete_project_handler, delete_project_callback.filter()
+    )
+    dp.register_callback_query_handler(
+        vip_project_handler, vip_project_callback.filter()
     )
     dp.register_message_handler(
         delete_confirm_handler, state=DeleteProjectStates.confirm

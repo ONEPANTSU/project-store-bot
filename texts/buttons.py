@@ -1,5 +1,7 @@
 back_button = "Вернуться в главное меню"
 
+information_button = "Информация"
+
 moderate_button = "Управление проектами"
 
 sell_menu_button = "🗄 Мои предложения 🗄"
@@ -25,6 +27,7 @@ cancellation_button = "Отмена"
 delete_button = "Удалить объявление"
 prev_button = "⏪ Назад"
 next_button = "Вперёд ⏩"
+vip_project_button = "Установить VIP статус 👑"
 
 BUTTONS = {
     "back": back_button,
@@ -45,6 +48,8 @@ BUTTONS = {
     "delete_project": delete_button,
     "prev": prev_button,
     "next": next_button,
+    "vip_project": vip_project_button,
     "chose_search_params": chose_search_params_button,
     "moderate": moderate_button,
+    "information": information_button,
 }
