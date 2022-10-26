@@ -27,9 +27,18 @@ from handlers.seller.instruments.seller_dicts import (
 )
 from states import DeleteProjectStates
 from texts.buttons import BUTTONS
+from texts.commands import COMMANDS
 from texts.invoice_payload import INVOICE_PAYLOAD
 from texts.messages import MESSAGES
 from useful.instruments import bot, db_manager
+
+
+async def my_projects_by_button(message: Message):
+    await my_project_index_handler(message)
+
+
+async def my_projects_by_command(message: Message):
+    await my_project_index_handler(message)
 
 
 async def my_project_index_handler(message: Message):
@@ -144,7 +153,10 @@ async def confirmed_deleting(message, state):
 
 
 def register_my_projects_handlers(dp: Dispatcher):
-    dp.register_message_handler(my_project_index_handler, text=BUTTONS["sell_list"])
+    dp.register_message_handler(my_projects_by_button, text=BUTTONS["sell_list"])
+    dp.register_message_handler(
+        my_projects_by_command, commands=COMMANDS["my_projects"]
+    )
     dp.register_callback_query_handler(
         my_project_page_handler, my_projects_callback.filter()
     )

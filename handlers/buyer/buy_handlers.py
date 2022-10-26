@@ -14,6 +14,7 @@ from data_base.db_functions import get_guarantee_name, get_project_list_by_filte
 from handlers.main_handlers import get_main_keyboard, main_menu
 from states import BuyProjectStates
 from texts.buttons import BUTTONS
+from texts.commands import COMMANDS
 from texts.messages import MESSAGES
 from useful.instruments import bot, db_manager
 
@@ -46,6 +47,14 @@ def back_menu():
     back_button = KeyboardButton(BUTTONS["back_to_buy_menu"])
     markup.add(back_button)
     return markup
+
+
+async def search_project_by_button(message: Message):
+    await show_main_buy_keyboard(message)
+
+
+async def search_project_by_command(message: Message):
+    await show_main_buy_keyboard(message)
 
 
 async def show_main_buy_keyboard(message: Message):
@@ -350,7 +359,10 @@ async def buy_project_page_handler(query: CallbackQuery, callback_data: dict):
 
 def register_buy_handlers(dp: Dispatcher):
     dp.register_message_handler(get_main_keyboard, text=BUTTONS["back"])
-    dp.register_message_handler(show_main_buy_keyboard, text=[BUTTONS["buy_menu"]])
+    dp.register_message_handler(search_project_by_button, text=[BUTTONS["buy_menu"]])
+    dp.register_message_handler(
+        search_project_by_command, commands=[COMMANDS["search_project"]]
+    )
     dp.register_message_handler(
         chose_search_parameters, text=[BUTTONS["chose_search_params"]]
     )

@@ -34,6 +34,7 @@ from handlers.seller.inner_functions.seller_keyboard_markups import (
 from handlers.seller.instruments.seller_dicts import vip_project_dict
 from states import SellProjectStates
 from texts.buttons import BUTTONS
+from texts.commands import COMMANDS
 from texts.invoice_payload import INVOICE_PAYLOAD
 from texts.messages import MESSAGES
 from useful.instruments import bot, db_manager
@@ -54,6 +55,14 @@ async def show_main_sell_keyboard(message: Message):
         text=MESSAGES["sell_menu"].format(message.from_user),
         reply_markup=get_main_sell_keyboard(),
     )
+
+
+async def to_sell_by_command(message: Message):
+    await put_up_for_sale(message)
+
+
+async def to_sell_by_button(message: Message):
+    await put_up_for_sale(message)
 
 
 async def put_up_for_sale(message: Message):
@@ -579,7 +588,8 @@ async def successful_payment(message: Message):
 
 def register_sell_handlers(dp: Dispatcher):
     dp.register_message_handler(show_main_sell_keyboard, text=[BUTTONS["sell_menu"]])
-    dp.register_message_handler(put_up_for_sale, text=[BUTTONS["sell_project"]])
+    dp.register_message_handler(to_sell_by_button, text=[BUTTONS["sell_project"]])
+    dp.register_message_handler(to_sell_by_command, commands=[COMMANDS["new_project"]])
     dp.register_message_handler(
         project_name_state, state=SellProjectStates.project_name
     )
