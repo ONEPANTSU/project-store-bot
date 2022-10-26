@@ -4,7 +4,7 @@ start_message = (
 
 main_menu_massage = "📌 Главное меню 📌"
 
-information_message = "Вся информация о боте доступна в телеграм канале: t.me"
+information_message = "Вся информация о боте доступна в телеграм канале: https://t.me/+jIRlpTHZFNcyODhi"
 
 sell_menu_message = "🗄 Мои предложения 🗄"
 put_up_for_sale_massage = "🖊Заполните анкету🖊"
