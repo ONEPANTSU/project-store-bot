@@ -16,8 +16,8 @@ yes_button = "Да"
 no_button = "Нет"
 chose_search_params_button = "Выбрать параметры поиска"
 
-back_to_sell_menu_button = "Вернуться в меню"
-back_to_buy_menu_button = "Вернуться в меню"
+back_to_sell_menu_button = "Вернуться"
+back_to_buy_menu_button = "Вернуться"
 cancel_button = "⏪ Предыдущий вопрос"
 
 confirm_button = "Подтвердить"
@@ -28,6 +28,7 @@ delete_button = "Удалить объявление"
 prev_button = "⏪ Назад"
 next_button = "Вперёд ⏩"
 vip_project_button = "Установить VIP статус 👑"
+price_changing_project_button = "Изменить стоимость проекта 💰"
 
 BUTTONS = {
     "back": back_button,
@@ -49,6 +50,7 @@ BUTTONS = {
     "prev": prev_button,
     "next": next_button,
     "vip_project": vip_project_button,
+    "price_changing_project": price_changing_project_button,
     "chose_search_params": chose_search_params_button,
     "moderate": moderate_button,
     "information": information_button,

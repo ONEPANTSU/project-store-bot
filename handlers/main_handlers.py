@@ -11,7 +11,7 @@ def get_main_keyboard(is_moderator=False):
     markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     my_projects_button = KeyboardButton(BUTTONS["sell_menu"])
     search_projects_button = KeyboardButton(BUTTONS["buy_menu"])
-    information_button = KeyboardButton(BUTTONS["information"])
+    information_button = KeyboardButton(BUTTONS["information"], url=MESSAGES["inform_url"])
     if is_moderator:
         moderator_button = KeyboardButton(BUTTONS["moderate"])
         markup.add(

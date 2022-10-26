@@ -4,7 +4,8 @@ start_message = (
 
 main_menu_massage = "📌 Главное меню 📌"
 
-information_message = "Вся информация о боте доступна в телеграм канале: https://t.me/+jIRlpTHZFNcyODhi"
+inform_url = "https://t.me/project_store_guide"
+information_message = "Можно ознакомиться с информацией о боте по ссылке:"
 
 sell_menu_message = "🗄 Мои предложения 🗄"
 put_up_for_sale_massage = "🖊Заполните анкету🖊"
@@ -108,8 +109,13 @@ already_in_moderation_message = "Ваш проект находится на м�
 vip_project = "VIP 👑"
 regular_project = "Обычный 🗿"
 
+change_price_message = price_question
+price_changing_success_message = "Цена проекта успешно изменена!"
+price_changing_confirm_message = "Вы уверены, что хотите изменить цену?"
+
 MESSAGES = {
     "start": start_message,
+    "inform_url": inform_url,
     "information": information_message,
     "sell_menu": sell_menu_message,
     "put_up_for_sale": put_up_for_sale_massage,
@@ -174,4 +180,7 @@ MESSAGES = {
     "already_in_moderation": already_in_moderation_message,
     "vip_project": vip_project,
     "regular_project": regular_project,
+    "change_price": change_price_message,
+    "price_changing_success": price_changing_success_message,
+    "price_changing_confirm": price_changing_confirm_message,
 }

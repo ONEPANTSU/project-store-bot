@@ -3,7 +3,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from handlers.seller.instruments.seller_callbacks import (
     delete_project_callback,
     my_projects_callback,
-    vip_project_callback,
+    vip_project_callback, price_changing_callback,
 )
 from texts.buttons import BUTTONS
 
@@ -30,9 +30,11 @@ def get_my_projects_keyboard(
             page_num_button,
         )
     else:
+        price_changing_button = create_price_changing_button(page, project_list, is_moderator)
         return create_my_vip_projects_keyboard(
             back_button,
             delete_button,
+            price_changing_button,
             has_next_page,
             next_button,
             page,
@@ -57,11 +59,12 @@ def create_my_regular_projects_keyboard(
 
 
 def create_my_vip_projects_keyboard(
-    back_button, delete_button, has_next_page, next_button, page, page_num_button
+    back_button, delete_button, price_changing_button, has_next_page, next_button, page, page_num_button
 ):
     keyboard = InlineKeyboardMarkup(row_width=2)
     keyboard.row(page_num_button)
     keyboard.row(delete_button)
+    keyboard.row(price_changing_button)
     return add_page_buttons(has_next_page, keyboard, back_button, next_button, page)
 
 
@@ -107,6 +110,15 @@ def create_vip_button(page, project_list, is_moderator):
     return InlineKeyboardButton(
         text=BUTTONS["vip_project"],
         callback_data=vip_project_callback.new(
+            id=project_list[page].id, page=page, is_moderator=is_moderator
+        ),
+    )
+
+
+def create_price_changing_button(page, project_list, is_moderator):
+    return InlineKeyboardButton(
+        text=BUTTONS["price_changing_project"],
+        callback_data=price_changing_callback.new(
             id=project_list[page].id, page=page, is_moderator=is_moderator
         ),
     )

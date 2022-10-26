@@ -13,19 +13,20 @@ from handlers.seller.inner_functions.seller_carousel_pages import (
 )
 from handlers.seller.inner_functions.seller_keyboard_markups import (
     get_main_sell_keyboard,
-    get_project_confirmation_menu_keyboard,
+    get_project_confirmation_menu_keyboard, get_back_menu_keyboard,
 )
 from handlers.seller.instruments.seller_callbacks import (
     delete_project_callback,
     my_projects_callback,
-    vip_project_callback,
+    vip_project_callback, price_changing_callback,
 )
 from handlers.seller.instruments.seller_dicts import (
     delete_project_dict,
     is_moderator_dict,
-    vip_project_dict,
+    vip_project_dict, price_changing_project_dict,
 )
 from states import DeleteProjectStates
+from states.price_changing_states import PriceChangingStates
 from texts.buttons import BUTTONS
 from texts.commands import COMMANDS
 from texts.invoice_payload import INVOICE_PAYLOAD
@@ -69,6 +70,67 @@ async def vip_project_handler(query: CallbackQuery, callback_data: dict):
         start_parameter="example",
         payload=INVOICE_PAYLOAD["vip"],
     )
+
+
+async def price_changing_handler(query: CallbackQuery, callback_data: dict):
+    project = Project()
+    project.set_params_by_id(callback_data.get("id"))
+    price_changing_project_dict[query.message.chat.id] = project
+    await query.message.answer(
+        text=MESSAGES["change_price"], reply_markup=get_back_menu_keyboard()
+    )
+    await PriceChangingStates.price.set()
+
+
+async def price_changing_state(message: Message, state: FSMContext):
+    await state.update_data(seller=message.from_user.username)
+    answer = message.text
+    if answer == BUTTONS["back_to_sell_menu"]:
+        await my_project_index_handler(message)
+        price_changing_project_dict.pop(message.chat.id)
+        await state.finish()
+    else:
+        if not answer.isdigit():
+            await message.answer(
+                text=MESSAGES["price_check"]
+            )
+            await PriceChangingStates.price.set()
+        else:
+            await state.update_data(price=answer)
+            price_changing_project_dict[message.chat.id].price = answer
+            await message.answer(
+                text=MESSAGES["price_changing_confirm"],
+                reply_markup=get_project_confirmation_menu_keyboard(back_button=False)
+            )
+            await PriceChangingStates.confirm.set()
+
+
+async def price_changing_confirm_state(message: Message, state: FSMContext):
+    answer = message.text
+
+    if answer == BUTTONS["cancellation"]:
+        await my_project_index_handler(message)
+        price_changing_project_dict.pop(message.chat.id)
+        await state.finish()
+
+    elif answer == BUTTONS["confirm"]:
+        price_changing_project_dict[message.chat.id].save_changes_to_existing_project()
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=MESSAGES["price_changing_success"]
+        )
+        await my_project_index_handler(message)
+        price_changing_project_dict.pop(message.chat.id)
+        await state.finish()
+
+    else:
+        await message.answer(
+            text=MESSAGES["command_error"],
+            reply_markup=get_project_confirmation_menu_keyboard(back_button=False)
+        )
+        await PriceChangingStates.confirm.set()
+
+
 
 
 async def delete_project_handler(query: CallbackQuery, callback_data: dict):
@@ -166,6 +228,15 @@ def register_my_projects_handlers(dp: Dispatcher):
     dp.register_callback_query_handler(
         vip_project_handler, vip_project_callback.filter()
     )
+    dp.register_callback_query_handler(
+        price_changing_handler, price_changing_callback.filter()
+    )
     dp.register_message_handler(
         delete_confirm_handler, state=DeleteProjectStates.confirm
+    )
+    dp.register_message_handler(
+        price_changing_state, state=PriceChangingStates.price
+    )
+    dp.register_message_handler(
+        price_changing_confirm_state, state=PriceChangingStates.confirm
     )
