@@ -1,0 +1,136 @@
+from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
+
+from data_base.db_functions import get_project_list_by_filter, get_guarantee_name
+from handlers.buyer.buy_callbacks import buy_project_callback, themes_callback
+from texts.buttons import BUTTONS
+from texts.messages import MESSAGES
+from useful.instruments import bot, db_manager
+
+
+async def show_main_buy_keyboard(message: Message):
+    await buy_project_index(
+        chat_id=message.chat.id, theme_id="None", price_from="None", price_up_to="None"
+    )
+    await message.answer(text=MESSAGES["buy_menu"], reply_markup=buy_menu())
+
+
+def buy_menu():
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    chose_search_params = KeyboardButton(BUTTONS["chose_search_params"])
+    back_button = KeyboardButton(BUTTONS["back"])
+    markup.add(chose_search_params, back_button)
+    return markup
+
+
+async def buy_project_index(chat_id, theme_id, price_from, price_up_to):
+    project_list = get_project_list_by_filter(
+        theme_id=theme_id, price_from=price_from, price_up_to=price_up_to
+    )
+    if len(project_list) != 0:
+        project_data = project_list[0]
+        project_info = get_project_info(project_data=project_data)
+        keyboard = get_buy_projects_price_keyboard(
+            project_list=project_list,
+            theme_id=theme_id,
+            price_from=price_from,
+            price_up_to=price_up_to,
+        )
+        await bot.send_message(
+            chat_id=chat_id,
+            text=project_info,
+            parse_mode="HTML",
+            reply_markup=keyboard,
+        )
+    else:
+        await bot.send_message(chat_id=chat_id, text=MESSAGES["list_is_empty"])
+
+
+def chose_themes_keyboard(price_from="None", price_up_to="None"):
+    # С помощью функции get_all_themes() присваиваем в themes - словарь с темами и их айди
+    themes = db_manager.get_filled_themes()
+    themes_keyboard = InlineKeyboardMarkup(row_width=2)
+    # Заполнение списка тем из словаря с базы данных
+    for theme_key in themes.keys():
+        themes_keyboard.add(
+            InlineKeyboardButton(
+                text=themes[theme_key],
+                callback_data=themes_callback.new(
+                    theme_id="{}".format(theme_key),
+                    price_from=price_from,
+                    price_up_to=price_up_to,
+                ),
+            )
+        )
+    return themes_keyboard
+
+
+# Клавиатура для карусели по листу проектов
+def get_buy_projects_price_keyboard(
+    project_list, theme_id, price_from, price_up_to, page: int = 0
+) -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardMarkup(row_width=2)
+
+    has_next_page = len(project_list) > page + 1
+
+    page_num_button = InlineKeyboardButton(
+        text=f"{page + 1} / {len(project_list)}", callback_data="dont_click_me"
+    )
+
+    back_button = InlineKeyboardButton(
+        text=BUTTONS["prev"],
+        callback_data=buy_project_callback.new(
+            page=page - 1,
+            theme_id=theme_id,
+            price_from=price_from,
+            price_up_to=price_up_to,
+        ),
+    )
+
+    next_button = InlineKeyboardButton(
+        text=BUTTONS["next"],
+        callback_data=buy_project_callback.new(
+            page=page + 1,
+            theme_id=theme_id,
+            price_from=price_from,
+            price_up_to=price_up_to,
+        ),
+    )
+
+    keyboard.row(page_num_button)
+
+    if page != 0:
+        if has_next_page:
+            keyboard.row(back_button, next_button)
+        else:
+            keyboard.row(back_button)
+    elif has_next_page:
+        keyboard.row(next_button)
+
+    return keyboard
+
+
+def get_project_info(project_data):  # Page: 0
+    guarantee = get_guarantee_name()
+    if project_data.status_id == 1:
+        data_status = MESSAGES["vip_project"]
+    else:
+        data_status = MESSAGES["regular_project"]
+    themes_str = ""
+    for theme_name in project_data.themes_names:
+        themes_str += "#" + str(theme_name) + " "
+    project_info = MESSAGES["show_project"].format(
+        link=project_data.link,
+        status=data_status,
+        name=project_data.name,
+        theme=themes_str,
+        subs=project_data.subscribers,
+        income=project_data.income,
+        comm=project_data.comment,
+        seller=project_data.seller_name,
+        price=project_data.price,
+        guarantee=guarantee,
+    )
+    return project_info
+
+
+

@@ -3,12 +3,12 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, LabeledPrice, Message
 
 from config import PAYMENTS_TOKEN
-from data_base.db_functions import get_projects_list_by_seller_name, get_vip_sell_price
+from data_base.db_functions import get_vip_sell_price
 from data_base.project import Project
-from handlers.main_handlers import get_main_keyboard
+from handlers.main_functions import get_main_keyboard
+from handlers.seller.handlers.my_projects_functions import my_project_index_handler
 from handlers.seller.inner_functions.seller_carousel_pages import (
     get_delete_project_dict_info,
-    my_project_index,
     refresh_pages,
 )
 from handlers.seller.inner_functions.seller_keyboard_markups import (
@@ -31,6 +31,7 @@ from texts.buttons import BUTTONS
 from texts.commands import COMMANDS
 from texts.invoice_payload import INVOICE_PAYLOAD
 from texts.messages import MESSAGES
+from useful.commands_handler import commands_handler
 from useful.instruments import bot, db_manager
 
 
@@ -40,13 +41,6 @@ async def my_projects_by_button(message: Message):
 
 async def my_projects_by_command(message: Message):
     await my_project_index_handler(message)
-
-
-async def my_project_index_handler(message: Message):
-    project_list = get_projects_list_by_seller_name(message.from_user.username)
-    await my_project_index(
-        message=message, project_list=project_list, is_moderator=False
-    )
 
 
 async def my_project_page_handler(query: CallbackQuery, callback_data: dict):
@@ -85,7 +79,10 @@ async def price_changing_handler(query: CallbackQuery, callback_data: dict):
 async def price_changing_state(message: Message, state: FSMContext):
     await state.update_data(seller=message.from_user.username)
     answer = message.text
-    if answer == BUTTONS["back_to_sell_menu"]:
+    if answer.lstrip("/") in COMMANDS.values():
+        await state.finish()
+        await commands_handler(message)
+    elif answer == BUTTONS["back_to_sell_menu"]:
         await my_project_index_handler(message)
         price_changing_project_dict.pop(message.chat.id)
         await state.finish()
@@ -107,8 +104,10 @@ async def price_changing_state(message: Message, state: FSMContext):
 
 async def price_changing_confirm_state(message: Message, state: FSMContext):
     answer = message.text
-
-    if answer == BUTTONS["cancellation"]:
+    if answer.lstrip("/") in COMMANDS.values():
+        await state.finish()
+        await commands_handler(message)
+    elif answer == BUTTONS["cancellation"]:
         await my_project_index_handler(message)
         price_changing_project_dict.pop(message.chat.id)
         await state.finish()
@@ -129,8 +128,6 @@ async def price_changing_confirm_state(message: Message, state: FSMContext):
             reply_markup=get_project_confirmation_menu_keyboard(back_button=False)
         )
         await PriceChangingStates.confirm.set()
-
-
 
 
 async def delete_project_handler(query: CallbackQuery, callback_data: dict):
@@ -155,8 +152,12 @@ async def delete_project_handler(query: CallbackQuery, callback_data: dict):
 
 async def delete_confirm_handler(message: Message, state: FSMContext):
     answer = message.text
-    await state.update_data(confitrm=answer)
-    await check_delete_confirm(answer, message, state)
+    if answer.lstrip("/") in COMMANDS.values():
+        await state.finish()
+        await commands_handler(message)
+    else:
+        await state.update_data(confitrm=answer)
+        await check_delete_confirm(answer, message, state)
 
 
 async def check_delete_confirm(answer, message, state):
