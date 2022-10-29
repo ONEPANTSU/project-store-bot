@@ -83,6 +83,8 @@ class DBManager:
             + str(project.vip_ending)
             + "', '"
             + project.link
+            + "', '"
+            + str(project.is_verified)
             + "'"
         )
 
@@ -510,6 +512,7 @@ class DBManager:
             str(project.comment),
             str(project.vip_ending),
             str(project.link),
+            str(project.is_verified),
             str(project_id),
         )
         self.update_project_themes(project_id, project.themes_id)

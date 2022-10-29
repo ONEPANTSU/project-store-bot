@@ -1,3 +1,5 @@
+from texts.project_info import PROJECT_INFO
+
 start_message = (
     "Здравствуйте, {0.first_name}! Я тестовый бот для продажи и покупки проектов!"
 )
@@ -40,9 +42,7 @@ status_yes_question = "Ура, теперь вы счталивый облада
 confirm_question = (
     "Данные введены верно? Если да, то перейдите к оплате. "
     "При нажатии кнопки 'Отмена' Вы вернётесь в главное меню.\n\n"
-    '<b>Название:</b> <a href = "{link}"> {name}</a>\n<b>Статус:</b> {status}\n<b>Тематика:</b> {themes}\n'
-    "<b>Подписчиков:</b> {subs}\n<b>Доход в месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n"
-    "\n<b>Продавец:</b> @{seller}\n\n<b>Цена:</b> {price}"
+    + PROJECT_INFO['sell']
 )
 payment_message = "Начинается процесс оплаты"
 
@@ -80,12 +80,14 @@ sell_payment_title = "Оплата"
 sell_payment_description = "Оплата за размещение объявления"
 successful_payment_message = "Оплата произведена успешно!"
 
-show_project_message = (
-    '<b>Название:</b> <a href = "{link}"> {name}</a>\n<b>Статус:</b> {status}\n'
-    "<b>Тематика:</b> {theme}\n<b>Подписчиков:</b> {subs}\n"
-    "<b>Доход в месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> @{"
-    "seller}\n\n<b>Цена:</b> {price}\n\nГарантируем 100% безопасность при сделках в "
-    "Telegram.\n<b>Гарант:</b> {guarantee} "
+show_my_project_message = (
+    PROJECT_INFO['my']
+)
+show_verified_project_message = (
+    PROJECT_INFO['buy_verified']
+)
+show_not_verified_project_message = (
+    PROJECT_INFO['buy_not_verified']
 )
 deleted_project_message = "Объявление удалено!"
 not_deleted_project_message = "Объявление не удалено"
@@ -97,21 +99,22 @@ command_error_message = "Сообщение не распознано ☹️"
 
 moderation_message = "Ожидайте. Ваша заявка на модерации!"
 moderator_confirm_message = (
-    "Новая заявка на размещение объявления ждёт подтверждения!\n\n"
-    '<b>Название:</b> <a href = "{link}">  {name}</a>\n<b>Статус:</b> {status}\n<b>Тематика:</b> {themes}\n'
-    "<b>Подписчиков:</b> {subs}\n<b>Доход в месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> "
-    "@{seller}\n\n<b>Цена:</b> {price}"
+    "Новая заявка на размещение объявления ждёт подтверждения!\n\n" + PROJECT_INFO['sell']
 )
 rejected_project_message = "К сожалению, ваш проект '%s' не прошёл модерацию! ☹"
 empty_username_message = "У вас не задано имя пользователя в телеграме! Измените настройки и возвращайтесь! 😊"
 already_in_moderation_message = "Ваш проект находится на модерации! Ожидайте ответа!"
 
-vip_project = "VIP 👑"
-regular_project = "Обычный 🗿"
-
 change_price_message = price_question
 price_changing_success_message = "Цена проекта успешно изменена!"
 price_changing_confirm_message = "Вы уверены, что хотите изменить цену?"
+
+vip_project = "Premium 👑"
+regular_project = "Обычное 🗿"
+
+verified = "Проверено ✅"
+not_verified = "Идёт проверка..."
+
 
 MESSAGES = {
     "start": start_message,
@@ -155,7 +158,9 @@ MESSAGES = {
     "sell_payment_title": sell_payment_title,
     "sell_payment_description": sell_payment_description,
     "successful_payment": successful_payment_message,
-    "show_project": show_project_message,
+    "show_my_project": show_my_project_message,
+    "show_verified_project": show_verified_project_message,
+    "show_not_verified_project": show_not_verified_project_message,
     "deleted_project": deleted_project_message,
     "not_deleted_project": not_deleted_project_message,
     "confirm_deleting": confirm_deleting_message,
@@ -180,6 +185,8 @@ MESSAGES = {
     "already_in_moderation": already_in_moderation_message,
     "vip_project": vip_project,
     "regular_project": regular_project,
+    "verified": verified,
+    "not_verified": not_verified,
     "change_price": change_price_message,
     "price_changing_success": price_changing_success_message,
     "price_changing_confirm": price_changing_confirm_message,

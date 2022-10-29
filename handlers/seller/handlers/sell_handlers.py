@@ -570,6 +570,7 @@ async def successful_payment(message: Message):
         vip_project_dict.pop(message.chat.id)
         project.status_id = 1
         project.status = "VIP"
+        project.is_verified = 1
         project.vip_ending = datetime.now() + timedelta(days=7)
         project.save_changes_to_existing_project()
 
