@@ -29,6 +29,7 @@ class Project:
         self.comment = None
         self.vip_ending = None
         self.link = None
+        self.is_verified = 0
 
     def set_params(
         self,
@@ -43,6 +44,7 @@ class Project:
         comment,
         vip_ending,
         link,
+        is_verified
     ):
         """
         This function sets values of all params to the Project's object.
@@ -80,6 +82,9 @@ class Project:
 
         :param link: link to project
         :type link: :obj: `str`
+
+        :param is_verified: 1 - YES, 0 - NO
+        :type is_verified: :obj: `int`
         """
 
         self.params_are_not_none = True
@@ -96,6 +101,7 @@ class Project:
         self._set_seller_info(seller_name, seller_id)
         self.vip_ending = vip_ending  # дата окончания вип-подписки
         self.link = link
+        self.is_verified = is_verified
 
     def _set_seller_info(self, seller_name, seller_id):
         if seller_name is not None:
@@ -148,6 +154,7 @@ class Project:
             themes_id=themes_id,
             vip_ending=project_sql_row[8],
             link=project_sql_row[9],
+            is_verified=project_sql_row[10]
         )
 
     def set_id(self, project_id):
@@ -195,6 +202,7 @@ class Project:
             and self.comment is not None
             and self.vip_ending is not None
             and self.link is not None
+            and self.is_verified is not None
         ):
             self.params_are_not_none = True
         else:

@@ -131,8 +131,6 @@ async def price_changing_confirm_state(message: Message, state: FSMContext):
         await PriceChangingStates.confirm.set()
 
 
-
-
 async def delete_project_handler(query: CallbackQuery, callback_data: dict):
     await bot.send_message(
         chat_id=query.message.chat.id,
