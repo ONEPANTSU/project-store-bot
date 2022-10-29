@@ -22,6 +22,7 @@ from data_base.db_functions import (
     get_regular_sell_price,
     get_vip_sell_price,
 )
+from data_base.discount import Discount
 from data_base.project import Project
 from handlers.main_functions import get_main_keyboard
 from handlers.seller.inner_functions.sell_functions import put_up_for_sale
@@ -35,6 +36,7 @@ from handlers.seller.instruments.seller_callbacks import moderators_confirm_call
 from handlers.seller.instruments.seller_dicts import vip_project_dict, projects_in_moderation, moderation_dict, \
     new_projects_dict
 from states import SellProjectStates
+from states.discount_states import DiscountStates
 from texts.buttons import BUTTONS
 from texts.commands import COMMANDS
 from texts.invoice_payload import INVOICE_PAYLOAD
@@ -491,24 +493,11 @@ async def moderators_confirm(query: CallbackQuery, callback_data: dict):
     need_payment = get_need_payment()
     projects_in_moderation.remove(user_id)
     if need_payment == 1:
-        price_amount = 0
-        if new_project.status_id == 0:
-            price_amount = get_regular_sell_price()
-        elif new_project.status_id == 1:
-            price_amount = get_regular_sell_price() + get_vip_sell_price()
-        prices = [LabeledPrice(label=MESSAGES["sell_payment"], amount=price_amount)]
         new_projects_dict[new_project.seller_name] = new_project
-        await bot.send_invoice(
-            user_id,
-            title=MESSAGES["sell_payment_title"],
-            description=MESSAGES["sell_payment_description"],
-            provider_token=PAYMENTS_TOKEN,
-            currency="rub",
-            is_flexible=False,
-            prices=prices,
-            start_parameter="example",
-            payload=INVOICE_PAYLOAD["sell"],
-        )
+        await bot.send_message(chat_id=user_id,
+                               text=MESSAGES["need_promo_code"],
+                               reply_markup=yes_or_no_keyboard())
+        await DiscountStates.is_need.set()
     elif need_payment == 0:
         new_project.save_new_project()
         is_moderator = False
@@ -519,6 +508,68 @@ async def moderators_confirm(query: CallbackQuery, callback_data: dict):
             MESSAGES["save_project"],
             reply_markup=get_main_keyboard(is_moderator=is_moderator),
         )
+
+
+async def need_promo_state(message: Message, state: FSMContext):
+    answer = message.text
+    if answer == BUTTONS["yes"]:
+        await bot.send_message(chat_id=message.chat.id,
+                               text=MESSAGES["input_promo_code"],
+                               reply_markup=ReplyKeyboardRemove())
+        await DiscountStates.code.set()
+    else:
+        project = new_projects_dict[message.chat.username]
+        price_amount = 0
+        if project.status_id == 0:
+            price_amount = get_regular_sell_price()
+        elif project.status_id == 1:
+            price_amount = get_regular_sell_price() + get_vip_sell_price()
+        prices = [LabeledPrice(label=MESSAGES["sell_payment"], amount=price_amount)]
+        await bot.send_invoice(
+            message.chat.id,
+            title=MESSAGES["sell_payment_title"],
+            description=MESSAGES["sell_payment_description"],
+            provider_token=PAYMENTS_TOKEN,
+            currency="rub",
+            is_flexible=False,
+            prices=prices,
+            start_parameter="example",
+            payload=INVOICE_PAYLOAD["sell"],
+        )
+        await state.finish()
+
+
+### COMMANDS CHECKING
+
+async def input_promo_state(message: Message, state: FSMContext):
+    project = new_projects_dict[message.chat.username]
+    price_amount = 0
+    if project.status_id == 0:
+        price_amount = get_regular_sell_price()
+    elif project.status_id == 1:
+        price_amount = get_regular_sell_price() + get_vip_sell_price()
+    discounted_price = Discount().use_discount(message.text, price_amount)
+    if discounted_price < price_amount:
+
+        await state.finish()
+        price_amount = discounted_price
+        prices = [LabeledPrice(label=MESSAGES["sell_payment"], amount=price_amount)]
+        await bot.send_invoice(
+            message.chat.id,
+            title=MESSAGES["sell_payment_title"],
+            description=MESSAGES["sell_payment_description"],
+            provider_token=PAYMENTS_TOKEN,
+            currency="rub",
+            is_flexible=False,
+            prices=prices,
+            start_parameter="example",
+            payload=INVOICE_PAYLOAD["sell"],
+        )
+    else:
+        await bot.send_message(chat_id=message.chat.id,
+                               text=MESSAGES["wrong_promo_code"],
+                               reply_markup=yes_or_no_keyboard())
+        await DiscountStates.is_need.set()
 
 
 async def moderators_reject(query: CallbackQuery, callback_data: dict):
@@ -617,3 +668,5 @@ def register_sell_handlers(dp: Dispatcher):
     dp.register_callback_query_handler(
         moderators_reject, moderators_reject_callback.filter()
     )
+    dp.register_message_handler(need_promo_state, state=DiscountStates.is_need)
+    dp.register_message_handler(input_promo_state, state=DiscountStates.code)

@@ -115,6 +115,9 @@ regular_project = "Обычное 🗿"
 verified = "Проверено ✅"
 not_verified = "Идёт проверка..."
 
+need_promo_code_message = "Воспользоваться промокодом?"
+input_promo_code_message = "Введите промокод:"
+wrong_promo_code_message = "Неверный промокод! Попробовать ещё раз?"
 
 MESSAGES = {
     "start": start_message,
@@ -183,11 +186,18 @@ MESSAGES = {
     "rejected_project": rejected_project_message,
     "empty_username": empty_username_message,
     "already_in_moderation": already_in_moderation_message,
+
     "vip_project": vip_project,
     "regular_project": regular_project,
+
     "verified": verified,
     "not_verified": not_verified,
+
     "change_price": change_price_message,
     "price_changing_success": price_changing_success_message,
     "price_changing_confirm": price_changing_confirm_message,
+
+    "need_promo_code": need_promo_code_message,
+    "input_promo_code": input_promo_code_message,
+    "wrong_promo_code": wrong_promo_code_message,
 }

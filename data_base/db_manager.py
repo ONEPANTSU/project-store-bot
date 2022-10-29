@@ -483,7 +483,7 @@ class DBManager:
 
     def get_settings_info(self):
         """
-        This function creates SELECT query for getting all settings info from of `settings`.
+        This function creates SELECT query for getting all settings info from `settings`.
 
         :return: list of guarantee's name, channel's name of guarantee's reviews and need_payment (0=False, 1=True).
         :rtype: :list:`str`
@@ -491,6 +491,17 @@ class DBManager:
         get_settings_query = QUERIES["select_all_settings_info"]
         settings_info = self.execute_read_query(self.connection, get_settings_query)[0]
         return settings_info
+
+    def get_discounts(self):
+        """
+        This function creates SELECT query for getting all discounts info from `discount`.
+
+        :return: code, type (0 - PER CENT, 1 - RUBS), discount
+        :rtype: :list:list:`str`
+        """
+        get_settings_query = QUERIES["select_discounts"]
+        discounts = self.execute_read_query(self.connection, get_settings_query)
+        return discounts
 
     def update_project(self, project_id, project):
         """
