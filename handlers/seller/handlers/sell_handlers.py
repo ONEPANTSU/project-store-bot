@@ -617,8 +617,8 @@ async def successful_payment(message: Message):
         new_projects_dict.pop(message.from_user.username)
 
     elif message.successful_payment.invoice_payload == INVOICE_PAYLOAD["vip"]:
-        project = vip_project_dict[message.chat.id]
-        vip_project_dict.pop(message.chat.id)
+        project = vip_project_dict[message.chat.username]
+        vip_project_dict.pop(message.chat.username)
         project.status_id = 1
         project.status = "VIP"
         project.is_verified = 1
