@@ -1,4 +1,4 @@
-project_name = '<b>Название:</b> <a href = "{link}">  {name}</a>'
+project_name = '<b>Название:</b> <a href = "{link}">{name}</a>'
 project_vip = '<b>Объявление:</b> {status}'
 project_verified = '<b>Статус:</b> {verified}'
 project_themes = '<b>Тематика:</b> {themes}'
@@ -17,7 +17,7 @@ sell_project_info = (
         project_vip + '\n' +
         project_themes + '\n' +
         project_subs + '\n' +
-        project_income + '\n' +
+        project_income + '\n\n' +
         project_comment + '\n\n' +
         project_seller + '\n\n' +
         project_price
@@ -28,7 +28,7 @@ my_project_info = (
         project_vip + '\n' +
         project_themes + '\n' +
         project_subs + '\n' +
-        project_income + '\n' +
+        project_income + '\n\n' +
         project_comment + '\n\n' +
         project_verified + '\n\n' +
         project_seller + '\n\n' +
@@ -39,7 +39,7 @@ buy_verified_project_info = (
         project_name + '\n\n' +
         project_themes + '\n' +
         project_subs + '\n' +
-        project_income + '\n' +
+        project_income + '\n\n' +
         project_comment + '\n\n' +
         project_verified + '\n\n' +
         project_seller + '\n\n' +
@@ -51,7 +51,7 @@ buy_not_verified_project_info = (
         project_name + '\n\n' +
         project_themes + '\n' +
         project_subs + '\n' +
-        project_income + '\n' +
+        project_income + '\n\n' +
         project_comment + '\n\n' +
         project_seller + '\n\n' +
         project_price + '\n\n' +

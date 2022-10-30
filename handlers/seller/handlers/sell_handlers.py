@@ -484,6 +484,7 @@ async def moderators_confirm(query: CallbackQuery, callback_data: dict, state: F
     new_project.name = data["project_name"]
     new_project.seller_name = data["seller"]
     new_project.status_id = data["status"]
+    new_project.is_verified = new_project.status_id
     new_project.price = data["price"]
     new_project.subscribers = data["subscribers"]
     new_project.themes_names = data["themes"]
