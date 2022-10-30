@@ -537,9 +537,9 @@ async def need_promo_state(message: Message, state: FSMContext):
             payload=INVOICE_PAYLOAD["sell"],
         )
         await state.finish()
+        if answer.lstrip("/") in COMMANDS.values():
+            await commands_handler(message)
 
-
-### COMMANDS CHECKING
 
 async def input_promo_state(message: Message, state: FSMContext):
     project = new_projects_dict[message.chat.username]
@@ -548,6 +548,9 @@ async def input_promo_state(message: Message, state: FSMContext):
         price_amount = get_regular_sell_price()
     elif project.status_id == 1:
         price_amount = get_regular_sell_price() + get_vip_sell_price()
+    if message.text.lstrip("/") in COMMANDS.values():
+        await state.finish()
+        await commands_handler(message)
     discounted_price = Discount().use_discount(message.text, price_amount)
     if discounted_price < price_amount:
 
