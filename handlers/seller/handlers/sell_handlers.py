@@ -501,7 +501,6 @@ async def moderators_confirm(query: CallbackQuery, callback_data: dict, state: F
         state.chat = user_id
         state.user = user_id
         await state.set_state(DiscountStates.is_need)
-        #await DiscountStates.is_need.set()
     elif need_payment == 0:
         new_project.save_new_project()
         is_moderator = False
@@ -552,9 +551,6 @@ async def input_promo_state(message: Message, state: FSMContext):
         price_amount = get_regular_sell_price()
     elif project.status_id == 1:
         price_amount = get_regular_sell_price() + get_vip_sell_price()
-    if message.text.lstrip("/") in COMMANDS.values():
-        await state.finish()
-        await commands_handler(message)
     discounted_price = Discount().use_discount(message.text, price_amount)
     if discounted_price < price_amount:
 

@@ -27,7 +27,7 @@ cancellation_button = "Отмена"
 delete_button = "Удалить объявление"
 prev_button = "⏪ Назад"
 next_button = "Вперёд ⏩"
-vip_project_button = "Установить VIP статус 👑"
+vip_project_button = "Установить Premium статус 👑"
 price_changing_project_button = "Изменить стоимость проекта 💰"
 
 BUTTONS = {
