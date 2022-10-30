@@ -474,7 +474,7 @@ async def moderators_confirm_state(message: Message, state: FSMContext):
         await state.finish()
 
 
-async def moderators_confirm(query: CallbackQuery, callback_data: dict):
+async def moderators_confirm(query: CallbackQuery, callback_data: dict, state: FSMContext):
     await query.message.delete()
     user_id = int(callback_data.get("user_id"))
     data_id = callback_data.get("project_data_id")
@@ -494,10 +494,14 @@ async def moderators_confirm(query: CallbackQuery, callback_data: dict):
     projects_in_moderation.remove(user_id)
     if need_payment == 1:
         new_projects_dict[new_project.seller_name] = new_project
+
         await bot.send_message(chat_id=user_id,
                                text=MESSAGES["need_promo_code"],
                                reply_markup=yes_or_no_keyboard())
-        await DiscountStates.is_need.set()
+        state.chat = user_id
+        state.user = user_id
+        await state.set_state(DiscountStates.is_need)
+        #await DiscountStates.is_need.set()
     elif need_payment == 0:
         new_project.save_new_project()
         is_moderator = False
