@@ -1,12 +1,14 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery, LabeledPrice, Message
+from aiogram.types import CallbackQuery, LabeledPrice, Message, ReplyKeyboardRemove
 
 from config import PAYMENTS_TOKEN
-from data_base.db_functions import get_vip_sell_price
+from data_base.db_functions import get_vip_sell_price, get_regular_sell_price
+from data_base.discount import Discount
 from data_base.project import Project
 from handlers.main_functions import get_main_keyboard
 from handlers.seller.handlers.my_projects_functions import my_project_index_handler
+from handlers.seller.handlers.sell_handlers import yes_or_no_keyboard
 from handlers.seller.inner_functions.seller_carousel_pages import (
     get_delete_project_dict_info,
     refresh_pages,
@@ -25,7 +27,7 @@ from handlers.seller.instruments.seller_dicts import (
     is_moderator_dict,
     vip_project_dict, price_changing_project_dict,
 )
-from states import DeleteProjectStates
+from states import DeleteProjectStates, VipDiscountStates
 from states.price_changing_states import PriceChangingStates
 from texts.buttons import BUTTONS
 from texts.commands import COMMANDS
@@ -47,14 +49,91 @@ async def my_project_page_handler(query: CallbackQuery, callback_data: dict):
     await refresh_pages(query=query, callback_data=callback_data)
 
 
-async def vip_project_handler(query: CallbackQuery, callback_data: dict):
+async def vip_project_handler(query: CallbackQuery, callback_data: dict, state: FSMContext):
+    await bot.send_message(chat_id=query.message.chat.id,
+                           text=MESSAGES["vip_need_promo_code"],
+                           reply_markup=yes_or_no_keyboard())
+    await state.update_data(project_id=callback_data.get("id"), chat_id=query.message.chat.id)
+    await state.set_state(VipDiscountStates.is_need)
+
+
+async def vip_need_promo_state(message: Message, state: FSMContext):
+    answer = message.text
+    if answer == BUTTONS["yes"]:
+        await bot.send_message(chat_id=message.chat.id,
+                               text=MESSAGES["input_promo_code"],
+                               reply_markup=ReplyKeyboardRemove())
+        await VipDiscountStates.code.set()
+    else:
+        data = await state.get_data()
+        project_id = data["project_id"]
+        project = Project()
+        project.set_params_by_id(project_id)
+        price_amount = 0
+        if project.status_id == 0:
+            price_amount = get_regular_sell_price()
+        elif project.status_id == 1:
+            price_amount = get_regular_sell_price() + get_vip_sell_price()
+        prices = [LabeledPrice(label=MESSAGES["sell_payment"], amount=price_amount)]
+        await bot.send_invoice(
+            message.chat.id,
+            title=MESSAGES["sell_payment_title"],
+            description=MESSAGES["sell_payment_description"],
+            provider_token=PAYMENTS_TOKEN,
+            currency="rub",
+            is_flexible=False,
+            prices=prices,
+            start_parameter="example",
+            payload=INVOICE_PAYLOAD["sell"],
+        )
+        await state.finish()
+        if answer.lstrip("/") in COMMANDS.values():
+            await commands_handler(message)
+
+
+async def vip_input_promo_state(message: Message, state: FSMContext):
+    data = await state.get_data()
+    chat_id = data["chat_id"]
+    project_id = data["project_id"]
+    project = Project()
+    project.set_params_by_id(project_id)
+    vip_project_dict[chat_id] = project
+    price_amount = 0
+    if project.status_id == 0:
+        price_amount = get_regular_sell_price()
+    elif project.status_id == 1:
+        price_amount = get_regular_sell_price() + get_vip_sell_price()
+    discounted_price = Discount().use_discount(message.text, price_amount)
+    if discounted_price < price_amount:
+        data = await state.get_data()
+        chat_id = data["chat_id"]
+        await state.finish()
+        price_amount = discounted_price
+        prices = [LabeledPrice(label=MESSAGES["sell_payment"], amount=price_amount)]
+        await bot.send_invoice(
+            message.chat.id,
+            title=MESSAGES["sell_payment_title"],
+            description=MESSAGES["sell_payment_description"],
+            provider_token=PAYMENTS_TOKEN,
+            currency="rub",
+            is_flexible=False,
+            prices=prices,
+            start_parameter="example",
+            payload=INVOICE_PAYLOAD["sell"],
+        )
+        await vip_project_payment(chat_id)
+    else:
+        await bot.send_message(chat_id=message.chat.id,
+                               text=MESSAGES["wrong_promo_code"],
+                               reply_markup=yes_or_no_keyboard())
+        await VipDiscountStates.is_need.set()
+
+
+async def vip_project_payment(chat_id):
     price_amount = get_vip_sell_price()
     prices = [LabeledPrice(label=MESSAGES["vip_payment"], amount=price_amount)]
-    project = Project()
-    project.set_params_by_id(callback_data.get("id"))
-    vip_project_dict[query.message.chat.id] = project
     await bot.send_invoice(
-        query.message.chat.id,
+        chat_id,
         title=MESSAGES["sell_payment_title"],
         description=MESSAGES["sell_payment_description"],
         provider_token=PAYMENTS_TOKEN,
@@ -240,4 +319,10 @@ def register_my_projects_handlers(dp: Dispatcher):
     )
     dp.register_message_handler(
         price_changing_confirm_state, state=PriceChangingStates.confirm
+    )
+    dp.register_message_handler(
+        vip_need_promo_state, state=VipDiscountStates.is_need
+    )
+    dp.register_message_handler(
+        vip_input_promo_state, state=VipDiscountStates.code
     )

@@ -74,7 +74,7 @@ error_upto_bigger_then_from_message = (
 list_is_empty_message = "Проектов по вашему запросу не найдено"
 
 
-vip_payment_label = "Установить Premium татус проекту!"
+vip_payment_label = "Установить Premium статус проекту!"
 sell_payment_label = "Разместить объявление!"
 sell_payment_title = "Оплата"
 sell_payment_description = "Оплата за размещение объявления"
@@ -118,6 +118,8 @@ not_verified = "Идёт проверка..."
 need_promo_code_message = "Ваш проект прошёл проверку! Воспользоваться промокодом?"
 input_promo_code_message = "Введите промокод:"
 wrong_promo_code_message = "Неверный промокод! Попробовать ещё раз?"
+
+vip_need_promo_code_message = "Ваш проект прошёл проверку! Воспользоваться промокодом?"
 
 MESSAGES = {
     "start": start_message,
@@ -200,4 +202,5 @@ MESSAGES = {
     "need_promo_code": need_promo_code_message,
     "input_promo_code": input_promo_code_message,
     "wrong_promo_code": wrong_promo_code_message,
+    "vip_need_promo_code": vip_need_promo_code_message,
 }
