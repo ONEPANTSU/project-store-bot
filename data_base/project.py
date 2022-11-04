@@ -44,7 +44,7 @@ class Project:
         comment,
         vip_ending,
         link,
-        is_verified
+        is_verified,
     ):
         """
         This function sets values of all params to the Project's object.
@@ -154,7 +154,7 @@ class Project:
             themes_id=themes_id,
             vip_ending=project_sql_row[8],
             link=project_sql_row[9],
-            is_verified=project_sql_row[10]
+            is_verified=project_sql_row[10],
         )
 
     def set_id(self, project_id):

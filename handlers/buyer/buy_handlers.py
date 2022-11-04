@@ -1,16 +1,17 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import (
-    CallbackQuery,
-    KeyboardButton,
-    Message,
-    ReplyKeyboardMarkup,
-)
+from aiogram.types import CallbackQuery, KeyboardButton, Message, ReplyKeyboardMarkup
 
 from data_base.db_functions import get_project_list_by_filter
-from handlers.buyer.buy_functions import show_main_buy_keyboard, buy_project_index, chose_themes_keyboard, \
-    get_buy_projects_price_keyboard, buy_menu, get_project_info
 from handlers.buyer.buy_callbacks import buy_project_callback, themes_callback
+from handlers.buyer.buy_functions import (
+    buy_menu,
+    buy_project_index,
+    chose_themes_keyboard,
+    get_buy_projects_price_keyboard,
+    get_project_info,
+    show_main_buy_keyboard,
+)
 from handlers.main_functions import get_main_keyboard, main_menu
 from states import BuyProjectStates
 from texts.buttons import BUTTONS

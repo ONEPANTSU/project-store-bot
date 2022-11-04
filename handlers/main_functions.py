@@ -1,4 +1,4 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
 from data_base.db_functions import get_moderator_id
 from texts.buttons import BUTTONS
@@ -9,7 +9,9 @@ def get_main_keyboard(is_moderator=False):
     markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     my_projects_button = KeyboardButton(BUTTONS["sell_menu"])
     search_projects_button = KeyboardButton(BUTTONS["buy_menu"])
-    information_button = KeyboardButton(BUTTONS["information"], url=MESSAGES["inform_url"])
+    information_button = KeyboardButton(
+        BUTTONS["information"], url=MESSAGES["inform_url"]
+    )
     if is_moderator:
         moderator_button = KeyboardButton(BUTTONS["moderate"])
         markup.add(

@@ -32,9 +32,16 @@ from handlers.seller.inner_functions.seller_keyboard_markups import (
     get_main_sell_keyboard,
     get_project_confirmation_menu_keyboard,
 )
-from handlers.seller.instruments.seller_callbacks import moderators_confirm_callback, moderators_reject_callback
-from handlers.seller.instruments.seller_dicts import vip_project_dict, projects_in_moderation, moderation_dict, \
-    new_projects_dict
+from handlers.seller.instruments.seller_callbacks import (
+    moderators_confirm_callback,
+    moderators_reject_callback,
+)
+from handlers.seller.instruments.seller_dicts import (
+    moderation_dict,
+    new_projects_dict,
+    projects_in_moderation,
+    vip_project_dict,
+)
 from states import SellProjectStates
 from states.discount_states import DiscountStates
 from texts.buttons import BUTTONS
@@ -474,7 +481,9 @@ async def moderators_confirm_state(message: Message, state: FSMContext):
         await state.finish()
 
 
-async def moderators_confirm(query: CallbackQuery, callback_data: dict, state: FSMContext):
+async def moderators_confirm(
+    query: CallbackQuery, callback_data: dict, state: FSMContext
+):
     await query.message.delete()
     user_id = int(callback_data.get("user_id"))
     data_id = callback_data.get("project_data_id")
@@ -496,9 +505,11 @@ async def moderators_confirm(query: CallbackQuery, callback_data: dict, state: F
     if need_payment == 1:
         new_projects_dict[new_project.seller_name] = new_project
 
-        await bot.send_message(chat_id=user_id,
-                               text=MESSAGES["need_promo_code"],
-                               reply_markup=yes_or_no_keyboard())
+        await bot.send_message(
+            chat_id=user_id,
+            text=MESSAGES["need_promo_code"],
+            reply_markup=yes_or_no_keyboard(),
+        )
         state.chat = user_id
         state.user = user_id
         await state.set_state(DiscountStates.is_need)
@@ -517,9 +528,11 @@ async def moderators_confirm(query: CallbackQuery, callback_data: dict, state: F
 async def need_promo_state(message: Message, state: FSMContext):
     answer = message.text
     if answer == BUTTONS["yes"]:
-        await bot.send_message(chat_id=message.chat.id,
-                               text=MESSAGES["input_promo_code"],
-                               reply_markup=ReplyKeyboardRemove())
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=MESSAGES["input_promo_code"],
+            reply_markup=ReplyKeyboardRemove(),
+        )
         await DiscountStates.code.set()
     else:
         project = new_projects_dict[message.chat.username]
@@ -570,9 +583,11 @@ async def input_promo_state(message: Message, state: FSMContext):
             payload=INVOICE_PAYLOAD["sell"],
         )
     else:
-        await bot.send_message(chat_id=message.chat.id,
-                               text=MESSAGES["wrong_promo_code"],
-                               reply_markup=yes_or_no_keyboard())
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=MESSAGES["wrong_promo_code"],
+            reply_markup=yes_or_no_keyboard(),
+        )
         await DiscountStates.is_need.set()
 
 

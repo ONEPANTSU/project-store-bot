@@ -42,7 +42,7 @@ status_yes_question = "Ура, теперь вы счталивый облада
 confirm_question = (
     "Данные введены верно? Если да, то перейдите к оплате. "
     "При нажатии кнопки 'Отмена' Вы вернётесь в главное меню.\n\n"
-    + PROJECT_INFO['sell']
+    + PROJECT_INFO["sell"]
 )
 payment_message = "Начинается процесс оплаты"
 
@@ -80,15 +80,9 @@ sell_payment_title = "Оплата"
 sell_payment_description = "Оплата за размещение объявления"
 successful_payment_message = "Оплата произведена успешно!"
 
-show_my_project_message = (
-    PROJECT_INFO['my']
-)
-show_verified_project_message = (
-    PROJECT_INFO['buy_verified']
-)
-show_not_verified_project_message = (
-    PROJECT_INFO['buy_not_verified']
-)
+show_my_project_message = PROJECT_INFO["my"]
+show_verified_project_message = PROJECT_INFO["buy_verified"]
+show_not_verified_project_message = PROJECT_INFO["buy_not_verified"]
 deleted_project_message = "Объявление удалено!"
 not_deleted_project_message = "Объявление не удалено"
 confirm_deleting_message = "Вы действительно хотите удалить объявление?"
@@ -99,7 +93,8 @@ command_error_message = "Сообщение не распознано ☹️"
 
 moderation_message = "Ожидайте. Ваша заявка на модерации!"
 moderator_confirm_message = (
-    "Новая заявка на размещение объявления ждёт подтверждения!\n\n" + PROJECT_INFO['sell']
+    "Новая заявка на размещение объявления ждёт подтверждения!\n\n"
+    + PROJECT_INFO["sell"]
 )
 rejected_project_message = "К сожалению, ваш проект '%s' не прошёл модерацию! ☹"
 empty_username_message = "У вас не задано имя пользователя в телеграме! Измените настройки и возвращайтесь! 😊"
@@ -119,7 +114,7 @@ need_promo_code_message = "Ваш проект прошёл проверку! В
 input_promo_code_message = "Введите промокод:"
 wrong_promo_code_message = "Неверный промокод! Попробовать ещё раз?"
 
-vip_need_promo_code_message = "Ваш проект прошёл проверку! Воспользоваться промокодом?"
+vip_need_promo_code_message = "Воспользоваться промокодом?"
 
 MESSAGES = {
     "start": start_message,
@@ -188,17 +183,13 @@ MESSAGES = {
     "rejected_project": rejected_project_message,
     "empty_username": empty_username_message,
     "already_in_moderation": already_in_moderation_message,
-
     "vip_project": vip_project,
     "regular_project": regular_project,
-
     "verified": verified,
     "not_verified": not_verified,
-
     "change_price": change_price_message,
     "price_changing_success": price_changing_success_message,
     "price_changing_confirm": price_changing_confirm_message,
-
     "need_promo_code": need_promo_code_message,
     "input_promo_code": input_promo_code_message,
     "wrong_promo_code": wrong_promo_code_message,

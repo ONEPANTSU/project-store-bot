@@ -29,13 +29,8 @@ insert_seller_query = """
         (%s);
         """
 
-select_discounts_query = (
-    "SELECT * FROM `promocode`"
-)
-select_vip_projects_id_query = (
-    "SELECT id FROM `project` "
-    "WHERE `status_id` = 1;"
-)
+select_discounts_query = "SELECT * FROM `promocode`"
+select_vip_projects_id_query = "SELECT id FROM `project` " "WHERE `status_id` = 1;"
 select_all_projects_id_query = (
     "SELECT id FROM `project` "
     "ORDER BY `status_id` DESC, `vip_ending` DESC, `is_verified` DESC;"
@@ -68,8 +63,7 @@ select_project_by_seller_name_query = (
     "ORDER BY project.`status_id` DESC, `vip_ending` DESC, `is_verified` DESC;"
 )
 select_projects_id_by_theme_id_query = (
-    "SELECT `project_id` FROM `project_theme` "
-    "WHERE `theme_id` = '%s';"
+    "SELECT `project_id` FROM `project_theme` " "WHERE `theme_id` = '%s';"
 )
 select_all_project_info_by_id_query = (
     "SELECT project.id, project.seller_id, project.name, project.price, "

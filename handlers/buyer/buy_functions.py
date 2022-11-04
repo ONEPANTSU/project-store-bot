@@ -1,6 +1,12 @@
-from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    Message,
+    ReplyKeyboardMarkup,
+)
 
-from data_base.db_functions import get_project_list_by_filter, get_guarantee_name
+from data_base.db_functions import get_guarantee_name, get_project_list_by_filter
 from handlers.buyer.buy_callbacks import buy_project_callback, themes_callback
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
@@ -144,6 +150,3 @@ def get_project_info(project_data):  # Page: 0
         )
 
     return project_info
-
-
-

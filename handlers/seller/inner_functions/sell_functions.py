@@ -1,9 +1,11 @@
 from aiogram.types import Message
 
+from handlers.seller.inner_functions.seller_keyboard_markups import (
+    get_back_menu_keyboard,
+    get_main_sell_keyboard,
+)
 from handlers.seller.instruments.seller_dicts import projects_in_moderation
-from handlers.seller.inner_functions.seller_keyboard_markups import get_main_sell_keyboard, get_back_menu_keyboard
 from states import SellProjectStates
-
 from texts.messages import MESSAGES
 from useful.instruments import bot
 

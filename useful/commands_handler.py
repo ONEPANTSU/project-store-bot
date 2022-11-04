@@ -12,8 +12,12 @@ from texts.messages import MESSAGES
 async def commands_handler(message):
     answer = message.text.lstrip("/")
     if answer == COMMANDS["start"]:
-        await main_menu(message, message_text=MESSAGES["start"].format(message.from_user,
-                                                                       reply_markup=ReplyKeyboardRemove()))
+        await main_menu(
+            message,
+            message_text=MESSAGES["start"].format(
+                message.from_user, reply_markup=ReplyKeyboardRemove()
+            ),
+        )
     elif answer == COMMANDS["help"]:
         await help_inform(message)
     elif answer == COMMANDS["new_project"]:
