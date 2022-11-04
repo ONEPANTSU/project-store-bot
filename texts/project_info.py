@@ -11,7 +11,6 @@ project_guarantee = (
     'Гарантируем 100% безопасность при сделках в Telegram.\n'
     '<b>Гарант:</b> {guarantee} "'
 )
-
 sell_project_info = (
         project_name + '\n\n' +
         project_vip + '\n' +
@@ -22,6 +21,7 @@ sell_project_info = (
         project_seller + '\n\n' +
         project_price
 )
+
 
 my_project_info = (
         project_name + '\n\n' +

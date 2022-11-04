@@ -7,7 +7,7 @@ start_message = (
 main_menu_massage = "📌 Главное меню 📌"
 
 inform_url = "https://t.me/project_store_guide"
-information_message = "Можно ознакомиться с информацией о боте по ссылке:"
+information_message = "Вся информация о боте доступна в телеграм канале:"
 
 sell_menu_message = "🗄 Мои предложения 🗄"
 put_up_for_sale_massage = "🖊Заполните анкету🖊"
@@ -74,7 +74,7 @@ error_upto_bigger_then_from_message = (
 list_is_empty_message = "Проектов по вашему запросу не найдено"
 
 
-vip_payment_label = "Установить Premium статус проекту!"
+vip_payment_label = "Установить Premium cтатус проекту!"
 sell_payment_label = "Разместить объявление!"
 sell_payment_title = "Оплата"
 sell_payment_description = "Оплата за размещение объявления"
