@@ -14,10 +14,10 @@ from useful.instruments import bot, db_manager
 
 
 async def show_main_buy_keyboard(message: Message):
+    await message.answer(text=MESSAGES["buy_menu"], reply_markup=buy_menu())
     await buy_project_index(
         chat_id=message.chat.id, theme_id="None", price_from="None", price_up_to="None"
     )
-    await message.answer(text=MESSAGES["buy_menu"], reply_markup=buy_menu())
 
 
 def buy_menu():

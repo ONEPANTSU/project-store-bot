@@ -322,7 +322,8 @@ async def comment_state(message: Message, state: FSMContext):
         if len(answer) < 1000:
             await state.update_data(comment=answer)
             await message.answer(
-                text=MESSAGES["status"], reply_markup=yes_or_no_keyboard()
+                text=MESSAGES["status"].format(vip_price=str(int(int(get_vip_sell_price())/100))),
+                reply_markup=yes_or_no_keyboard()
             )
             await SellProjectStates.status.set()
         else:
