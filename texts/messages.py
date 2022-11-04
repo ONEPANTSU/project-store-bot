@@ -78,6 +78,7 @@ vip_payment_label = "Установить Premium cтатус проекту!"
 sell_payment_label = "Разместить объявление!"
 sell_payment_title = "Оплата"
 sell_payment_description = "Оплата за размещение объявления"
+vip_payment_description = "Оплата Premium-статуса"
 successful_payment_message = "Оплата произведена успешно!"
 
 show_my_project_message = PROJECT_INFO["my"]
@@ -157,6 +158,7 @@ MESSAGES = {
     "sell_payment": sell_payment_label,
     "sell_payment_title": sell_payment_title,
     "sell_payment_description": sell_payment_description,
+    "vip_payment_description": vip_payment_description,
     "successful_payment": successful_payment_message,
     "show_my_project": show_my_project_message,
     "show_verified_project": show_verified_project_message,

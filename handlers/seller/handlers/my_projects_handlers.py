@@ -80,16 +80,21 @@ async def vip_need_promo_state(message: Message, state: FSMContext):
         project.set_params_by_id(project_id)
         price_amount = get_vip_sell_price()
         prices = [LabeledPrice(label=MESSAGES["sell_payment"], amount=price_amount)]
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=MESSAGES["vip_payment_description"],
+            reply_markup=get_main_sell_keyboard(),
+        )
         await bot.send_invoice(
             message.chat.id,
             title=MESSAGES["sell_payment_title"],
-            description=MESSAGES["sell_payment_description"],
+            description=MESSAGES["vip_payment_description"],
             provider_token=PAYMENTS_TOKEN,
             currency="rub",
             is_flexible=False,
             prices=prices,
             start_parameter="example",
-            payload=INVOICE_PAYLOAD["vip"],
+            payload=INVOICE_PAYLOAD["vip"]
         )
         await state.finish()
         if answer.lstrip("/") in COMMANDS.values():
