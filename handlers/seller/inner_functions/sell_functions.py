@@ -1,6 +1,6 @@
 from aiogram.types import Message
 
-from data_base.db_functions import get_regular_sell_price, get_vip_sell_price
+from data_base.db_functions import get_regular_sell_price, get_vip_sell_price, get_need_payment
 from handlers.seller.inner_functions.seller_keyboard_markups import (
     get_back_menu_keyboard,
     get_main_sell_keyboard,
@@ -20,10 +20,15 @@ async def put_up_for_sale(message: Message):
                 reply_markup=get_main_sell_keyboard(),
             )
         else:
-            await message.answer(text=MESSAGES["put_up_for_sale"].format(regular_price=
-                                                                         str(int(int(get_regular_sell_price())/100)),
+            if get_need_payment() == 1:
+                await message.answer(text=MESSAGES["put_up_for_sale"].format(regular_price=
+                                                                         str(int(int(get_regular_sell_price())/100))+"₽",
                                                                          vip_price=str(int(int(get_regular_sell_price() +
-                                                                                       get_vip_sell_price())/100))))
+                                                                                       get_vip_sell_price())/100))+"₽"))
+            else:
+                await message.answer(text=MESSAGES["put_up_for_sale"].format(regular_price=MESSAGES["free_payment"],
+                                                                             vip_price=str(
+                                                                                 int(int(get_vip_sell_price()) / 100))+"₽"))
             await message.answer(
                 text=MESSAGES["project_name"], reply_markup=get_back_menu_keyboard()
             )

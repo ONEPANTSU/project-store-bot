@@ -503,7 +503,7 @@ async def moderators_confirm(
     new_project.link = data["link"]
     need_payment = get_need_payment()
     projects_in_moderation.remove(user_id)
-    if need_payment == 1:
+    if need_payment == 1 or new_project.status_id == 1:
         new_projects_dict[new_project.seller_name] = new_project
 
         await bot.send_message(
@@ -514,7 +514,7 @@ async def moderators_confirm(
         state.chat = user_id
         state.user = user_id
         await state.set_state(DiscountStates.is_need)
-    elif need_payment == 0:
+    elif need_payment == 0 and new_project.status_id == 0:
         new_project.save_new_project()
         is_moderator = False
         if user_id == get_moderator_id():
@@ -541,8 +541,13 @@ async def need_promo_state(message: Message, state: FSMContext):
         if project.status_id == 0:
             price_amount = get_regular_sell_price()
         elif project.status_id == 1:
-            price_amount = get_regular_sell_price() + get_vip_sell_price()
+            if get_need_payment() == 1:
+                price_amount = get_regular_sell_price() + get_vip_sell_price()
+            else:
+                price_amount = get_vip_sell_price()
+
         prices = [LabeledPrice(label=MESSAGES["sell_payment"], amount=price_amount)]
+
         await bot.send_invoice(
             message.chat.id,
             title=MESSAGES["sell_payment_title"],
@@ -565,7 +570,10 @@ async def input_promo_state(message: Message, state: FSMContext):
     if project.status_id == 0:
         price_amount = get_regular_sell_price()
     elif project.status_id == 1:
-        price_amount = get_regular_sell_price() + get_vip_sell_price()
+        if get_need_payment() == 1:
+            price_amount = get_regular_sell_price() + get_vip_sell_price()
+        else:
+            price_amount = get_vip_sell_price()
     discounted_price = Discount().use_discount(message.text, price_amount)
     if discounted_price < price_amount:
 
