@@ -1,8 +1,8 @@
 back_button = "Вернуться в главное меню"
 
-information_button = "Информация"
+information_button = "🔍 Информация 🔍"
 
-moderate_button = "Управление проектами"
+moderate_button = "⚙ Управление проектами ⚙"
 
 sell_menu_button = "🗄 Мои предложения 🗄"
 sell_project_button = "Выставить проект на продажу"

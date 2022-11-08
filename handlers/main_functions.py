@@ -15,10 +15,9 @@ def get_main_keyboard(is_moderator=False):
     if is_moderator:
         moderator_button = KeyboardButton(BUTTONS["moderate"])
         markup.add(
-            my_projects_button,
+            moderator_button,
             search_projects_button,
             information_button,
-            moderator_button,
         )
     else:
         markup.add(my_projects_button, search_projects_button, information_button)
