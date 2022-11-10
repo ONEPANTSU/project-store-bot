@@ -1,9 +1,16 @@
-back_button = "Вернуться в главное меню"
+back_button = "🔙 Вернуться в главное меню 🔙"
 
 information_button = "🔍 Информация 🔍"
 
 moderate_button = "⚙ Управление проектами ⚙"
 setting_button = "🛠️ Изменение настроек 🛠️"
+
+moderators_button = "👤 Модераторы 👤"
+guarantee_button = "🤖 Гарант 🤖"
+promo_button = "🤞 Промокоды 🤞"
+payment_button = "💰 Оплата 💰"
+
+add_moderator_button = "➕ Добавить модератора ➕"
 
 sell_menu_button = "🗄 Мои предложения 🗄"
 sell_project_button = "Выставить проект на продажу"
@@ -57,5 +64,10 @@ BUTTONS = {
     "chose_search_params": chose_search_params_button,
     "moderate": moderate_button,
     "settings": setting_button,
+    "moderators": moderators_button,
+    "add_moderator": add_moderator_button,
+    "promo": promo_button,
+    "payment": payment_button,
+    "guarantee": guarantee_button,
     "information": information_button,
 }

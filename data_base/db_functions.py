@@ -214,9 +214,9 @@ def get_guarantee_name():
     return db_manager.get_settings_info()[1]
 
 
-def get_guarantee_reviews():
+def get_admin_id():
     """
-    This function returns telegram channel name with reviews of the guarantee from `settings` table.
+    This function returns telegram channel id of admin from `settings` table.
 
     :return: telegram channel name with reviews
     :rtype: :obj:`str`

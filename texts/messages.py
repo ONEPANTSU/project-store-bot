@@ -143,6 +143,9 @@ wrong_promo_code_message = "Неверный промокод! Попробов�
 
 vip_need_promo_code_message = "Воспользоваться промокодом?"
 
+settings_message = "🛠️ Настройки бота 🛠️"
+moderators_message = "Модераторы:"
+
 MESSAGES = {
     "start": start_message,
     "inform_url": inform_url,
@@ -223,4 +226,6 @@ MESSAGES = {
     "wrong_promo_code": wrong_promo_code_message,
     "vip_need_promo_code": vip_need_promo_code_message,
     "free_payment": free_payment_message,
+    "settings": settings_message,
+    "moderators": moderators_message,
 }
