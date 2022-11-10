@@ -1,8 +1,8 @@
 from aiogram.types import ReplyKeyboardRemove
 
 from handlers.buyer.buy_functions import show_main_buy_keyboard
-from handlers.information_functions import help_inform
-from handlers.main_functions import main_menu
+from handlers.information.information_functions import help_inform
+from handlers.main.main_functions import main_menu
 from handlers.seller.handlers.my_projects_functions import my_project_index_handler
 from handlers.seller.inner_functions.sell_functions import put_up_for_sale
 from texts.commands import COMMANDS

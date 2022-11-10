@@ -35,6 +35,9 @@ select_all_projects_id_query = (
     "SELECT id FROM `project` "
     "ORDER BY `status_id` DESC, `vip_ending` DESC, `is_verified` DESC;"
 )
+select_moderator_all_projects_id_query = (
+    "SELECT id FROM `project`" "ORDER BY `is_verified` ASC;"
+)
 select_projects_id_by_prices_query = (
     "SELECT id FROM `project` WHERE price >= '%s' AND price <= '%s'  "
     "ORDER BY `status_id` DESC, `vip_ending` DESC, `is_verified` DESC;"
@@ -124,6 +127,7 @@ QUERIES = {
     "select_discounts": select_discounts_query,
     "select_vip_projects_id": select_vip_projects_id_query,
     "select_all_projects_id": select_all_projects_id_query,
+    "select_moderator_all_projects_id": select_moderator_all_projects_id_query,
     "select_projects_id_by_prices": select_projects_id_by_prices_query,
     "select_project_by_id": select_project_by_id_query,
     "select_seller_name_by_seller_id": select_seller_name_by_seller_id_query,

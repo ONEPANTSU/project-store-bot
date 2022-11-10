@@ -12,7 +12,7 @@ from handlers.buyer.buy_functions import (
     get_project_info,
     show_main_buy_keyboard,
 )
-from handlers.main_functions import get_main_keyboard, main_menu
+from handlers.main.main_functions import get_main_keyboard, main_menu
 from states import BuyProjectStates
 from texts.buttons import BUTTONS
 from texts.commands import COMMANDS

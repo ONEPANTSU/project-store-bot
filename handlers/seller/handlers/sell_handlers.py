@@ -24,7 +24,7 @@ from data_base.db_functions import (
 )
 from data_base.discount import Discount
 from data_base.project import Project
-from handlers.main_functions import get_main_keyboard
+from handlers.main.main_functions import get_main_keyboard
 from handlers.seller.inner_functions.sell_functions import put_up_for_sale
 from handlers.seller.inner_functions.seller_keyboard_markups import (
     get_back_menu_keyboard,
@@ -322,8 +322,10 @@ async def comment_state(message: Message, state: FSMContext):
         if len(answer) < 1000:
             await state.update_data(comment=answer)
             await message.answer(
-                text=MESSAGES["status"].format(vip_price=str(int(int(get_vip_sell_price())/100))),
-                reply_markup=yes_or_no_keyboard()
+                text=MESSAGES["status"].format(
+                    vip_price=str(int(int(get_vip_sell_price()) / 100))
+                ),
+                reply_markup=yes_or_no_keyboard(),
             )
             await SellProjectStates.status.set()
         else:

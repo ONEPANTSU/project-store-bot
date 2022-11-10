@@ -325,6 +325,18 @@ class DBManager:
 
         return project
 
+    def get_moderator_all_projects_id(self):
+        """
+        This function creates SELECT query for getting all not sorted projects's ids
+
+        :return: ids of the projects
+        :rtype: :list:`int`
+        """
+        get_project_query = QUERIES["select_moderator_all_projects_id"]
+        projects_id = self.execute_read_query(self.connection, get_project_query)
+
+        return projects_id
+
     def get_all_projects_id(self):
         """
         This function creates SELECT query for getting all projects's ids

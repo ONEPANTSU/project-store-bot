@@ -3,10 +3,10 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, LabeledPrice, Message, ReplyKeyboardRemove
 
 from config import PAYMENTS_TOKEN
-from data_base.db_functions import get_vip_sell_price
+from data_base.db_functions import get_moderator_id, get_vip_sell_price
 from data_base.discount import Discount
 from data_base.project import Project
-from handlers.main_functions import get_main_keyboard
+from handlers.main.main_functions import get_main_keyboard
 from handlers.seller.handlers.my_projects_functions import my_project_index_handler
 from handlers.seller.handlers.sell_handlers import yes_or_no_keyboard
 from handlers.seller.inner_functions.seller_carousel_pages import (
@@ -94,7 +94,7 @@ async def vip_need_promo_state(message: Message, state: FSMContext):
             is_flexible=False,
             prices=prices,
             start_parameter="example",
-            payload=INVOICE_PAYLOAD["vip"]
+            payload=INVOICE_PAYLOAD["vip"],
         )
         await state.finish()
         if answer.lstrip("/") in COMMANDS.values():
@@ -179,8 +179,13 @@ async def price_changing_confirm_state(message: Message, state: FSMContext):
 
     elif answer == BUTTONS["confirm"]:
         price_changing_project_dict[message.chat.id].save_changes_to_existing_project()
+        is_moderator = False
+        if message.from_user.id == get_moderator_id():
+            is_moderator = True
         await bot.send_message(
-            chat_id=message.chat.id, text=MESSAGES["price_changing_success"]
+            chat_id=message.chat.id,
+            text=MESSAGES["price_changing_success"],
+            reply_markup=get_main_keyboard(is_moderator),
         )
         await my_project_index_handler(message)
         price_changing_project_dict.pop(message.chat.id)

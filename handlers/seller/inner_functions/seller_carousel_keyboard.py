@@ -4,6 +4,7 @@ from handlers.seller.instruments.seller_callbacks import (
     delete_project_callback,
     my_projects_callback,
     price_changing_callback,
+    verify_callback,
     vip_project_callback,
 )
 from texts.buttons import BUTTONS
@@ -34,15 +35,37 @@ def get_my_projects_keyboard(
         price_changing_button = create_price_changing_button(
             page, project_list, is_moderator
         )
-        return create_my_vip_projects_keyboard(
-            back_button,
-            delete_button,
-            price_changing_button,
-            has_next_page,
-            next_button,
-            page,
-            page_num_button,
-        )
+        if is_moderator:
+            if project_list[page].is_verified == 0:
+                verify_button = create_verify_button(page, project_list, is_moderator)
+                return create_not_verified_project_keyboard(
+                    back_button,
+                    delete_button,
+                    verify_button,
+                    has_next_page,
+                    next_button,
+                    page,
+                    page_num_button,
+                )
+            else:
+                return create_verified_project_keyboard(
+                    back_button,
+                    delete_button,
+                    has_next_page,
+                    next_button,
+                    page,
+                    page_num_button,
+                )
+        else:
+            return create_my_vip_projects_keyboard(
+                back_button,
+                delete_button,
+                price_changing_button,
+                has_next_page,
+                next_button,
+                page,
+                page_num_button,
+            )
 
 
 def create_my_regular_projects_keyboard(
@@ -74,6 +97,36 @@ def create_my_vip_projects_keyboard(
     keyboard.row(page_num_button)
     keyboard.row(delete_button)
     keyboard.row(price_changing_button)
+    return add_page_buttons(has_next_page, keyboard, back_button, next_button, page)
+
+
+def create_verified_project_keyboard(
+    back_button,
+    delete_button,
+    has_next_page,
+    next_button,
+    page,
+    page_num_button,
+):
+    keyboard = InlineKeyboardMarkup(row_width=2)
+    keyboard.row(page_num_button)
+    keyboard.row(delete_button)
+    return add_page_buttons(has_next_page, keyboard, back_button, next_button, page)
+
+
+def create_not_verified_project_keyboard(
+    back_button,
+    delete_button,
+    verify_button,
+    has_next_page,
+    next_button,
+    page,
+    page_num_button,
+):
+    keyboard = InlineKeyboardMarkup(row_width=2)
+    keyboard.row(page_num_button)
+    keyboard.row(delete_button)
+    keyboard.row(verify_button)
     return add_page_buttons(has_next_page, keyboard, back_button, next_button, page)
 
 
@@ -128,6 +181,15 @@ def create_price_changing_button(page, project_list, is_moderator):
     return InlineKeyboardButton(
         text=BUTTONS["price_changing_project"],
         callback_data=price_changing_callback.new(
+            id=project_list[page].id, page=page, is_moderator=is_moderator
+        ),
+    )
+
+
+def create_verify_button(page, project_list, is_moderator):
+    return InlineKeyboardButton(
+        text=BUTTONS["verify"],
+        callback_data=verify_callback.new(
             id=project_list[page].id, page=page, is_moderator=is_moderator
         ),
     )

@@ -59,6 +59,18 @@ def get_projects_list_by_seller_name(seller_name):
     return get_parsed_project_list(projects_info)
 
 
+def get_moderator_all_project_list():
+    """
+    This function creates SELECT query for getting all Project class's objects.
+
+    :return: list of the Project class's objects
+    :rtype: :list::class:`data_base.project.Project`
+    """
+    projects_id = db_manager.get_moderator_all_projects_id()
+    projects_info = create_all_projects_info(projects_id)
+    return get_parsed_project_list(projects_info)
+
+
 def get_all_project_list():
     """
     This function creates SELECT query for getting all Project class's objects.

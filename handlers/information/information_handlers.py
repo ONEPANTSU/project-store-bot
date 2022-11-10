@@ -1,7 +1,7 @@
 from aiogram import Dispatcher
 from aiogram.types import Message
 
-from handlers.information_functions import help_inform
+from handlers.information.information_functions import help_inform
 from texts.buttons import BUTTONS
 from texts.commands import COMMANDS
 

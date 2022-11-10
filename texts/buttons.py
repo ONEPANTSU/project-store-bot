@@ -3,6 +3,7 @@ back_button = "Вернуться в главное меню"
 information_button = "🔍 Информация 🔍"
 
 moderate_button = "⚙ Управление проектами ⚙"
+setting_button = "🛠️ Изменение настроек 🛠️"
 
 sell_menu_button = "🗄 Мои предложения 🗄"
 sell_project_button = "Выставить проект на продажу"
@@ -29,6 +30,7 @@ prev_button = "⏪ Назад"
 next_button = "Вперёд ⏩"
 vip_project_button = "Установить Premium статус 👑"
 price_changing_project_button = "Изменить стоимость проекта 💰"
+verify_button = "Проверено ✅"
 
 BUTTONS = {
     "back": back_button,
@@ -51,7 +53,9 @@ BUTTONS = {
     "next": next_button,
     "vip_project": vip_project_button,
     "price_changing_project": price_changing_project_button,
+    "verify": verify_button,
     "chose_search_params": chose_search_params_button,
     "moderate": moderate_button,
+    "settings": setting_button,
     "information": information_button,
 }

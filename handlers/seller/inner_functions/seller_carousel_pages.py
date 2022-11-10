@@ -2,6 +2,7 @@ from aiogram.types import CallbackQuery, Message
 
 from data_base.db_functions import (
     get_all_project_list,
+    get_moderator_all_project_list,
     get_projects_list_by_seller_name,
 )
 from handlers.seller.inner_functions.seller_carousel_keyboard import (
@@ -32,7 +33,7 @@ async def refresh_pages(query: CallbackQuery, callback_data: dict):
     else:
         is_moderator = False
     if is_moderator:
-        project_list = get_all_project_list()
+        project_list = get_moderator_all_project_list()
     else:
         project_list = get_projects_list_by_seller_name(query.from_user.username)
     await update_page(page, project_list, query, is_moderator)
