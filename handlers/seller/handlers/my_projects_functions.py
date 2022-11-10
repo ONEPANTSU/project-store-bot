@@ -12,3 +12,5 @@ async def my_project_index_handler(message: Message):
     await my_project_index(
         message=message, project_list=project_list, is_moderator=is_moderator
     )
+
+

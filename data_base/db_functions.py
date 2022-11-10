@@ -252,3 +252,7 @@ def get_vip_sell_price():
     :rtype: :obj:`int`
     """
     return db_manager.get_settings_info()[5]
+
+
+def get_moderators_info():
+    return db_manager.get_all_moderators_info()

@@ -66,26 +66,26 @@ class DBManager:
         :rtype: :obj:`str`
         """
         return (
-            str(project.seller_id)
-            + ", '"
-            + project.name
-            + "', "
-            + str(project.price)
-            + ", "
-            + str(project.status_id)
-            + ", "
-            + str(project.subscribers)
-            + ", "
-            + str(project.income)
-            + ", '"
-            + project.comment
-            + "', '"
-            + str(project.vip_ending)
-            + "', '"
-            + project.link
-            + "', '"
-            + str(project.is_verified)
-            + "'"
+                str(project.seller_id)
+                + ", '"
+                + project.name
+                + "', "
+                + str(project.price)
+                + ", "
+                + str(project.status_id)
+                + ", "
+                + str(project.subscribers)
+                + ", "
+                + str(project.income)
+                + ", '"
+                + project.comment
+                + "', '"
+                + str(project.vip_ending)
+                + "', '"
+                + project.link
+                + "', '"
+                + str(project.is_verified)
+                + "'"
         )
 
     def insert_project(self, project):
@@ -173,6 +173,11 @@ class DBManager:
         else:
             return True
 
+    def get_all_moderators_info(self):
+        get_all_moderators_info_query = QUERIES["select_all_moderators_info"]
+        moderators = self.execute_read_query(self.connection, get_all_moderators_info_query)
+        return moderators
+
     def get_seller_name(self, seller_id):
         """
         This function creates SELECT query for getting seller's name of `seller` table by id.
@@ -184,9 +189,7 @@ class DBManager:
         :rtype: :obj:`str`
         """
         get_seller_name_query = QUERIES["select_seller_name_by_seller_id"] % seller_id
-        seller_name = self.execute_read_query(self.connection, get_seller_name_query)[
-            0
-        ][0]
+        seller_name = self.execute_read_query(self.connection, get_seller_name_query)[0][0]
         return seller_name
 
     def get_seller_id_by_project_id(self, project_id):
@@ -374,7 +377,7 @@ class DBManager:
         :rtype: :list:`int`
         """
         get_project_query = (
-            QUERIES["select_projects_id_by_prices"] % price_from % price_up_to
+                QUERIES["select_projects_id_by_prices"] % price_from % price_up_to
         )
         projects_id = self.execute_read_query(self.connection, get_project_query)
 

@@ -1,7 +1,6 @@
 from aiogram.types import CallbackQuery, Message
 
 from data_base.db_functions import (
-    get_all_project_list,
     get_moderator_all_project_list,
     get_projects_list_by_seller_name,
 )
