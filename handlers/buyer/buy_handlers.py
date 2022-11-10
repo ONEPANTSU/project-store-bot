@@ -184,12 +184,16 @@ async def price_up_to_state(message: Message, state: FSMContext):
 
             if theme_ans == "Нет":
                 # Если только цена, то вывод следующий(отправляю в колбэк только цены)
-                await buy_project_index(
-                    chat_id=message.chat.id,
-                    theme_id="None",
-                    price_from=price_from,
-                    price_up_to=price_up_to,
-                )
+                try:
+                    await buy_project_index(
+                        chat_id=message.chat.id,
+                        theme_id="None",
+                        price_from=price_from,
+                        price_up_to=price_up_to,
+                    )
+                except ConnectionError:
+                    print("Вознкила ошибка с подключением к БД")
+
 
             elif theme_ans == "Да":
                 await message.reply(
