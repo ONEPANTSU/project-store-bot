@@ -11,6 +11,9 @@ promo_button = "🤞 Промокоды 🤞"
 payment_button = "💰 Оплата 💰"
 
 add_moderator_button = "➕ Добавить модератора ➕"
+delete_moderator_button = "❌ Удалить модератора ❌"
+chose_moderator_button = "📌 Выбрать модератора 📌"
+current_moderator_button = "✅ Текущий модератор ✅"
 
 sell_menu_button = "🗄 Мои предложения 🗄"
 sell_project_button = "Выставить проект на продажу"
@@ -66,6 +69,9 @@ BUTTONS = {
     "settings": setting_button,
     "moderators": moderators_button,
     "add_moderator": add_moderator_button,
+    "delete_moderator": delete_moderator_button,
+    "chose_moderator": chose_moderator_button,
+    "current_moderator": current_moderator_button,
     "promo": promo_button,
     "payment": payment_button,
     "guarantee": guarantee_button,

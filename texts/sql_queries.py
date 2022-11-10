@@ -29,6 +29,7 @@ insert_seller_query = """
         (%s);
         """
 
+select_all_moderators_info = "SELECT * FROM `moderator`"
 select_discounts_query = "SELECT * FROM `promocode`"
 select_vip_projects_id_query = "SELECT id FROM `project` " "WHERE `status_id` = 1;"
 select_all_projects_id_query = (
@@ -124,6 +125,7 @@ QUERIES = {
     "insert_theme": insert_theme_query,
     "insert_project_theme": insert_project_theme_query,
     "insert_seller": insert_seller_query,
+    "select_all_moderators_info": select_all_moderators_info,
     "select_discounts": select_discounts_query,
     "select_vip_projects_id": select_vip_projects_id_query,
     "select_all_projects_id": select_all_projects_id_query,

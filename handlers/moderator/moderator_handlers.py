@@ -3,7 +3,10 @@ from aiogram.types import CallbackQuery, Message
 
 from data_base.db_functions import get_moderator_all_project_list, get_moderator_id
 from data_base.project import Project
-from handlers.moderator.moderator_functions import get_settings_keyboard, check_is_moderator, get_moderators_keyboard
+from handlers.moderator.moderator_callback import moderator_page_callback
+from handlers.moderator.moderator_functions import get_settings_keyboard, check_is_moderator, get_moderators_keyboard, \
+    get_admin_moderators_keyboard, check_is_admin
+from handlers.moderator.moderators_carousel import moderators_index, refresh_moderator_pages
 from handlers.seller.inner_functions.seller_carousel_pages import (
     my_project_index,
     refresh_pages,
@@ -38,7 +41,15 @@ async def settings_handler(message: Message):
 
 async def moderator_menu_handler(message: Message):
     if check_is_moderator(message.from_user.id):
-        await message.answer(text=MESSAGES["moderators"], reply_markup=get_moderators_keyboard())
+        if check_is_admin(message.from_user.id):
+            await message.answer(text=MESSAGES["moderators"], reply_markup=get_admin_moderators_keyboard())
+        else:
+            await message.answer(text=MESSAGES["moderators"], reply_markup=get_moderators_keyboard())
+        await moderators_index(message)
+
+
+async def moderator_page_handler(query: CallbackQuery, callback_data: dict):
+    await refresh_moderator_pages(query=query, callback_data=callback_data)
 
 
 async def payment_menu_handler(message: Message):
@@ -61,3 +72,4 @@ def register_moderator_handlers(dp: Dispatcher):
     dp.register_message_handler(promo_menu_handler, text=BUTTONS["promo"])
     dp.register_message_handler(change_guarantee_handler, text=BUTTONS["guarantee"])
     dp.register_callback_query_handler(verify_callback_handler, verify_callback.filter())
+    dp.register_callback_query_handler(moderator_page_handler, moderator_page_callback.filter())
