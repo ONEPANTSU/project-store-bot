@@ -52,3 +52,12 @@ def get_admin_moderators_keyboard():
     markup.row(add_moderator_button)
     markup.row(back_button)
     return markup
+
+
+def get_project_confirmation_menu_keyboard():
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    confirm_button = KeyboardButton(BUTTONS["confirm"])
+    cancellation_button = KeyboardButton(BUTTONS["cancellation"])
+    markup.row(confirm_button)
+    markup.row(cancellation_button)
+    return markup
