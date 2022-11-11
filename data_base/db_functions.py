@@ -268,3 +268,7 @@ def set_guarantee(guarantee):
 
 def delete_moderator(moderator_id):
     db_manager.delete_moderator(moderator_id)
+
+
+def add_moderator(moderator_id, moderator_name):
+    db_manager.insert_new_moderator(moderator_id, moderator_name)

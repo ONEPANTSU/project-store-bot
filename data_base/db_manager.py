@@ -156,6 +156,10 @@ class DBManager:
         create_seller = QUERIES["insert_seller"] % seller_val
         self.execute_query(self.connection, create_seller)
 
+    def insert_new_moderator(self, moderator_id, moderator_name):
+        create_moderator = QUERIES["insert_moderator"] % (moderator_id + ", '" + moderator_name + "'")
+        self.execute_query(self.connection, create_moderator)
+
     def is_project_exist_by_id(self, project_id):
         """
         This function checks is project with concrete id exist
@@ -594,10 +598,10 @@ class DBManager:
         self.delete_project_theme(project_id)
         delete_project_query = QUERIES["delete_project"] % (str(project_id))
         seller_id = self.get_seller_id_by_project_id(project_id)
+        self.execute_query(self.connection, delete_project_query)
         projects = self.get_projects_by_seller_id(seller_id)
         if len(projects) == 0:
             self.delete_seller(seller_id)
-        self.execute_query(self.connection, delete_project_query)
 
     def delete_seller(self, seller_id):
         """

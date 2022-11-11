@@ -2,8 +2,8 @@ from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from data_base.db_functions import get_moderator_all_project_list, get_moderator_id, set_current_moderator, \
-    delete_moderator, set_guarantee
+from data_base.db_functions import get_moderator_all_project_list, set_current_moderator, \
+    delete_moderator, set_guarantee, add_moderator
 from data_base.project import Project
 from handlers.moderator.moderator_callback import moderator_page_callback, chose_moderator_callback, \
     delete_moderator_callback
@@ -11,7 +11,6 @@ from handlers.moderator.moderator_functions import get_settings_keyboard, check_
     get_admin_moderators_keyboard, check_is_admin, \
     get_confirmation_menu_keyboard, get_cancel_keyboard
 from handlers.moderator.moderators_carousel import moderators_index, refresh_moderator_pages
-from handlers.seller.handlers.sell_handlers import yes_or_no_keyboard
 from handlers.seller.inner_functions.seller_carousel_pages import (
     my_project_index,
     refresh_pages,
@@ -75,64 +74,71 @@ async def delete_moderator_handler(query: CallbackQuery, callback_data: dict):
 
 
 async def add_moderator_handler(message: Message):
-    await message.answer(text=MESSAGES["id_add_moderator"], reply_markup=get_cancel_keyboard())
-    await AddModeratorStates.id.set()
+    if check_is_moderator(message.from_user.id):
+        await message.answer(text=MESSAGES["id_add_moderator"], reply_markup=get_cancel_keyboard())
+        await AddModeratorStates.id.set()
 
 
 async def id_add_moderator_handler(message: Message, state: FSMContext):
-    answer = message.text
-    if answer.lstrip("/") in COMMANDS.values():
-        await state.finish()
-        await commands_handler(message)
-    elif answer == BUTTONS["cancel"]:
-        await settings_handler(message)
-        await state.finish()
-    else:
-        if not answer.isdigit():
-            await message.answer(
-                text=MESSAGES["id_check"]
-            )
-            await AddModeratorStates.id.set()
+    if check_is_moderator(message.from_user.id):
+        answer = message.text
+        if answer.lstrip("/") in COMMANDS.values():
+            await state.finish()
+            await commands_handler(message)
+        elif answer == BUTTONS["cancel"]:
+            await settings_handler(message)
+            await state.finish()
         else:
-            await state.update_data(id=answer)
-        await message.answer(MESSAGES["name_add_moderator"],
-                             reply_markup=get_confirmation_menu_keyboard())
-        await AddModeratorStates.name.set()
+            if not answer.isdigit():
+                await message.answer(
+                    text=MESSAGES["id_check"]
+                )
+                await AddModeratorStates.id.set()
+            else:
+                await state.update_data(id=answer)
+            await message.answer(MESSAGES["name_add_moderator"],
+                                 reply_markup=get_confirmation_menu_keyboard())
+            await AddModeratorStates.name.set()
 
 
 async def name_add_moderator_handler(message: Message, state: FSMContext):
-    answer = message.text
-    if answer.lstrip("/") in COMMANDS.values():
-        await state.finish()
-        await commands_handler(message)
-    elif answer == BUTTONS["cancel"]:
-        await settings_handler(message)
-        await state.finish()
-    else:
-        await state.update_data(name=answer)
-        await message.answer(MESSAGES["confirm_add_moderator"],
-                             reply_markup=get_confirmation_menu_keyboard())
-        await AddModeratorStates.confirm.set()
+    if check_is_moderator(message.from_user.id):
+        answer = message.text
+        if answer.lstrip("/") in COMMANDS.values():
+            await state.finish()
+            await commands_handler(message)
+        elif answer == BUTTONS["cancel"]:
+            await settings_handler(message)
+            await state.finish()
+        else:
+            if answer[0] != "@":
+                answer = "@" + answer
+            await state.update_data(name=answer)
+            await message.answer(MESSAGES["confirm_add_moderator"],
+                                 reply_markup=get_confirmation_menu_keyboard())
+            await AddModeratorStates.confirm.set()
 
 
 async def confirm_add_moderator_state(message: Message, state: FSMContext):
-    answer = message.text
-    if answer.lstrip("/") in COMMANDS.values():
-        await state.finish()
-        await commands_handler(message)
-    elif answer == BUTTONS["confirm"]:
-        #сохранение
-        await state.finish()
-        await message.answer(text=MESSAGES["update_save"])
-        await settings_handler(message)
-    elif answer == BUTTONS["cancellation"]:
-        await state.finish()
-        await settings_handler(message)
-    else:
-        await message.answer(
-            text=MESSAGES["command_error"], reply_markup=get_confirmation_menu_keyboard()
-        )
-        await ChangeGuaranteeStates.confirm.set()
+    if check_is_moderator(message.from_user.id):
+        answer = message.text
+        if answer.lstrip("/") in COMMANDS.values():
+            await state.finish()
+            await commands_handler(message)
+        elif answer == BUTTONS["confirm"]:
+            new_moderator = await state.get_data()
+            add_moderator(new_moderator["id"], new_moderator["name"])
+            await state.finish()
+            await message.answer(text=MESSAGES["update_save"])
+            await settings_handler(message)
+        elif answer == BUTTONS["cancellation"]:
+            await state.finish()
+            await settings_handler(message)
+        else:
+            await message.answer(
+                text=MESSAGES["command_error"], reply_markup=get_confirmation_menu_keyboard()
+            )
+            await ChangeGuaranteeStates.confirm.set()
 
 
 async def payment_menu_handler(message: Message):
@@ -144,47 +150,50 @@ async def promo_menu_handler(message: Message):
 
 
 async def change_guarantee_handler(message: Message):
-    await message.answer(text=MESSAGES["change_guarantee"], reply_markup=get_cancel_keyboard())
-    await ChangeGuaranteeStates.ask.set()
+    if check_is_moderator(message.from_user.id):
+        await message.answer(text=MESSAGES["change_guarantee"], reply_markup=get_cancel_keyboard())
+        await ChangeGuaranteeStates.ask.set()
 
 
 async def ask_change_guarantee_state(message: Message, state: FSMContext):
-    answer = message.text
-    if answer.lstrip("/") in COMMANDS.values():
-        await state.finish()
-        await commands_handler(message)
-    elif answer == BUTTONS["cancel"]:
-        await settings_handler(message)
-        await state.finish()
-    else:
-        if answer[0] != "@":
-            answer = "@" + answer
-            await state.update_data(guarantee=answer)
+    if check_is_moderator(message.from_user.id):
+        answer = message.text
+        if answer.lstrip("/") in COMMANDS.values():
+            await state.finish()
+            await commands_handler(message)
+        elif answer == BUTTONS["cancel"]:
+            await settings_handler(message)
+            await state.finish()
         else:
-            await state.update_data(guarantee=answer)
-        await message.answer(MESSAGES["confirm_change_guarantee"],
-                             reply_markup=get_confirmation_menu_keyboard())
-        await ChangeGuaranteeStates.confirm.set()
+            if answer[0] != "@":
+                answer = "@" + answer
+                await state.update_data(guarantee=answer)
+            else:
+                await state.update_data(guarantee=answer)
+            await message.answer(MESSAGES["confirm_change_guarantee"],
+                                 reply_markup=get_confirmation_menu_keyboard())
+            await ChangeGuaranteeStates.confirm.set()
 
 
 async def confirm_change_guarantee_state(message: Message, state: FSMContext):
-    answer = message.text
-    if answer.lstrip("/") in COMMANDS.values():
-        await commands_handler(message)
-    elif answer == BUTTONS["confirm"]:
-        new_guarantee = await state.get_data()
-        set_guarantee(new_guarantee["guarantee"])
-        await state.finish()
-        await message.answer(text=MESSAGES["update_save"])
-        await settings_handler(message)
-    elif answer == BUTTONS["cancellation"]:
-        await state.finish()
-        await settings_handler(message)
-    else:
-        await message.answer(
-            text=MESSAGES["command_error"], reply_markup=get_confirmation_menu_keyboard()
-        )
-        await ChangeGuaranteeStates.confirm.set()
+    if check_is_moderator(message.from_user.id):
+        answer = message.text
+        if answer.lstrip("/") in COMMANDS.values():
+            await commands_handler(message)
+        elif answer == BUTTONS["confirm"]:
+            new_guarantee = await state.get_data()
+            set_guarantee(new_guarantee["guarantee"])
+            await state.finish()
+            await message.answer(text=MESSAGES["update_save"])
+            await settings_handler(message)
+        elif answer == BUTTONS["cancellation"]:
+            await state.finish()
+            await settings_handler(message)
+        else:
+            await message.answer(
+                text=MESSAGES["command_error"], reply_markup=get_confirmation_menu_keyboard()
+            )
+            await ChangeGuaranteeStates.confirm.set()
 
 
 def register_moderator_handlers(dp: Dispatcher):

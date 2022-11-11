@@ -28,6 +28,12 @@ insert_seller_query = """
         VALUES
         (%s);
         """
+insert_moderator_query = """
+        INSERT INTO
+        `moderator` (`moderator_id`, `name`)
+        VALUES
+        (%s);
+        """
 
 select_all_moderators_info = "SELECT * FROM `moderator`"
 select_discounts_query = "SELECT * FROM `promocode`"
@@ -138,6 +144,7 @@ QUERIES = {
     "insert_theme": insert_theme_query,
     "insert_project_theme": insert_project_theme_query,
     "insert_seller": insert_seller_query,
+    "insert_moderator": insert_moderator_query,
     "select_all_moderators_info": select_all_moderators_info,
     "select_discounts": select_discounts_query,
     "select_vip_projects_id": select_vip_projects_id_query,
