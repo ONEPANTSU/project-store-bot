@@ -120,6 +120,12 @@ update_current_moderator_query = """
         SET `moderator_id` = '%s'
         WHERE `admin_id` = '944830799';
 """
+update_guarantee_query = """
+        UPDATE
+        `settings`
+        SET `guarantee` = '%s'
+        WHERE `admin_id` = '944830799';
+"""
 
 delete_moderator_query = "DELETE FROM `moderator` WHERE `moderator_id` = '%s'"
 delete_project_query = "DELETE FROM `project` WHERE `id` = '%s';"
@@ -156,6 +162,7 @@ QUERIES = {
     "update_project": update_project_query,
     "update_seller": update_seller_query,
     "update_current_moderator": update_current_moderator_query,
+    "update_guarantee": update_guarantee_query,
     "delete_moderator": delete_moderator_query,
     "delete_project": delete_project_query,
     "delete_seller": delete_seller_query,

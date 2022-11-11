@@ -574,6 +574,10 @@ class DBManager:
         update_moderator = QUERIES["update_current_moderator"] % (str(moderator_id))
         self.execute_query(self.connection, update_moderator)
 
+    def update_guarantee(self, guarantee):
+        update_guarantee = QUERIES["update_guarantee"] % guarantee
+        self.execute_query(self.connection, update_guarantee)
+
     def delete_moderator(self, moderator_id):
         delete_moderator = QUERIES["delete_moderator"] % (str(moderator_id))
         self.execute_query(self.connection, delete_moderator)
