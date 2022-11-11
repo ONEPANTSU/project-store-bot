@@ -25,7 +25,7 @@ buy_price_range_button = "🧷 Выбрать ценовой диапазон �
 
 yes_button = "Да"
 no_button = "Нет"
-chose_search_params_button = "🧹 Выбрать параметры поиска 🧹"
+chose_search_params_button = "⚙ Выбрать параметры поиска ⚙"
 
 back_to_sell_menu_button = "↩ Вернуться в меню ↩"
 back_to_buy_menu_button = "↩ Вернуться ↩"
