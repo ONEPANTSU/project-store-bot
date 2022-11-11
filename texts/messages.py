@@ -147,6 +147,9 @@ settings_message = "🛠️ Настройки бота 🛠️"
 moderators_message = "Модераторы:"
 change_guarantee_message = "Введите новое имя гаранта"
 confirm_change_guarantee_message = "Имя гаранта введено верно?"
+id_add_moderator_message = "Введите id нового модератора"
+name_add_moderator_message = "Введите ник нового модератора"
+id_check_message = "ID должен быть числом! Введите id нового модератора"
 
 MESSAGES = {
     "start": start_message,
@@ -232,4 +235,7 @@ MESSAGES = {
     "moderators": moderators_message,
     "change_guarantee": change_guarantee_message,
     "confirm_change_guarantee": confirm_change_guarantee_message,
+    "id_add_moderator": id_add_moderator_message,
+    "name_add_moderator": name_add_moderator_message,
+    "id_check": id_check_message,
 }

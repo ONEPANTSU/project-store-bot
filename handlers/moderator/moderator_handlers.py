@@ -16,7 +16,7 @@ from handlers.seller.inner_functions.seller_carousel_pages import (
     refresh_pages,
 )
 from handlers.seller.instruments.seller_callbacks import verify_callback
-from states import ChangeGuaranteeStates
+from states import ChangeGuaranteeStates, AddModeratorStates
 from texts.buttons import BUTTONS
 from texts.commands import COMMANDS
 from texts.messages import MESSAGES
@@ -74,7 +74,47 @@ async def delete_moderator_handler(query: CallbackQuery, callback_data: dict):
 
 
 async def add_moderator_handler(message: Message):
-    pass
+    await message.answer(text=MESSAGES["id_add_moderator"])
+    await AddModeratorStates.id.set()
+
+
+async def id_add_moderator_handler(message: Message, state: FSMContext):
+    answer = message.text
+    if answer.lstrip("/") in COMMANDS.values():
+        await state.finish()
+        await commands_handler(message)
+    elif answer == BUTTONS["cancel"]:
+        await settings_handler(message)
+        await state.finish()
+    else:
+        if not answer.isdigit():
+            await message.answer(
+                text=MESSAGES["id_check"]
+            )
+            await AddModeratorStates.id.set()
+        else:
+            await state.update_data(id=answer)
+        await message.answer(MESSAGES["name_add_moderator"],
+                             reply_markup=get_project_confirmation_menu_keyboard())
+        await ChangeGuaranteeStates.confirm.set()
+
+
+async def confirm_add_moderator_state(message: Message, state: FSMContext):
+    answer = message.text
+    if answer.lstrip("/") in COMMANDS.values():
+        await commands_handler(message)
+    elif answer == BUTTONS["confirm"]:
+        #сохранение
+        await state.finish()
+        await settings_handler(message)
+    elif answer == BUTTONS["cancellation"]:
+        await state.finish()
+        await settings_handler(message)
+    else:
+        await message.answer(
+            text=MESSAGES["command_error"], reply_markup=yes_or_no_keyboard()
+        )
+        await ChangeGuaranteeStates.confirm.set()
 
 
 async def payment_menu_handler(message: Message):
