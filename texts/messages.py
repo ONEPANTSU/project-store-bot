@@ -145,6 +145,8 @@ vip_need_promo_code_message = "Воспользоваться промокодо
 
 settings_message = "🛠️ Настройки бота 🛠️"
 moderators_message = "Модераторы:"
+change_guarantee_message = "Введите новое имя гаранта"
+confirm_change_guarantee_message = "Имя гаранта введено верно?"
 
 MESSAGES = {
     "start": start_message,
@@ -228,4 +230,6 @@ MESSAGES = {
     "free_payment": free_payment_message,
     "settings": settings_message,
     "moderators": moderators_message,
+    "change_guarantee": change_guarantee_message,
+    "confirm_change_guarantee": confirm_change_guarantee_message,
 }

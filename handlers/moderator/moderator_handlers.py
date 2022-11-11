@@ -1,19 +1,24 @@
 from aiogram import Dispatcher
+from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from data_base.db_functions import get_moderator_all_project_list, get_moderator_id
 from data_base.project import Project
 from handlers.moderator.moderator_callback import moderator_page_callback
 from handlers.moderator.moderator_functions import get_settings_keyboard, check_is_moderator, get_moderators_keyboard, \
-    get_admin_moderators_keyboard, check_is_admin
+    get_admin_moderators_keyboard, check_is_admin, get_project_confirmation_menu_keyboard
 from handlers.moderator.moderators_carousel import moderators_index, refresh_moderator_pages
+from handlers.seller.handlers.sell_handlers import yes_or_no_keyboard
 from handlers.seller.inner_functions.seller_carousel_pages import (
     my_project_index,
     refresh_pages,
 )
 from handlers.seller.instruments.seller_callbacks import verify_callback
+from states import ChangeGuaranteeStates
 from texts.buttons import BUTTONS
+from texts.commands import COMMANDS
 from texts.messages import MESSAGES
+from useful.commands_handler import commands_handler
 
 
 async def moderator_handler(message: Message):
@@ -61,7 +66,45 @@ async def promo_menu_handler(message: Message):
 
 
 async def change_guarantee_handler(message: Message):
-    pass
+    await message.answer(text=MESSAGES["change_guarantee"])
+    await ChangeGuaranteeStates.ask.set()
+
+
+async def ask_change_guarantee_state(message: Message, state: FSMContext):
+    answer = message.text
+    if answer.lstrip("/") in COMMANDS.values():
+        await state.finish()
+        await commands_handler(message)
+    elif answer == BUTTONS["cancel"]:
+        await settings_handler(message)
+        await state.finish()
+    else:
+        if answer[0] != "@":
+            answer = "@" + answer
+            await state.update_data(moderator=answer)
+        else:
+            await state.update_data(moderator=answer)
+        await message.answer(MESSAGES["confirm_change_guarantee"],
+                             reply_markup=get_project_confirmation_menu_keyboard())
+        await ChangeGuaranteeStates.confirm.set()
+
+
+async def confirm_change_guarantee_state(message: Message, state: FSMContext):
+    answer = message.text
+    if answer.lstrip("/") in COMMANDS.values():
+        await commands_handler(message)
+    elif answer == BUTTONS["yes"]:
+        #сохранение
+        await state.finish()
+        await settings_handler(message)
+    elif answer == BUTTONS["no"]:
+        await state.finish()
+        await settings_handler(message)
+    else:
+        await message.answer(
+            text=MESSAGES["yes_or_no"], reply_markup=yes_or_no_keyboard()
+        )
+        await ChangeGuaranteeStates.confirm.set()
 
 
 def register_moderator_handlers(dp: Dispatcher):
@@ -73,3 +116,5 @@ def register_moderator_handlers(dp: Dispatcher):
     dp.register_message_handler(change_guarantee_handler, text=BUTTONS["guarantee"])
     dp.register_callback_query_handler(verify_callback_handler, verify_callback.filter())
     dp.register_callback_query_handler(moderator_page_handler, moderator_page_callback.filter())
+    dp.register_message_handler(confirm_change_guarantee_state, state=ChangeGuaranteeStates.confirm)
+    dp.register_message_handler(ask_change_guarantee_state, state=ChangeGuaranteeStates.ask)
