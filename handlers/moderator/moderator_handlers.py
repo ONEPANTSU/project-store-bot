@@ -9,7 +9,7 @@ from handlers.moderator.moderator_callback import moderator_page_callback, chose
     delete_moderator_callback
 from handlers.moderator.moderator_functions import get_settings_keyboard, check_is_moderator, get_moderators_keyboard, \
     get_admin_moderators_keyboard, check_is_admin, \
-    get_confirmation_menu_keyboard
+    get_confirmation_menu_keyboard, get_cancel_keyboard
 from handlers.moderator.moderators_carousel import moderators_index, refresh_moderator_pages
 from handlers.seller.handlers.sell_handlers import yes_or_no_keyboard
 from handlers.seller.inner_functions.seller_carousel_pages import (
@@ -75,7 +75,7 @@ async def delete_moderator_handler(query: CallbackQuery, callback_data: dict):
 
 
 async def add_moderator_handler(message: Message):
-    await message.answer(text=MESSAGES["id_add_moderator"])
+    await message.answer(text=MESSAGES["id_add_moderator"], reply_markup=get_cancel_keyboard())
     await AddModeratorStates.id.set()
 
 
@@ -97,23 +97,40 @@ async def id_add_moderator_handler(message: Message, state: FSMContext):
             await state.update_data(id=answer)
         await message.answer(MESSAGES["name_add_moderator"],
                              reply_markup=get_confirmation_menu_keyboard())
-        await ChangeGuaranteeStates.confirm.set()
+        await AddModeratorStates.name.set()
+
+
+async def name_add_moderator_handler(message: Message, state: FSMContext):
+    answer = message.text
+    if answer.lstrip("/") in COMMANDS.values():
+        await state.finish()
+        await commands_handler(message)
+    elif answer == BUTTONS["cancel"]:
+        await settings_handler(message)
+        await state.finish()
+    else:
+        await state.update_data(name=answer)
+        await message.answer(MESSAGES["confirm_add_moderator"],
+                             reply_markup=get_confirmation_menu_keyboard())
+        await AddModeratorStates.confirm.set()
 
 
 async def confirm_add_moderator_state(message: Message, state: FSMContext):
     answer = message.text
     if answer.lstrip("/") in COMMANDS.values():
+        await state.finish()
         await commands_handler(message)
     elif answer == BUTTONS["confirm"]:
         #сохранение
         await state.finish()
+        await message.answer(text=MESSAGES["update_save"])
         await settings_handler(message)
     elif answer == BUTTONS["cancellation"]:
         await state.finish()
         await settings_handler(message)
     else:
         await message.answer(
-            text=MESSAGES["command_error"], reply_markup=yes_or_no_keyboard()
+            text=MESSAGES["command_error"], reply_markup=get_confirmation_menu_keyboard()
         )
         await ChangeGuaranteeStates.confirm.set()
 
@@ -127,7 +144,7 @@ async def promo_menu_handler(message: Message):
 
 
 async def change_guarantee_handler(message: Message):
-    await message.answer(text=MESSAGES["change_guarantee"])
+    await message.answer(text=MESSAGES["change_guarantee"], reply_markup=get_cancel_keyboard())
     await ChangeGuaranteeStates.ask.set()
 
 
@@ -158,13 +175,14 @@ async def confirm_change_guarantee_state(message: Message, state: FSMContext):
         new_guarantee = await state.get_data()
         set_guarantee(new_guarantee["guarantee"])
         await state.finish()
+        await message.answer(text=MESSAGES["update_save"])
         await settings_handler(message)
     elif answer == BUTTONS["cancellation"]:
         await state.finish()
         await settings_handler(message)
     else:
         await message.answer(
-            text=MESSAGES["command_error"], reply_markup=yes_or_no_keyboard()
+            text=MESSAGES["command_error"], reply_markup=get_confirmation_menu_keyboard()
         )
         await ChangeGuaranteeStates.confirm.set()
 
@@ -178,8 +196,11 @@ def register_moderator_handlers(dp: Dispatcher):
     dp.register_message_handler(change_guarantee_handler, text=BUTTONS["guarantee"])
     dp.register_callback_query_handler(verify_callback_handler, verify_callback.filter())
     dp.register_callback_query_handler(moderator_page_handler, moderator_page_callback.filter())
-    dp.register_message_handler(confirm_change_guarantee_state, state=ChangeGuaranteeStates.confirm)
+    dp.register_message_handler(id_add_moderator_handler, state=AddModeratorStates.id)
+    dp.register_message_handler(name_add_moderator_handler, state=AddModeratorStates.name)
+    dp.register_message_handler(confirm_add_moderator_state, state=AddModeratorStates.confirm)
     dp.register_message_handler(ask_change_guarantee_state, state=ChangeGuaranteeStates.ask)
+    dp.register_message_handler(confirm_change_guarantee_state, state=ChangeGuaranteeStates.confirm)
     dp.register_callback_query_handler(chose_moderator_handler, chose_moderator_callback.filter())
     dp.register_callback_query_handler(delete_moderator_handler, delete_moderator_callback.filter())
     dp.register_message_handler(add_moderator_handler, text=BUTTONS["add_moderator"])

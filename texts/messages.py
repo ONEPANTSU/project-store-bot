@@ -150,6 +150,8 @@ confirm_change_guarantee_message = "Имя гаранта введено вер�
 id_add_moderator_message = "Введите id нового модератора"
 name_add_moderator_message = "Введите ник нового модератора"
 id_check_message = "ID должен быть числом! Введите id нового модератора"
+confirm_add_moderator_message = "Имя модератора и id введено верно?"
+update_save_message = "Обновления сохранены!"
 
 MESSAGES = {
     "start": start_message,
@@ -238,4 +240,6 @@ MESSAGES = {
     "id_add_moderator": id_add_moderator_message,
     "name_add_moderator": name_add_moderator_message,
     "id_check": id_check_message,
+    "confirm_add_moderator": confirm_add_moderator_message,
+    "update_save": update_save_message,
 }

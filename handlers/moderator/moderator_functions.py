@@ -61,3 +61,10 @@ def get_confirmation_menu_keyboard():
     markup.row(confirm_button)
     markup.row(cancellation_button)
     return markup
+
+
+def get_cancel_keyboard():
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    cancellation_button = KeyboardButton(BUTTONS["cancellation"])
+    markup.row(cancellation_button)
+    return markup
