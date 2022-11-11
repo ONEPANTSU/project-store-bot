@@ -6,6 +6,13 @@ from texts.buttons import BUTTONS
 
 def check_is_moderator(user_id):
     is_moderator = False
+    if user_id == get_moderator_id() or user_id == get_admin_id():
+        is_moderator = True
+    return is_moderator
+
+
+def check_is_current_moderator(user_id):
+    is_moderator = False
     if user_id == get_moderator_id():
         is_moderator = True
     return is_moderator

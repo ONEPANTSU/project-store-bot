@@ -110,11 +110,18 @@ update_project_query = """
         """
 update_seller_query = """
         UPDATE
-        `seller` ()
+        `seller`
         SET `telegram_name` = '%s'
         WHERE `id` = '%s';
         """
+update_current_moderator_query = """
+        UPDATE
+        `settings`
+        SET `moderator_id` = '%s'
+        WHERE `admin_id` = '944830799';
+"""
 
+delete_moderator_query = "DELETE FROM `moderator` WHERE `moderator_id` = '%s'"
 delete_project_query = "DELETE FROM `project` WHERE `id` = '%s';"
 delete_seller_query = "DELETE FROM `seller` WHERE `id` = '%s';"
 delete_project_theme_query = "DELETE FROM `project_theme` WHERE `project_id` = '%s';"
@@ -148,6 +155,8 @@ QUERIES = {
     "select_all_settings_info": select_all_settings_info_query,
     "update_project": update_project_query,
     "update_seller": update_seller_query,
+    "update_current_moderator": update_current_moderator_query,
+    "delete_moderator": delete_moderator_query,
     "delete_project": delete_project_query,
     "delete_seller": delete_seller_query,
     "delete_project_theme": delete_project_theme_query,

@@ -1,9 +1,11 @@
 from aiogram import Dispatcher
 from aiogram.types import CallbackQuery, Message
 
-from data_base.db_functions import get_moderator_all_project_list, get_moderator_id
+from data_base.db_functions import get_moderator_all_project_list, get_moderator_id, set_current_moderator, \
+    delete_moderator
 from data_base.project import Project
-from handlers.moderator.moderator_callback import moderator_page_callback
+from handlers.moderator.moderator_callback import moderator_page_callback, chose_moderator_callback, \
+    delete_moderator_callback
 from handlers.moderator.moderator_functions import get_settings_keyboard, check_is_moderator, get_moderators_keyboard, \
     get_admin_moderators_keyboard, check_is_admin
 from handlers.moderator.moderators_carousel import moderators_index, refresh_moderator_pages
@@ -52,6 +54,24 @@ async def moderator_page_handler(query: CallbackQuery, callback_data: dict):
     await refresh_moderator_pages(query=query, callback_data=callback_data)
 
 
+async def chose_moderator_handler(query: CallbackQuery, callback_data: dict):
+    if check_is_moderator(query.from_user.id):
+        moderator_id = int(callback_data.get("id"))
+        set_current_moderator(moderator_id)
+        await refresh_moderator_pages(query=query, callback_data=callback_data)
+
+
+async def delete_moderator_handler(query: CallbackQuery, callback_data: dict):
+    if check_is_admin(query.from_user.id):
+        moderator_id = int(callback_data.get("id"))
+        delete_moderator(moderator_id)
+        await refresh_moderator_pages(query=query, callback_data=callback_data)
+
+
+async def add_moderator_handler(message: Message):
+    pass
+
+
 async def payment_menu_handler(message: Message):
     pass
 
@@ -73,3 +93,6 @@ def register_moderator_handlers(dp: Dispatcher):
     dp.register_message_handler(change_guarantee_handler, text=BUTTONS["guarantee"])
     dp.register_callback_query_handler(verify_callback_handler, verify_callback.filter())
     dp.register_callback_query_handler(moderator_page_handler, moderator_page_callback.filter())
+    dp.register_callback_query_handler(chose_moderator_handler, chose_moderator_callback.filter())
+    dp.register_callback_query_handler(delete_moderator_handler, delete_moderator_callback.filter())
+    dp.register_message_handler(add_moderator_handler, text=BUTTONS["add_moderator"])

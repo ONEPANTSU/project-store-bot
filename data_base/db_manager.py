@@ -570,6 +570,14 @@ class DBManager:
         update_seller = QUERIES["update_seller"] % (seller_name, str(seller_id))
         self.execute_query(self.connection, update_seller)
 
+    def update_current_moderator(self, moderator_id):
+        update_moderator = QUERIES["update_current_moderator"] % (str(moderator_id))
+        self.execute_query(self.connection, update_moderator)
+
+    def delete_moderator(self, moderator_id):
+        delete_moderator = QUERIES["delete_moderator"] % (str(moderator_id))
+        self.execute_query(self.connection, delete_moderator)
+
     def delete_project(self, project_id):
         """
         This function creates DELETE query for deleting row from `project` and `project_theme` tables.
