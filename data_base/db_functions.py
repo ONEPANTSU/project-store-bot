@@ -262,5 +262,9 @@ def set_current_moderator(moderator_id):
     db_manager.update_current_moderator(moderator_id)
 
 
+def set_guarantee(guarantee):
+    db_manager.update_guarantee(guarantee)
+
+
 def delete_moderator(moderator_id):
     db_manager.delete_moderator(moderator_id)
