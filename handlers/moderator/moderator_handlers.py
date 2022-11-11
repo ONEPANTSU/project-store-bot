@@ -96,7 +96,7 @@ async def id_add_moderator_handler(message: Message, state: FSMContext):
         else:
             await state.update_data(id=answer)
         await message.answer(MESSAGES["name_add_moderator"],
-                             reply_markup=get_project_confirmation_menu_keyboard())
+                             reply_markup=get_confirmation_menu_keyboard())
         await ChangeGuaranteeStates.confirm.set()
 
 
