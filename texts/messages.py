@@ -156,6 +156,7 @@ change_payment_message = "Выберите какую цену вы хотите
 new_payment_message = "Напишите новую цену"
 payment_check_message = "Цена должна быть числом! Напишите цену заново"
 confirm_change_payment_message = "Цена введена верно?"
+delete_promo_message = "Вы действительно хотите удалить промокод: <b> {code} </b>"
 
 MESSAGES = {
     "start": start_message,
@@ -250,4 +251,5 @@ MESSAGES = {
     "new_payment": new_payment_message,
     "payment_check": payment_check_message,
     "confirm_change_payment": confirm_change_payment_message,
+    "delete_promo": delete_promo_message,
 }

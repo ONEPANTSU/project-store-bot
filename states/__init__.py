@@ -1,5 +1,6 @@
 from .add_moderator_states import AddModeratorStates
 from .add_promo_states import AddPromoStates
+from .delete_promo_states import DeletePromoStates
 from .buy_project_states import BuyProjectStates
 from .change_guarantee_states import ChangeGuaranteeStates
 from .change_payment_states import ChangePaymentStates
