@@ -139,6 +139,18 @@ update_guarantee_query = """
         SET `guarantee` = '%s'
         WHERE `admin_id` = '944830799';
 """
+update_regular_query = """
+        UPDATE
+        `settings`
+        SET `regular_sell_price` = '%s'
+        WHERE `admin_id` = '944830799';
+"""
+update_vip_query = """
+        UPDATE
+        `settings`
+        SET `vip_sell_price` = '%s'
+        WHERE `admin_id` = '944830799';
+"""
 
 delete_moderator_query = "DELETE FROM `moderator` WHERE `moderator_id` = '%s'"
 delete_project_query = "DELETE FROM `project` WHERE `id` = '%s';"
@@ -178,6 +190,8 @@ QUERIES = {
     "update_seller": update_seller_query,
     "update_current_moderator": update_current_moderator_query,
     "update_guarantee": update_guarantee_query,
+    "update_regular": update_regular_query,
+    "update_vip": update_vip_query,
     "delete_moderator": delete_moderator_query,
     "delete_project": delete_project_query,
     "delete_seller": delete_seller_query,

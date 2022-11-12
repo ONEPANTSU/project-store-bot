@@ -290,3 +290,11 @@ def add_promo_code(new_code, new_discount, new_type):
     if new_type == 1:
         new_discount *= 100
     db_manager.insert_new_promo_code(new_code, new_discount, new_type)
+
+
+def save_regular_price(price):
+    db_manager.update_regular_price(price)
+
+
+def save_vip_price(price):
+    db_manager.update_vip_price(price)

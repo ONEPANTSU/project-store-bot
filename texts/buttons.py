@@ -44,8 +44,8 @@ verify_button = "Проверено ✅"
 add_promo_button = "➕ Добавить промокод ➕"
 delete_promo_button = "❌ Удалить промокод ❌"
 
-change_regular_price_button = "Изменить стоимость объявления"
-change_vip_price_button = "Изменить стоимость объявления"
+change_regular_price_button = "🗿 Стоимость объявления 🗿"
+change_vip_price_button = "👑 Premium-статус 👑"
 
 
 BUTTONS = {
