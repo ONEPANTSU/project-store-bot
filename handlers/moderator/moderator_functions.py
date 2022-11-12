@@ -88,3 +88,14 @@ def get_cancel_keyboard():
     cancellation_button = KeyboardButton(BUTTONS["cancellation"])
     markup.row(cancellation_button)
     return markup
+
+
+def get_payment_menu_keyboard():
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    change_regular_price_button = KeyboardButton(BUTTONS["change_regular_price"])
+    change_vip_price_button = KeyboardButton(BUTTONS["change_vip_price"])
+    cancellation_button = KeyboardButton(BUTTONS["change_vip_price"])
+    markup.row(change_regular_price_button)
+    markup.row(change_vip_price_button)
+    markup.row(cancellation_button)
+    return markup

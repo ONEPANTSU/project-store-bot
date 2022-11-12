@@ -152,6 +152,10 @@ name_add_moderator_message = "Введите ник нового модерат�
 id_check_message = "ID должен быть числом! Введите id нового модератора"
 confirm_add_moderator_message = "Имя модератора и id введено верно?"
 update_save_message = "Обновления сохранены!"
+change_payment_message = "Выберите какую цену вы хотите поменять"
+new_payment_message = "Напишите новую цену"
+payment_check_message = "Цена должна быть числом! Напишите цену заново"
+confirm_change_payment_message = "Цена введена верно?"
 
 MESSAGES = {
     "start": start_message,
@@ -242,4 +246,8 @@ MESSAGES = {
     "id_check": id_check_message,
     "confirm_add_moderator": confirm_add_moderator_message,
     "update_save": update_save_message,
+    "change_payment": change_payment_message,
+    "new_payment": new_payment_message,
+    "payment_check": payment_check_message,
+    "confirm_change_payment": confirm_change_payment_message,
 }

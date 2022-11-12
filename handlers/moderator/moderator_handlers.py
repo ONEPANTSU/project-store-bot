@@ -10,13 +10,14 @@ from handlers.moderator.moderator_callback import moderator_page_callback, chose
 from handlers.moderator.moderator_functions import get_settings_keyboard, check_is_moderator, get_moderators_keyboard, \
     get_admin_moderators_keyboard, check_is_admin, \
     get_confirmation_menu_keyboard, get_cancel_keyboard, get_promo_keyboard
+    get_confirmation_menu_keyboard, get_cancel_keyboard, get_payment_menu_keyboard
 from handlers.moderator.moderators_carousel import moderators_index, refresh_moderator_pages
 from handlers.seller.inner_functions.seller_carousel_pages import (
     my_project_index,
     refresh_pages,
 )
 from handlers.seller.instruments.seller_callbacks import verify_callback
-from states import ChangeGuaranteeStates, AddModeratorStates
+from states import ChangeGuaranteeStates, AddModeratorStates, ChangePaymentStates
 from texts.buttons import BUTTONS
 from texts.commands import COMMANDS
 from texts.messages import MESSAGES
@@ -142,7 +143,97 @@ async def confirm_add_moderator_state(message: Message, state: FSMContext):
 
 
 async def payment_menu_handler(message: Message):
-    pass
+    if check_is_moderator(message.from_user.id):
+        await message.answer(text=MESSAGES["change_payment"], reply_markup=get_payment_menu_keyboard())
+        await ChangePaymentStates.ask.set()
+
+
+async def ask_change_payment_state_handler(message: Message, state: FSMContext):
+    if check_is_moderator(message.from_user.id):
+        answer = message.text
+        if answer.lstrip("/") in COMMANDS.values():
+            await state.finish()
+            await commands_handler(message)
+        elif answer == BUTTONS["cancel"]:
+            await settings_handler(message)
+            await state.finish()
+        elif answer == BUTTONS["change_regular_price"]:
+            await message.answer(text=MESSAGES["new_payment"])
+            await ChangePaymentStates.regular.set()
+        elif answer == BUTTONS["change_vip_price"]:
+            await message.answer(text=MESSAGES["new_payment"])
+            await ChangePaymentStates.vip.set()
+        else:
+            await message.answer(MESSAGES["not_recognized"])
+            await message.answer(text=MESSAGES["change_payment"], reply_markup=get_payment_menu_keyboard())
+            await ChangePaymentStates.ask.set()
+
+
+async def regular_change_payment_state_handler(message: Message, state: FSMContext):
+    if check_is_moderator(message.from_user.id):
+        answer = message.text
+        if answer.lstrip("/") in COMMANDS.values():
+            await state.finish()
+            await commands_handler(message)
+        else:
+            if not answer.isdigit():
+                await message.answer(
+                    text=MESSAGES["payment_check"]
+                )
+                await ChangePaymentStates.regular.set()
+            else:
+                answer = int(answer)*100
+                await state.update_data(regular=answer)
+                await state.update_data(type="regular")
+            await message.answer(MESSAGES["confirm_change_payment"],
+                                 reply_markup=get_confirmation_menu_keyboard())
+            await ChangePaymentStates.confirm.set()
+
+
+async def vip_change_payment_state_handler(message: Message, state: FSMContext):
+    if check_is_moderator(message.from_user.id):
+        answer = message.text
+        if answer.lstrip("/") in COMMANDS.values():
+            await state.finish()
+            await commands_handler(message)
+        else:
+            if not answer.isdigit():
+                await message.answer(
+                    text=MESSAGES["payment_check"]
+                )
+                await ChangePaymentStates.vip.set()
+            else:
+                answer = int(answer)*100
+                await state.update_data(regular=answer)
+                await state.update_data(type="vip")
+            await message.answer(MESSAGES["confirm_change_payment"],
+                                 reply_markup=get_confirmation_menu_keyboard())
+            await ChangePaymentStates.confirm.set()
+
+
+async def confirm_change_payment_state(message: Message, state: FSMContext):
+    if check_is_moderator(message.from_user.id):
+        answer = message.text
+        if answer.lstrip("/") in COMMANDS.values():
+            await commands_handler(message)
+        elif answer == BUTTONS["confirm"]:
+            data = await state.get_data()
+            if data["type"] == "regular":
+                #сохранение для простой цены
+            else:
+                #сохранение для простой цены
+            await state.finish()
+            await message.answer(text=MESSAGES["update_save"])
+            await settings_handler(message)
+        elif answer == BUTTONS["cancellation"]:
+            await state.finish()
+            await settings_handler(message)
+        else:
+            await message.answer(
+                text=MESSAGES["command_error"], reply_markup=get_confirmation_menu_keyboard()
+            )
+            await ChangeGuaranteeStates.confirm.set()
+
 
 
 async def promo_menu_handler(message: Message):
@@ -210,6 +301,10 @@ def register_moderator_handlers(dp: Dispatcher):
     dp.register_message_handler(id_add_moderator_handler, state=AddModeratorStates.id)
     dp.register_message_handler(name_add_moderator_handler, state=AddModeratorStates.name)
     dp.register_message_handler(confirm_add_moderator_state, state=AddModeratorStates.confirm)
+    dp.register_message_handler(ask_change_payment_state_handler, state=ChangePaymentStates.ask)
+    dp.register_message_handler(regular_change_payment_state_handler, state=ChangePaymentStates.regular)
+    dp.register_message_handler(vip_change_payment_state_handler, state=ChangePaymentStates.vip)
+    dp.register_message_handler(confirm_change_payment_state, state=ChangePaymentStates.confirm)
     dp.register_message_handler(ask_change_guarantee_state, state=ChangeGuaranteeStates.ask)
     dp.register_message_handler(confirm_change_guarantee_state, state=ChangeGuaranteeStates.confirm)
     dp.register_callback_query_handler(chose_moderator_handler, chose_moderator_callback.filter())

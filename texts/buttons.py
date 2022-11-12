@@ -44,6 +44,10 @@ verify_button = "Проверено ✅"
 add_promo_button = "➕ Добавить промокод ➕"
 delete_promo_button = "❌ Удалить промокод ❌"
 
+change_regular_price_button = "Изменить стоимость объявления"
+change_vip_price_button = "Изменить стоимость объявления"
+
+
 BUTTONS = {
     "back": back_button,
     "sell_menu": sell_menu_button,
@@ -80,4 +84,7 @@ BUTTONS = {
     "information": information_button,
     "add_promo": add_promo_button,
     "delete_promo": delete_promo_button,
+    "change_regular_price": change_regular_price_button,
+    "change_vip_price": change_vip_price_button,
+
 }
