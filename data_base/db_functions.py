@@ -302,3 +302,7 @@ def save_regular_price(price):
 
 def save_vip_price(price):
     db_manager.update_vip_price(price)
+
+
+def save_need_payment(need_payment):
+    db_manager.update_need_payment(need_payment)

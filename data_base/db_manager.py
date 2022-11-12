@@ -602,6 +602,10 @@ class DBManager:
         update_vip = QUERIES["update_vip"] % str(price)
         self.execute_query(self.connection, update_vip)
 
+    def update_need_payment(self, need_payment):
+        update_need_payment = QUERIES["update_need_payment"] % str(need_payment)
+        self.execute_query(self.connection, update_need_payment)
+
     def delete_moderator(self, moderator_id):
         delete_moderator = QUERIES["delete_moderator"] % (str(moderator_id))
         self.execute_query(self.connection, delete_moderator)

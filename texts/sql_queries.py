@@ -151,6 +151,12 @@ update_vip_query = """
         SET `vip_sell_price` = '%s'
         WHERE `admin_id` = '944830799';
 """
+update_need_payment_query = """
+        UPDATE
+        `settings`
+        SET `need_payment` = '%s'
+        WHERE `admin_id` = '944830799';
+"""
 
 delete_moderator_query = "DELETE FROM `moderator` WHERE `moderator_id` = '%s'"
 delete_promo_query = "DELETE FROM `promocode` WHERE `code` = '%s'"
@@ -193,6 +199,7 @@ QUERIES = {
     "update_guarantee": update_guarantee_query,
     "update_regular": update_regular_query,
     "update_vip": update_vip_query,
+    "update_need_payment": update_need_payment_query,
     "delete_moderator": delete_moderator_query,
     "delete_promo": delete_promo_query,
     "delete_project": delete_project_query,

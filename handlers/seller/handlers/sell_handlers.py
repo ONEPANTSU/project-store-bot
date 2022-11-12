@@ -580,19 +580,41 @@ async def input_promo_state(message: Message, state: FSMContext):
     if discounted_price < price_amount:
 
         await state.finish()
-        price_amount = discounted_price
-        prices = [LabeledPrice(label=MESSAGES["sell_payment"], amount=price_amount)]
-        await bot.send_invoice(
-            message.chat.id,
-            title=MESSAGES["sell_payment_title"],
-            description=MESSAGES["sell_payment_description"],
-            provider_token=PAYMENTS_TOKEN,
-            currency="rub",
-            is_flexible=False,
-            prices=prices,
-            start_parameter="example",
-            payload=INVOICE_PAYLOAD["sell"],
-        )
+        if discounted_price <= 0:
+            if new_projects_dict[message.from_user.username].status_id == 1:
+                new_projects_dict[
+                    message.from_user.username
+                ].vip_ending = datetime.now() + timedelta(days=7)
+            else:
+                new_projects_dict[message.from_user.username].vip_ending = datetime(
+                    year=1900, month=1, day=1
+                )
+
+            new_projects_dict[message.from_user.username].save_new_project()
+            new_projects_dict.pop(message.from_user.username)
+
+            is_moderator = False
+            if message.chat.id == get_moderator_id():
+                is_moderator = True
+            await bot.send_message(
+                message.chat.id,
+                MESSAGES["successful_payment"],
+                reply_markup=get_main_keyboard(is_moderator=is_moderator),
+            )
+        else:
+            price_amount = discounted_price
+            prices = [LabeledPrice(label=MESSAGES["sell_payment"], amount=price_amount)]
+            await bot.send_invoice(
+                message.chat.id,
+                title=MESSAGES["sell_payment_title"],
+                description=MESSAGES["sell_payment_description"],
+                provider_token=PAYMENTS_TOKEN,
+                currency="rub",
+                is_flexible=False,
+                prices=prices,
+                start_parameter="example",
+                payload=INVOICE_PAYLOAD["sell"],
+            )
     else:
         await bot.send_message(
             chat_id=message.chat.id,
