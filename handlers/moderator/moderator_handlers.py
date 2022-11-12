@@ -8,7 +8,7 @@ from data_base.db_functions import (
     delete_moderator,
     get_moderator_all_project_list,
     set_current_moderator,
-    set_guarantee,
+    set_guarantee, save_regular_price, save_vip_price, get_regular_sell_price, get_vip_sell_price,
 )
 from data_base.project import Project
 from handlers.moderator.moderator_callback import (
@@ -179,8 +179,11 @@ async def confirm_add_moderator_state(message: Message, state: FSMContext):
 
 async def payment_menu_handler(message: Message):
     if check_is_moderator(message.from_user.id):
+        regular_price = int(get_regular_sell_price()/100)
+        vip_price = int(get_vip_sell_price()/100)
         await message.answer(
-            text=MESSAGES["change_payment"], reply_markup=get_payment_menu_keyboard()
+            text=MESSAGES["change_payment"].format(regular_price=regular_price, vip_price=vip_price),
+            reply_markup=get_payment_menu_keyboard()
         )
         await ChangePaymentStates.ask.set()
 
@@ -191,7 +194,7 @@ async def ask_change_payment_state_handler(message: Message, state: FSMContext):
         if answer.lstrip("/") in COMMANDS.values():
             await state.finish()
             await commands_handler(message)
-        elif answer == BUTTONS["cancel"]:
+        elif answer == BUTTONS["cancellation"]:
             await settings_handler(message)
             await state.finish()
         elif answer == BUTTONS["change_regular_price"]:
@@ -215,13 +218,16 @@ async def regular_change_payment_state_handler(message: Message, state: FSMConte
         if answer.lstrip("/") in COMMANDS.values():
             await state.finish()
             await commands_handler(message)
+        elif answer == BUTTONS["cancellation"]:
+            await settings_handler(message)
+            await state.finish()
         else:
             if not answer.isdigit():
                 await message.answer(text=MESSAGES["payment_check"])
                 await ChangePaymentStates.regular.set()
             else:
                 answer = int(answer) * 100
-                await state.update_data(regular=answer)
+                await state.update_data(price=answer)
                 await state.update_data(type="regular")
             await message.answer(
                 MESSAGES["confirm_change_payment"],
@@ -236,13 +242,16 @@ async def vip_change_payment_state_handler(message: Message, state: FSMContext):
         if answer.lstrip("/") in COMMANDS.values():
             await state.finish()
             await commands_handler(message)
+        elif answer == BUTTONS["cancellation"]:
+            await settings_handler(message)
+            await state.finish()
         else:
             if not answer.isdigit():
                 await message.answer(text=MESSAGES["payment_check"])
                 await ChangePaymentStates.vip.set()
             else:
                 answer = int(answer) * 100
-                await state.update_data(regular=answer)
+                await state.update_data(price=answer)
                 await state.update_data(type="vip")
             await message.answer(
                 MESSAGES["confirm_change_payment"],
@@ -259,11 +268,9 @@ async def confirm_change_payment_state(message: Message, state: FSMContext):
         elif answer == BUTTONS["confirm"]:
             data = await state.get_data()
             if data["type"] == "regular":
-                pass
-                # сохранение для простой цены
+                save_regular_price(int(data["price"]))
             else:
-                pass
-                # сохранение для простой цены
+                save_vip_price(int(data["price"]))
             await state.finish()
             await message.answer(text=MESSAGES["update_save"])
             await settings_handler(message)
