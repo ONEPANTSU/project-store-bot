@@ -3,13 +3,13 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from data_base.db_functions import get_moderator_all_project_list, set_current_moderator, \
-    delete_moderator, set_guarantee, add_moderator
+    delete_moderator, set_guarantee, add_moderator, get_all_promo_codes
 from data_base.project import Project
 from handlers.moderator.moderator_callback import moderator_page_callback, chose_moderator_callback, \
     delete_moderator_callback
 from handlers.moderator.moderator_functions import get_settings_keyboard, check_is_moderator, get_moderators_keyboard, \
     get_admin_moderators_keyboard, check_is_admin, \
-    get_confirmation_menu_keyboard, get_cancel_keyboard
+    get_confirmation_menu_keyboard, get_cancel_keyboard, get_promo_keyboard
 from handlers.moderator.moderators_carousel import moderators_index, refresh_moderator_pages
 from handlers.seller.inner_functions.seller_carousel_pages import (
     my_project_index,
@@ -146,7 +146,9 @@ async def payment_menu_handler(message: Message):
 
 
 async def promo_menu_handler(message: Message):
-    pass
+    if check_is_moderator(message.from_user.id):
+        text = "Промокоды:"
+        await message.answer(text=text, reply_markup=get_promo_keyboard())
 
 
 async def change_guarantee_handler(message: Message):

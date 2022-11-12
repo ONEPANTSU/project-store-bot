@@ -272,3 +272,15 @@ def delete_moderator(moderator_id):
 
 def add_moderator(moderator_id, moderator_name):
     db_manager.insert_new_moderator(moderator_id, moderator_name)
+
+
+def get_all_promo_codes():
+    discounts = db_manager.get_discounts()
+    promo_list = list()
+    for index in range(len(discounts)):
+        if discounts[index][1] == 0:
+            discount_value = str(discounts[index][2]) + "%"
+        else:
+            discount_value = str(int(discounts[index][2]/100)) + "₽"
+        promo_list.append(discounts[index][0] + "\t~\t" + discount_value)
+    return promo_list

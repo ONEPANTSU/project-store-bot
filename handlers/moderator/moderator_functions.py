@@ -1,6 +1,7 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 
-from data_base.db_functions import get_moderator_id, get_admin_id
+from data_base.db_functions import get_moderator_id, get_admin_id, get_all_promo_codes
+from handlers.moderator.moderator_callback import delete_promo_callback, add_promo_callback
 from texts.buttons import BUTTONS
 
 
@@ -23,6 +24,25 @@ def check_is_admin(user_id):
     if user_id == get_admin_id():
         is_admin = True
     return is_admin
+
+
+def get_promo_keyboard():
+    markup = InlineKeyboardMarkup(resize_keyboard=True, row_width=1)
+    promo_list = get_all_promo_codes()
+    for promo in promo_list:
+        new_delete_button = InlineKeyboardButton(
+            text="❌\t" + promo + "\t❌",
+            callback_data=delete_promo_callback.new(
+                code=promo.rpartition(' ~ ')[0],
+            )
+        )
+        markup.row(new_delete_button)
+    add_button = InlineKeyboardButton(
+        text=BUTTONS["add_promo"],
+        callback_data=add_promo_callback.new()
+    )
+    markup.row(add_button)
+    return markup
 
 
 def get_settings_keyboard():

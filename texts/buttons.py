@@ -41,6 +41,8 @@ next_button = "Вперёд ⏩"
 vip_project_button = "👑 Установить Premium статус 👑"
 price_changing_project_button = "💰 Изменить стоимость проекта 💰"
 verify_button = "Проверено ✅"
+add_promo_button = "➕ Добавить промокод ➕"
+delete_promo_button = "❌ Удалить промокод ❌"
 
 BUTTONS = {
     "back": back_button,
@@ -76,4 +78,6 @@ BUTTONS = {
     "payment": payment_button,
     "guarantee": guarantee_button,
     "information": information_button,
+    "add_promo": add_promo_button,
+    "delete_promo": delete_promo_button,
 }
