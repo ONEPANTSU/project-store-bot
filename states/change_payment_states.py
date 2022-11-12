@@ -6,3 +6,4 @@ class ChangePaymentStates(StatesGroup):
     regular = State()
     vip = State()
     confirm = State()
+    switch = State()

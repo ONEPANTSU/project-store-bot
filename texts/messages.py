@@ -162,6 +162,9 @@ payment_check_message = "Цена должна быть числом! Напиш
 confirm_change_payment_message = "Цена введена верно?"
 delete_promo_message = "Вы действительно хотите удалить промокод: <b> {code} </b>"
 
+switch_payment_confirm_message = ("Сейчас оплата <b>{need_payment}</b>\n"
+                                  "Уверены, что хотите переключить оплату?")
+
 MESSAGES = {
     "start": start_message,
     "inform_url": inform_url,
@@ -256,4 +259,5 @@ MESSAGES = {
     "payment_check": payment_check_message,
     "confirm_change_payment": confirm_change_payment_message,
     "delete_promo": delete_promo_message,
+    "switch_payment_confirm": switch_payment_confirm_message,
 }

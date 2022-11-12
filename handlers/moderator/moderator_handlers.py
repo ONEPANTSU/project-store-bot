@@ -13,7 +13,7 @@ from data_base.db_functions import (
     save_regular_price,
     save_vip_price,
     set_current_moderator,
-    set_guarantee,
+    set_guarantee, get_need_payment,
 )
 from data_base.project import Project
 from handlers.moderator.moderator_callback import (
@@ -215,6 +215,15 @@ async def ask_change_payment_state_handler(message: Message, state: FSMContext):
         elif answer == BUTTONS["change_vip_price"]:
             await message.answer(text=MESSAGES["new_payment"])
             await ChangePaymentStates.vip.set()
+        elif answer == BUTTONS["switch_payment"]:
+            if get_need_payment() == 0:
+                payment_condition = "выключена"
+            else:
+                payment_condition = "включена"
+            await message.answer(text=MESSAGES["switch_payment_confirm"].format(
+                                                need_payment=payment_condition),
+                                                reply_markup=get_confirmation_menu_keyboard())
+            await ChangePaymentStates.switch.set()
         else:
             await message.answer(MESSAGES["not_recognized"])
             await message.answer(
@@ -222,6 +231,29 @@ async def ask_change_payment_state_handler(message: Message, state: FSMContext):
                 reply_markup=get_payment_menu_keyboard(),
             )
             await ChangePaymentStates.ask.set()
+
+
+async def switch_payment_state(message: Message, state: FSMContext):
+    if check_is_moderator(message.from_user.id):
+        answer = message.text
+        if answer.lstrip("/") in COMMANDS.values():
+            await state.finish()
+            await commands_handler(message)
+        elif answer == BUTTONS["confirm"]:
+            # !!!! Если оплата выкл, то включить, иначе выкл
+            if get_need_payment() == 0:
+                pass
+            else:
+                pass            
+        elif answer == BUTTONS["cancellation"]:
+            await state.finish()
+            await settings_handler(message)
+        else:
+            await message.answer(
+                text=MESSAGES["command_error"],
+                reply_markup=get_confirmation_menu_keyboard(),
+            )
+            await ChangePaymentStates.switch.set()
 
 
 async def regular_change_payment_state_handler(message: Message, state: FSMContext):
@@ -563,3 +595,5 @@ def register_moderator_handlers(dp: Dispatcher):
     dp.register_callback_query_handler(
         delete_promo_handler, delete_promo_callback.filter()
     )
+    dp.register_message_handler(
+        switch_payment_state, state=ChangePaymentStates.switch)
