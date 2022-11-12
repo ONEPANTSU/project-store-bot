@@ -606,6 +606,10 @@ class DBManager:
         delete_moderator = QUERIES["delete_moderator"] % (str(moderator_id))
         self.execute_query(self.connection, delete_moderator)
 
+    def delete_promo_code(self, code):
+        delete_promo = QUERIES["delete_promo"] % code
+        self.execute_query(self.connection, delete_promo)
+
     def delete_project(self, project_id):
         """
         This function creates DELETE query for deleting row from `project` and `project_theme` tables.

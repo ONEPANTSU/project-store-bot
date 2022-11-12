@@ -118,7 +118,7 @@ async def id_add_moderator_handler(message: Message, state: FSMContext):
         if answer.lstrip("/") in COMMANDS.values():
             await state.finish()
             await commands_handler(message)
-        elif answer == BUTTONS["cancel"]:
+        elif answer == BUTTONS["cancellation"]:
             await settings_handler(message)
             await state.finish()
         else:
@@ -140,7 +140,7 @@ async def name_add_moderator_handler(message: Message, state: FSMContext):
         if answer.lstrip("/") in COMMANDS.values():
             await state.finish()
             await commands_handler(message)
-        elif answer == BUTTONS["cancel"]:
+        elif answer == BUTTONS["cancellation"]:
             await settings_handler(message)
             await state.finish()
         else:
@@ -450,7 +450,7 @@ async def ask_change_guarantee_state(message: Message, state: FSMContext):
         if answer.lstrip("/") in COMMANDS.values():
             await state.finish()
             await commands_handler(message)
-        elif answer == BUTTONS["cancel"]:
+        elif answer == BUTTONS["cancellation"]:
             await settings_handler(message)
             await state.finish()
         else:

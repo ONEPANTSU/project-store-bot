@@ -153,6 +153,7 @@ update_vip_query = """
 """
 
 delete_moderator_query = "DELETE FROM `moderator` WHERE `moderator_id` = '%s'"
+delete_promo_query = "DELETE FROM `promocode` WHERE `code` = '%s'"
 delete_project_query = "DELETE FROM `project` WHERE `id` = '%s';"
 delete_seller_query = "DELETE FROM `seller` WHERE `id` = '%s';"
 delete_project_theme_query = "DELETE FROM `project_theme` WHERE `project_id` = '%s';"
@@ -193,6 +194,7 @@ QUERIES = {
     "update_regular": update_regular_query,
     "update_vip": update_vip_query,
     "delete_moderator": delete_moderator_query,
+    "delete_promo": delete_promo_query,
     "delete_project": delete_project_query,
     "delete_seller": delete_seller_query,
     "delete_project_theme": delete_project_theme_query,
