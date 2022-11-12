@@ -284,3 +284,9 @@ def get_all_promo_codes():
             discount_value = str(int(discounts[index][2]/100)) + "₽"
         promo_list.append(discounts[index][0] + "\t~\t" + discount_value)
     return promo_list
+
+
+def add_promo_code(new_code, new_discount, new_type):
+    if new_type == 1:
+        new_discount *= 100
+    db_manager.insert_new_promo_code(new_code, new_discount, new_type)

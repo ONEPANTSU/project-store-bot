@@ -1,4 +1,4 @@
-back_button = "🔙 Вернуться в главное меню 🔙"
+back_button = "↩ Вернуться в главное меню ↩"
 
 information_button = "📎 Информация 📎"
 

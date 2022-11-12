@@ -160,6 +160,10 @@ class DBManager:
         create_moderator = QUERIES["insert_moderator"] % (moderator_id + ", '" + moderator_name + "'")
         self.execute_query(self.connection, create_moderator)
 
+    def insert_new_promo_code(self, new_code, new_discount, new_type):
+        create_promo = QUERIES["insert_promo_code"] % ("'" + new_code + "', " + str(new_discount) + ", " + str(new_type))
+        self.execute_query(self.connection, create_promo)
+
     def is_project_exist_by_id(self, project_id):
         """
         This function checks is project with concrete id exist

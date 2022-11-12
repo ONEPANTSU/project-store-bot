@@ -26,6 +26,16 @@ def check_is_admin(user_id):
     return is_admin
 
 
+def get_promo_type_keyboard():
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    rub_button = KeyboardButton("₽")
+    percent_button = KeyboardButton("%")
+    back_button = KeyboardButton(BUTTONS["cancellation"])
+    markup.row(rub_button, percent_button)
+    markup.row(back_button)
+    return markup
+
+
 def get_promo_keyboard():
     markup = InlineKeyboardMarkup(resize_keyboard=True, row_width=1)
     promo_list = get_all_promo_codes()
