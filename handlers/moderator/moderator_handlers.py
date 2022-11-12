@@ -8,7 +8,7 @@ from data_base.db_functions import (
     delete_moderator,
     get_moderator_all_project_list,
     set_current_moderator,
-    set_guarantee, save_regular_price, save_vip_price, get_regular_sell_price, get_vip_sell_price,
+    set_guarantee, save_regular_price, save_vip_price, get_regular_sell_price, get_vip_sell_price, delete_promo_code,
 )
 from data_base.project import Project
 from handlers.moderator.moderator_callback import (
@@ -421,7 +421,7 @@ async def confirm_delete_promo_state(message: Message, state: FSMContext):
             await commands_handler(message)
         elif answer == BUTTONS["confirm"]:
             data = await state.get_data()
-            #сохранение
+            delete_promo_code(data["code"])
             await state.finish()
             await message.answer(text=MESSAGES["update_save"])
             await settings_handler(message)

@@ -48,10 +48,11 @@ def get_promo_keyboard():
     markup = InlineKeyboardMarkup(resize_keyboard=True, row_width=1)
     promo_list = get_all_promo_codes()
     for promo in promo_list:
+        code = promo.rpartition("\t~\t")[0]
         new_delete_button = InlineKeyboardButton(
             text="❌\t" + promo + "\t❌",
             callback_data=delete_promo_callback.new(
-                code=promo.rpartition(" ~ ")[0],
+                code=code,
             ),
         )
         markup.row(new_delete_button)
