@@ -86,5 +86,4 @@ BUTTONS = {
     "delete_promo": delete_promo_button,
     "change_regular_price": change_regular_price_button,
     "change_vip_price": change_vip_price_button,
-
 }

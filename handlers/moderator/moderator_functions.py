@@ -1,7 +1,15 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+)
 
-from data_base.db_functions import get_moderator_id, get_admin_id, get_all_promo_codes
-from handlers.moderator.moderator_callback import delete_promo_callback, add_promo_callback
+from data_base.db_functions import get_admin_id, get_all_promo_codes, get_moderator_id
+from handlers.moderator.moderator_callback import (
+    add_promo_callback,
+    delete_promo_callback,
+)
 from texts.buttons import BUTTONS
 
 
@@ -43,13 +51,12 @@ def get_promo_keyboard():
         new_delete_button = InlineKeyboardButton(
             text="❌\t" + promo + "\t❌",
             callback_data=delete_promo_callback.new(
-                code=promo.rpartition(' ~ ')[0],
-            )
+                code=promo.rpartition(" ~ ")[0],
+            ),
         )
         markup.row(new_delete_button)
     add_button = InlineKeyboardButton(
-        text=BUTTONS["add_promo"],
-        callback_data=add_promo_callback.new()
+        text=BUTTONS["add_promo"], callback_data=add_promo_callback.new()
     )
     markup.row(add_button)
     return markup

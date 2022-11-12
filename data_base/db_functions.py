@@ -141,21 +141,21 @@ def filter_list_appending(price_from, price_up_to, projects_list):
     filtered_list = list()
     for project in projects_list:
         if (
-                price_from != "None"
-                and price_up_to != "None"
-                and int(price_from) <= project.price <= int(price_up_to)
+            price_from != "None"
+            and price_up_to != "None"
+            and int(price_from) <= project.price <= int(price_up_to)
         ):
             filtered_list.append(project)
         elif (
-                price_from == "None"
-                and price_up_to != "None"
-                and project.price <= int(price_up_to)
+            price_from == "None"
+            and price_up_to != "None"
+            and project.price <= int(price_up_to)
         ):
             filtered_list.append(project)
         elif (
-                price_up_to == "None"
-                and price_from != "None"
-                and project.price >= int(price_from)
+            price_up_to == "None"
+            and price_from != "None"
+            and project.price >= int(price_from)
         ):
             filtered_list.append(project)
     return filtered_list
@@ -281,7 +281,7 @@ def get_all_promo_codes():
         if discounts[index][1] == 0:
             discount_value = str(discounts[index][2]) + "%"
         else:
-            discount_value = str(int(discounts[index][2]/100)) + "₽"
+            discount_value = str(int(discounts[index][2] / 100)) + "₽"
         promo_list.append(discounts[index][0] + "\t~\t" + discount_value)
     return promo_list
 

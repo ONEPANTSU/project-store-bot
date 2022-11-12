@@ -66,26 +66,26 @@ class DBManager:
         :rtype: :obj:`str`
         """
         return (
-                str(project.seller_id)
-                + ", '"
-                + project.name
-                + "', "
-                + str(project.price)
-                + ", "
-                + str(project.status_id)
-                + ", "
-                + str(project.subscribers)
-                + ", "
-                + str(project.income)
-                + ", '"
-                + project.comment
-                + "', '"
-                + str(project.vip_ending)
-                + "', '"
-                + project.link
-                + "', '"
-                + str(project.is_verified)
-                + "'"
+            str(project.seller_id)
+            + ", '"
+            + project.name
+            + "', "
+            + str(project.price)
+            + ", "
+            + str(project.status_id)
+            + ", "
+            + str(project.subscribers)
+            + ", "
+            + str(project.income)
+            + ", '"
+            + project.comment
+            + "', '"
+            + str(project.vip_ending)
+            + "', '"
+            + project.link
+            + "', '"
+            + str(project.is_verified)
+            + "'"
         )
 
     def insert_project(self, project):
@@ -157,11 +157,15 @@ class DBManager:
         self.execute_query(self.connection, create_seller)
 
     def insert_new_moderator(self, moderator_id, moderator_name):
-        create_moderator = QUERIES["insert_moderator"] % (moderator_id + ", '" + moderator_name + "'")
+        create_moderator = QUERIES["insert_moderator"] % (
+            moderator_id + ", '" + moderator_name + "'"
+        )
         self.execute_query(self.connection, create_moderator)
 
     def insert_new_promo_code(self, new_code, new_discount, new_type):
-        create_promo = QUERIES["insert_promo_code"] % ("'" + new_code + "', " + str(new_discount) + ", " + str(new_type))
+        create_promo = QUERIES["insert_promo_code"] % (
+            "'" + new_code + "', " + str(new_discount) + ", " + str(new_type)
+        )
         self.execute_query(self.connection, create_promo)
 
     def is_project_exist_by_id(self, project_id):
@@ -183,7 +187,9 @@ class DBManager:
 
     def get_all_moderators_info(self):
         get_all_moderators_info_query = QUERIES["select_all_moderators_info"]
-        moderators = self.execute_read_query(self.connection, get_all_moderators_info_query)
+        moderators = self.execute_read_query(
+            self.connection, get_all_moderators_info_query
+        )
         return moderators
 
     def get_seller_name(self, seller_id):
@@ -197,7 +203,9 @@ class DBManager:
         :rtype: :obj:`str`
         """
         get_seller_name_query = QUERIES["select_seller_name_by_seller_id"] % seller_id
-        seller_name = self.execute_read_query(self.connection, get_seller_name_query)[0][0]
+        seller_name = self.execute_read_query(self.connection, get_seller_name_query)[
+            0
+        ][0]
         return seller_name
 
     def get_seller_id_by_project_id(self, project_id):
@@ -385,7 +393,7 @@ class DBManager:
         :rtype: :list:`int`
         """
         get_project_query = (
-                QUERIES["select_projects_id_by_prices"] % price_from % price_up_to
+            QUERIES["select_projects_id_by_prices"] % price_from % price_up_to
         )
         projects_id = self.execute_read_query(self.connection, get_project_query)
 

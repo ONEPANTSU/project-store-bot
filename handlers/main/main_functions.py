@@ -1,7 +1,7 @@
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
 from data_base.db_functions import get_moderator_id
-from handlers.moderator.moderator_functions import check_is_moderator, check_is_admin
+from handlers.moderator.moderator_functions import check_is_admin, check_is_moderator
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
 
