@@ -28,7 +28,7 @@ class Discount:
 
     def _get_new_price(self, price):
         if self.type == 0:
-            return price * self.discount / 100
+            return price - price * self.discount / 100
         elif self.type == 1:
             return price - self.discount
         else:
