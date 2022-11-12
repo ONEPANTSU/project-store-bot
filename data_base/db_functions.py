@@ -292,6 +292,10 @@ def add_promo_code(new_code, new_discount, new_type):
     db_manager.insert_new_promo_code(new_code, new_discount, new_type)
 
 
+def delete_promo_code(code):
+    db_manager.delete_promo_code(code)
+
+
 def save_regular_price(price):
     db_manager.update_regular_price(price)
 
