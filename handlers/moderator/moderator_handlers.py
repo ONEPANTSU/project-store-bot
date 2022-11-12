@@ -6,9 +6,14 @@ from data_base.db_functions import (
     add_moderator,
     add_promo_code,
     delete_moderator,
+    delete_promo_code,
     get_moderator_all_project_list,
+    get_regular_sell_price,
+    get_vip_sell_price,
+    save_regular_price,
+    save_vip_price,
     set_current_moderator,
-    set_guarantee, save_regular_price, save_vip_price, get_regular_sell_price, get_vip_sell_price, delete_promo_code,
+    set_guarantee,
 )
 from data_base.project import Project
 from handlers.moderator.moderator_callback import (
@@ -39,7 +44,12 @@ from handlers.seller.inner_functions.seller_carousel_pages import (
     refresh_pages,
 )
 from handlers.seller.instruments.seller_callbacks import verify_callback
-from states import AddModeratorStates, ChangeGuaranteeStates, ChangePaymentStates, DeletePromoStates
+from states import (
+    AddModeratorStates,
+    ChangeGuaranteeStates,
+    ChangePaymentStates,
+    DeletePromoStates,
+)
 from states.add_promo_states import AddPromoStates
 from texts.buttons import BUTTONS
 from texts.commands import COMMANDS
@@ -179,11 +189,13 @@ async def confirm_add_moderator_state(message: Message, state: FSMContext):
 
 async def payment_menu_handler(message: Message):
     if check_is_moderator(message.from_user.id):
-        regular_price = int(get_regular_sell_price()/100)
-        vip_price = int(get_vip_sell_price()/100)
+        regular_price = int(get_regular_sell_price() / 100)
+        vip_price = int(get_vip_sell_price() / 100)
         await message.answer(
-            text=MESSAGES["change_payment"].format(regular_price=regular_price, vip_price=vip_price),
-            reply_markup=get_payment_menu_keyboard()
+            text=MESSAGES["change_payment"].format(
+                regular_price=regular_price, vip_price=vip_price
+            ),
+            reply_markup=get_payment_menu_keyboard(),
         )
         await ChangePaymentStates.ask.set()
 
@@ -287,8 +299,7 @@ async def confirm_change_payment_state(message: Message, state: FSMContext):
 
 async def promo_menu_handler(message: Message):
     if check_is_moderator(message.from_user.id):
-        text = "Промокоды:"
-        await message.answer(text=text, reply_markup=get_promo_keyboard())
+        await message.answer(text="Промокоды:", reply_markup=get_promo_keyboard())
 
 
 async def add_promo_handler(query: CallbackQuery):
@@ -404,10 +415,13 @@ async def confirm_add_promo_handler(message: Message, state: FSMContext):
             await AddPromoStates.confirm.set()
 
 
-async def delete_promo_handler(query: CallbackQuery, callback_data: dict, state: FSMContext):
+async def delete_promo_handler(
+    query: CallbackQuery, callback_data: dict, state: FSMContext
+):
     code = callback_data.get("code")
     await query.message.answer(
-        text=MESSAGES["delete_promo"].format(code=code), reply_markup=get_confirmation_menu_keyboard()
+        text=MESSAGES["delete_promo"].format(code=code),
+        reply_markup=get_confirmation_menu_keyboard(),
     )
     await state.update_data(code=code)
     await DeletePromoStates.confirm.set()
@@ -423,7 +437,10 @@ async def confirm_delete_promo_state(message: Message, state: FSMContext):
             data = await state.get_data()
             delete_promo_code(data["code"])
             await state.finish()
-            await message.answer(text=MESSAGES["update_save"])
+            await message.answer(
+                text=MESSAGES["update_save"],
+                reply_markup=get_promo_keyboard()
+            )
             await settings_handler(message)
         elif answer == BUTTONS["cancellation"]:
             await state.finish()
@@ -540,7 +557,9 @@ def register_moderator_handlers(dp: Dispatcher):
     )
     dp.register_message_handler(code_add_promo_handler, state=AddPromoStates.code)
     dp.register_message_handler(confirm_add_promo_handler, state=AddPromoStates.confirm)
-    dp.register_message_handler(confirm_delete_promo_state, state=DeletePromoStates.confirm)
+    dp.register_message_handler(
+        confirm_delete_promo_state, state=DeletePromoStates.confirm
+    )
     dp.register_callback_query_handler(
         delete_promo_handler, delete_promo_callback.filter()
     )
