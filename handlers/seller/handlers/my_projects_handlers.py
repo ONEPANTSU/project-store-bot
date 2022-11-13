@@ -117,7 +117,7 @@ async def vip_input_promo_state(message: Message, state: FSMContext):
         await bot.send_invoice(
             message.chat.id,
             title=MESSAGES["sell_payment_title"],
-            description=MESSAGES["sell_payment_description"],
+            description=MESSAGES["vip_payment_description"],
             provider_token=PAYMENTS_TOKEN,
             currency="rub",
             is_flexible=False,
