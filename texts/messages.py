@@ -8,7 +8,7 @@ start_message = (
 
 main_menu_massage = "📌 Главное меню 📌"
 
-inform_url = "https://t.me/project_store_guide"
+inform_url = "https://t.me/saw_birzha_info"
 information_message = "Вся информация о боте доступна в телеграм канале:"
 
 sell_menu_message = (

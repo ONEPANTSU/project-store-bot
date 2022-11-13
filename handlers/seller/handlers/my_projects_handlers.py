@@ -78,6 +78,7 @@ async def vip_need_promo_state(message: Message, state: FSMContext):
         project_id = data["project_id"]
         project = Project()
         project.set_params_by_id(project_id)
+        vip_project_dict[message.chat.username] = project
         price_amount = get_vip_sell_price()
         prices = [LabeledPrice(label=MESSAGES["sell_payment"], amount=price_amount)]
         await bot.send_message(
