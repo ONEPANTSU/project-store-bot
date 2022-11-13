@@ -8,12 +8,14 @@ from data_base.db_functions import (
     delete_moderator,
     delete_promo_code,
     get_moderator_all_project_list,
+    get_need_payment,
     get_regular_sell_price,
     get_vip_sell_price,
+    save_need_payment,
     save_regular_price,
     save_vip_price,
     set_current_moderator,
-    set_guarantee, get_need_payment,
+    set_guarantee,
 )
 from data_base.project import Project
 from handlers.moderator.moderator_callback import (
@@ -220,9 +222,12 @@ async def ask_change_payment_state_handler(message: Message, state: FSMContext):
                 payment_condition = "выключена"
             else:
                 payment_condition = "включена"
-            await message.answer(text=MESSAGES["switch_payment_confirm"].format(
-                                                need_payment=payment_condition),
-                                                reply_markup=get_confirmation_menu_keyboard())
+            await message.answer(
+                text=MESSAGES["switch_payment_confirm"].format(
+                    need_payment=payment_condition
+                ),
+                reply_markup=get_confirmation_menu_keyboard(),
+            )
             await ChangePaymentStates.switch.set()
         else:
             await message.answer(MESSAGES["not_recognized"])
@@ -240,11 +245,12 @@ async def switch_payment_state(message: Message, state: FSMContext):
             await state.finish()
             await commands_handler(message)
         elif answer == BUTTONS["confirm"]:
-            # !!!! Если оплата выкл, то включить, иначе выкл
             if get_need_payment() == 0:
-                pass
+                save_need_payment(1)
             else:
-                pass            
+                save_need_payment(0)
+            await state.finish()
+            await message.answer(text=MESSAGES["update_save"], reply_markup=get_settings_keyboard())
         elif answer == BUTTONS["cancellation"]:
             await state.finish()
             await settings_handler(message)
@@ -470,8 +476,7 @@ async def confirm_delete_promo_state(message: Message, state: FSMContext):
             delete_promo_code(data["code"])
             await state.finish()
             await message.answer(
-                text=MESSAGES["update_save"],
-                reply_markup=get_promo_keyboard()
+                text=MESSAGES["update_save"], reply_markup=get_promo_keyboard()
             )
             await settings_handler(message)
         elif answer == BUTTONS["cancellation"]:
@@ -595,5 +600,4 @@ def register_moderator_handlers(dp: Dispatcher):
     dp.register_callback_query_handler(
         delete_promo_handler, delete_promo_callback.filter()
     )
-    dp.register_message_handler(
-        switch_payment_state, state=ChangePaymentStates.switch)
+    dp.register_message_handler(switch_payment_state, state=ChangePaymentStates.switch)

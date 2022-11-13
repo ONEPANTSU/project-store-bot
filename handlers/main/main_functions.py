@@ -1,7 +1,11 @@
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
 from data_base.db_functions import get_moderator_id
-from handlers.moderator.moderator_functions import check_is_admin, check_is_moderator, check_is_current_moderator
+from handlers.moderator.moderator_functions import (
+    check_is_admin,
+    check_is_current_moderator,
+    check_is_moderator,
+)
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
 
@@ -16,12 +20,13 @@ def get_main_keyboard(is_moderator=False):
     if is_moderator:
         moderator_button = KeyboardButton(BUTTONS["moderate"])
         settings_button = KeyboardButton(BUTTONS["settings"])
-        markup.add(my_projects_button,
-                   search_projects_button,
-                   information_button,
-                   moderator_button,
-                   settings_button,
-                   )
+        markup.add(
+            my_projects_button,
+            search_projects_button,
+            information_button,
+            moderator_button,
+            settings_button,
+        )
     else:
         markup.add(my_projects_button, search_projects_button, information_button)
     return markup

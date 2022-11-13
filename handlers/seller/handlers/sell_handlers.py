@@ -517,6 +517,9 @@ async def moderators_confirm(
         state.user = user_id
         await state.set_state(DiscountStates.is_need)
     elif need_payment == 0 and new_project.status_id == 0:
+        new_project.vip_ending = datetime(
+                year=1900, month=1, day=1
+            )
         new_project.save_new_project()
         is_moderator = False
         if user_id == get_moderator_id():
