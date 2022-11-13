@@ -1,8 +1,7 @@
 from aiogram.types import CallbackQuery, Message
 
 from data_base.db_functions import (
-    get_all_project_list,
-    get_guarantee_name,
+    get_moderator_all_project_list,
     get_projects_list_by_seller_name,
 )
 from handlers.seller.inner_functions.seller_carousel_keyboard import (
@@ -33,7 +32,7 @@ async def refresh_pages(query: CallbackQuery, callback_data: dict):
     else:
         is_moderator = False
     if is_moderator:
-        project_list = get_all_project_list()
+        project_list = get_moderator_all_project_list()
     else:
         project_list = get_projects_list_by_seller_name(query.from_user.username)
     await update_page(page, project_list, query, is_moderator)
@@ -77,27 +76,31 @@ def get_page_content(page, project_list, is_moderator):
 
 
 def create_project_info(project_data):
-    guarantee = get_guarantee_name()
+    # guarantee = get_guarantee_name()
     themes_str = get_themes_str(project_data.themes_names)
-    return get_project_info(project_data, themes_str, guarantee)
+    return get_project_info(project_data, themes_str)
 
 
-def get_project_info(project_data, themes_str, guarantee):
+def get_project_info(project_data, themes_str):
     if project_data.status_id == 1:
         data_status = MESSAGES["vip_project"]
     else:
         data_status = MESSAGES["regular_project"]
-    project_info = MESSAGES["show_project"].format(
+    if project_data.is_verified == 1:
+        data_verified = MESSAGES["verified"]
+    else:
+        data_verified = MESSAGES["not_verified"]
+    project_info = MESSAGES["show_my_project"].format(
         name=project_data.name,
+        verified=data_verified,
         status=data_status,
-        theme=themes_str,
+        themes=themes_str,
         subs=project_data.subscribers,
         income=project_data.income,
         comm=project_data.comment,
         seller=project_data.seller_name,
         price=project_data.price,
         link=project_data.link,
-        guarantee=guarantee,
     )
     return project_info
 

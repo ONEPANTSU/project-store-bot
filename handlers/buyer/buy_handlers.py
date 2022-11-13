@@ -1,36 +1,24 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    KeyboardButton,
-    Message,
-    ReplyKeyboardMarkup,
-)
-from aiogram.utils.callback_data import CallbackData
+from aiogram.types import CallbackQuery, KeyboardButton, Message, ReplyKeyboardMarkup
 
-from data_base.db_functions import get_guarantee_name, get_project_list_by_filter
-from handlers.main_handlers import get_main_keyboard, main_menu
+from data_base.db_functions import get_project_list_by_filter
+from handlers.buyer.buy_callbacks import buy_project_callback, themes_callback
+from handlers.buyer.buy_functions import (
+    buy_menu,
+    buy_project_index,
+    chose_themes_keyboard,
+    get_buy_projects_price_keyboard,
+    get_project_info,
+    show_main_buy_keyboard,
+)
+from handlers.main.main_functions import get_main_keyboard, main_menu
 from states import BuyProjectStates
 from texts.buttons import BUTTONS
+from texts.commands import COMMANDS
 from texts.messages import MESSAGES
-from useful.instruments import bot, db_manager
-
-buy_project_callback = CallbackData(
-    "buy_project_callback", "page", "theme_id", "price_from", "price_up_to"
-)
-themes_callback = CallbackData(
-    "themes_callback", "theme_id", "price_from", "price_up_to"
-)
-
-
-def buy_menu():
-    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    chose_search_params = KeyboardButton(BUTTONS["chose_search_params"])
-    back_button = KeyboardButton(BUTTONS["back"])
-    markup.add(chose_search_params, back_button)
-    return markup
+from useful.commands_handler import commands_handler
+from useful.instruments import bot
 
 
 def yes_no_menu():
@@ -48,11 +36,12 @@ def back_menu():
     return markup
 
 
-async def show_main_buy_keyboard(message: Message):
-    await buy_project_index(
-        chat_id=message.chat.id, theme_id="None", price_from="None", price_up_to="None"
-    )
-    await message.answer(text=MESSAGES["buy_menu"], reply_markup=buy_menu())
+async def search_project_by_button(message: Message):
+    await show_main_buy_keyboard(message)
+
+
+async def search_project_by_command(message: Message):
+    await show_main_buy_keyboard(message)
 
 
 # Действия по нажатию кнопки Выбрать параметры поиска
@@ -68,7 +57,10 @@ async def chose_search_parameters(message: Message):
 # Вопрос про цену
 async def question_price_state(message: Message, state: FSMContext):
     answer = message.text
-    if answer == "Да" or answer == "Нет":
+    if answer.lstrip("/") in COMMANDS.values():
+        await state.finish()
+        await commands_handler(message)
+    elif answer == "Да" or answer == "Нет":
         await state.update_data(price_ans=answer)
         await message.answer(
             text=MESSAGES["question_theme"].format(message.from_user),
@@ -87,7 +79,10 @@ async def question_price_state(message: Message, state: FSMContext):
 # Анализ введенных ответов и дальнейший вывод
 async def analyse_answers_state(message: Message, state: FSMContext):
     answer = message.text
-    if answer == "Да" or answer == "Нет":
+    if answer.lstrip("/") in COMMANDS.values():
+        await state.finish()
+        await commands_handler(message)
+    elif answer == "Да" or answer == "Нет":
         await state.update_data(theme_ans=answer)
         data = await state.get_data()
         price_ans = data["price_ans"]
@@ -133,7 +128,9 @@ async def analyse_answers_state(message: Message, state: FSMContext):
 
 async def back_to_buy_menu(message: Message):
     answer = message.text
-    if answer == BUTTONS["back_to_buy_menu"]:
+    if answer.lstrip("/") in COMMANDS.values():
+        await commands_handler(message)
+    elif answer == BUTTONS["back_to_buy_menu"]:
         await bot.send_message(
             chat_id=message.chat.id, text=MESSAGES["buy_menu"], reply_markup=buy_menu()
         )
@@ -142,7 +139,10 @@ async def back_to_buy_menu(message: Message):
 # Получение ответа про цену "от" и запрос цены "до"
 async def price_from_state(message: Message, state: FSMContext):
     answer = message.text
-    if answer == BUTTONS["chose_search_params"]:
+    if answer.lstrip("/") in COMMANDS.values():
+        await state.finish()
+        await commands_handler(message)
+    elif answer == BUTTONS["chose_search_params"]:
         await chose_search_parameters(message)
         return 0
     elif answer == BUTTONS["back"]:
@@ -164,7 +164,10 @@ async def price_from_state(message: Message, state: FSMContext):
 
 async def price_up_to_state(message: Message, state: FSMContext):
     answer = message.text
-    if answer == BUTTONS["chose_search_params"]:
+    if answer.lstrip("/") in COMMANDS.values():
+        await state.finish()
+        await commands_handler(message)
+    elif answer == BUTTONS["chose_search_params"]:
         await chose_search_parameters(message)
         await state.finish()
         return 0
@@ -208,123 +211,12 @@ async def price_up_to_state(message: Message, state: FSMContext):
         await BuyProjectStates.price_up_to.set()
 
 
-def chose_themes_keyboard(price_from="None", price_up_to="None"):
-    # С помощью функции get_all_themes() присваиваем в themes - словарь с темами и их айди
-    themes = db_manager.get_filled_themes()
-    themes_keyboard = InlineKeyboardMarkup(row_width=2)
-    # Заполнение списка тем из словаря с базы данных
-    for theme_key in themes.keys():
-        themes_keyboard.add(
-            InlineKeyboardButton(
-                text=themes[theme_key],
-                callback_data=themes_callback.new(
-                    theme_id="{}".format(theme_key),
-                    price_from=price_from,
-                    price_up_to=price_up_to,
-                ),
-            )
-        )
-    return themes_keyboard
-
-
-# Клавиатура для карусели по листу проектов
-def get_buy_projects_price_keyboard(
-    project_list, theme_id, price_from, price_up_to, page: int = 0
-) -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup(row_width=2)
-
-    has_next_page = len(project_list) > page + 1
-
-    page_num_button = InlineKeyboardButton(
-        text=f"{page + 1} / {len(project_list)}", callback_data="dont_click_me"
-    )
-
-    back_button = InlineKeyboardButton(
-        text=BUTTONS["prev"],
-        callback_data=buy_project_callback.new(
-            page=page - 1,
-            theme_id=theme_id,
-            price_from=price_from,
-            price_up_to=price_up_to,
-        ),
-    )
-
-    next_button = InlineKeyboardButton(
-        text=BUTTONS["next"],
-        callback_data=buy_project_callback.new(
-            page=page + 1,
-            theme_id=theme_id,
-            price_from=price_from,
-            price_up_to=price_up_to,
-        ),
-    )
-
-    keyboard.row(page_num_button)
-
-    if page != 0:
-        if has_next_page:
-            keyboard.row(back_button, next_button)
-        else:
-            keyboard.row(back_button)
-    elif has_next_page:
-        keyboard.row(next_button)
-
-    return keyboard
-
-
-def get_project_info(project_data):  # Page: 0
-    guarantee = get_guarantee_name()
-    if project_data.status_id == 1:
-        data_status = MESSAGES["vip_project"]
-    else:
-        data_status = MESSAGES["regular_project"]
-    themes_str = ""
-    for theme_name in project_data.themes_names:
-        themes_str += "#" + str(theme_name) + " "
-    project_info = MESSAGES["show_project"].format(
-        link=project_data.link,
-        status=data_status,
-        name=project_data.name,
-        theme=themes_str,
-        subs=project_data.subscribers,
-        income=project_data.income,
-        comm=project_data.comment,
-        seller=project_data.seller_name,
-        price=project_data.price,
-        guarantee=guarantee,
-    )
-    return project_info
-
-
 async def buy_project_index_by_callback(query: CallbackQuery, callback_data: dict):
     theme_id = callback_data.get("theme_id")
     price_from = callback_data.get("price_from")
     price_up_to = callback_data.get("price_up_to")
     await buy_project_index(query.message.chat.id, theme_id, price_from, price_up_to)
     await bot.answer_callback_query(query.id)
-
-
-async def buy_project_index(chat_id, theme_id, price_from, price_up_to):
-    project_list = get_project_list_by_filter(
-        theme_id=theme_id, price_from=price_from, price_up_to=price_up_to
-    )
-    if len(project_list) != 0:
-        project_data = project_list[0]
-        project_info = get_project_info(project_data=project_data)
-        keyboard = get_buy_projects_price_keyboard(
-            project_list=project_list,
-            theme_id=theme_id,
-            price_from=price_from,
-            price_up_to=price_up_to,
-        )
-        await bot.send_message(
-            chat_id=chat_id,
-            text=project_info,
-            parse_mode="HTML",
-            reply_markup=keyboard,
-        )
-    else:
-        await bot.send_message(chat_id=chat_id, text=MESSAGES["list_is_empty"])
 
 
 async def buy_project_page_handler(query: CallbackQuery, callback_data: dict):
@@ -350,7 +242,10 @@ async def buy_project_page_handler(query: CallbackQuery, callback_data: dict):
 
 def register_buy_handlers(dp: Dispatcher):
     dp.register_message_handler(get_main_keyboard, text=BUTTONS["back"])
-    dp.register_message_handler(show_main_buy_keyboard, text=[BUTTONS["buy_menu"]])
+    dp.register_message_handler(search_project_by_button, text=[BUTTONS["buy_menu"]])
+    dp.register_message_handler(
+        search_project_by_command, commands=[COMMANDS["search_project"]]
+    )
     dp.register_message_handler(
         chose_search_parameters, text=[BUTTONS["chose_search_params"]]
     )

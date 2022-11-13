@@ -1,5 +1,5 @@
-import mysql.connector
-from mysql.connector import Error
+import sqlite3
+from sqlite3 import Error
 
 from config import *
 from texts.sql_queries import QUERIES
@@ -18,21 +18,12 @@ class DBManager:
         :return: Instance of the class
         :rtype: :class:`data_base.db_manager.DBManager`
         """
-        self.connection = self.create_connection(HOST, USER, PASSWORD, DATA_BASE)
+        self.connection = self.create_connection(DATA_BASE)
 
     @staticmethod
-    def create_connection(host_name, user_name, user_password, data_base):
+    def create_connection(data_base):
         """
         This function creates connection to the data base.
-
-        :param host_name: host name of data base's server
-        :type host_name: :obj: `str`
-
-        :param user_name: user name of data base's server
-        :type user_name: :obj: `str`
-
-        :param user_password: user's password of data base's server
-        :type user_password: :obj: `str`
 
         :param data_base: data base's name
         :type data_base: :obj: `str`
@@ -42,14 +33,10 @@ class DBManager:
         """
         connection = None
         try:
-            connection = mysql.connector.connect(
-                host=host_name,
-                user=user_name,
-                passwd=user_password,
+            connection = sqlite3.connect(
                 database=data_base,
-                charset="utf8mb4",
             )
-            print("Connection to MySQL DB successful")
+            print("Connection to SqLite DB successful")
         except Error as e:
             print(f"The error '{e}' occurred")
         return connection
@@ -83,6 +70,8 @@ class DBManager:
             + str(project.vip_ending)
             + "', '"
             + project.link
+            + "', '"
+            + str(project.is_verified)
             + "'"
         )
 
@@ -154,6 +143,18 @@ class DBManager:
         create_seller = QUERIES["insert_seller"] % seller_val
         self.execute_query(self.connection, create_seller)
 
+    def insert_new_moderator(self, moderator_id, moderator_name):
+        create_moderator = QUERIES["insert_moderator"] % (
+            moderator_id + ", '" + moderator_name + "'"
+        )
+        self.execute_query(self.connection, create_moderator)
+
+    def insert_new_promo_code(self, new_code, new_discount, new_type):
+        create_promo = QUERIES["insert_promo_code"] % (
+            "'" + new_code + "', " + str(new_discount) + ", " + str(new_type)
+        )
+        self.execute_query(self.connection, create_promo)
+
     def is_project_exist_by_id(self, project_id):
         """
         This function checks is project with concrete id exist
@@ -170,6 +171,13 @@ class DBManager:
             return False
         else:
             return True
+
+    def get_all_moderators_info(self):
+        get_all_moderators_info_query = QUERIES["select_all_moderators_info"]
+        moderators = self.execute_read_query(
+            self.connection, get_all_moderators_info_query
+        )
+        return moderators
 
     def get_seller_name(self, seller_id):
         """
@@ -322,6 +330,18 @@ class DBManager:
         project = self.execute_read_query(self.connection, get_project_query)
 
         return project
+
+    def get_moderator_all_projects_id(self):
+        """
+        This function creates SELECT query for getting all not sorted projects's ids
+
+        :return: ids of the projects
+        :rtype: :list:`int`
+        """
+        get_project_query = QUERIES["select_moderator_all_projects_id"]
+        projects_id = self.execute_read_query(self.connection, get_project_query)
+
+        return projects_id
 
     def get_all_projects_id(self):
         """
@@ -481,7 +501,7 @@ class DBManager:
 
     def get_settings_info(self):
         """
-        This function creates SELECT query for getting all settings info from of `settings`.
+        This function creates SELECT query for getting all settings info from `settings`.
 
         :return: list of guarantee's name, channel's name of guarantee's reviews and need_payment (0=False, 1=True).
         :rtype: :list:`str`
@@ -489,6 +509,17 @@ class DBManager:
         get_settings_query = QUERIES["select_all_settings_info"]
         settings_info = self.execute_read_query(self.connection, get_settings_query)[0]
         return settings_info
+
+    def get_discounts(self):
+        """
+        This function creates SELECT query for getting all discounts info from `discount`.
+
+        :return: code, type (0 - PER CENT, 1 - RUBS), discount
+        :rtype: :list:list:`str`
+        """
+        get_settings_query = QUERIES["select_discounts"]
+        discounts = self.execute_read_query(self.connection, get_settings_query)
+        return discounts
 
     def update_project(self, project_id, project):
         """
@@ -510,6 +541,7 @@ class DBManager:
             str(project.comment),
             str(project.vip_ending),
             str(project.link),
+            str(project.is_verified),
             str(project_id),
         )
         self.update_project_themes(project_id, project.themes_id)
@@ -541,6 +573,34 @@ class DBManager:
         update_seller = QUERIES["update_seller"] % (seller_name, str(seller_id))
         self.execute_query(self.connection, update_seller)
 
+    def update_current_moderator(self, moderator_id):
+        update_moderator = QUERIES["update_current_moderator"] % (str(moderator_id))
+        self.execute_query(self.connection, update_moderator)
+
+    def update_guarantee(self, guarantee):
+        update_guarantee = QUERIES["update_guarantee"] % guarantee
+        self.execute_query(self.connection, update_guarantee)
+
+    def update_regular_price(self, price):
+        update_regular = QUERIES["update_regular"] % str(price)
+        self.execute_query(self.connection, update_regular)
+
+    def update_vip_price(self, price):
+        update_vip = QUERIES["update_vip"] % str(price)
+        self.execute_query(self.connection, update_vip)
+
+    def update_need_payment(self, need_payment):
+        update_need_payment = QUERIES["update_need_payment"] % str(need_payment)
+        self.execute_query(self.connection, update_need_payment)
+
+    def delete_moderator(self, moderator_id):
+        delete_moderator = QUERIES["delete_moderator"] % (str(moderator_id))
+        self.execute_query(self.connection, delete_moderator)
+
+    def delete_promo_code(self, code):
+        delete_promo = QUERIES["delete_promo"] % code
+        self.execute_query(self.connection, delete_promo)
+
     def delete_project(self, project_id):
         """
         This function creates DELETE query for deleting row from `project` and `project_theme` tables.
@@ -553,10 +613,10 @@ class DBManager:
         self.delete_project_theme(project_id)
         delete_project_query = QUERIES["delete_project"] % (str(project_id))
         seller_id = self.get_seller_id_by_project_id(project_id)
+        self.execute_query(self.connection, delete_project_query)
         projects = self.get_projects_by_seller_id(seller_id)
         if len(projects) == 0:
             self.delete_seller(seller_id)
-        self.execute_query(self.connection, delete_project_query)
 
     def delete_seller(self, seller_id):
         """

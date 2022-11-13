@@ -1,13 +1,28 @@
+from typing import Any, Dict, Union
+
+from texts.project_info import PROJECT_INFO
+
 start_message = (
-    "Здравствуйте, {0.first_name}! Я тестовый бот для продажи и покупки проектов!"
+    "Здравствуйте, {0.first_name} 🖐! Я бот для продажи и покупки проектов <b>Saw Биржа</b>!"
 )
 
 main_menu_massage = "📌 Главное меню 📌"
 
-information_message = "Вся информация о боте доступна в телеграм канале: t.me"
+inform_url = "https://t.me/saw_birzha_info"
+information_message = "Вся информация о боте доступна в телеграм канале:"
 
-sell_menu_message = "🗄 Мои предложения 🗄"
-put_up_for_sale_massage = "🖊Заполните анкету🖊"
+sell_menu_message = (
+    "✔ Чтобы выставить свой проект на продажу, перейдите в пункт меню «Выставить проект на продажу» "
+    "и заполните анкету. Перед появлением на площадке, объявление проходит модерацию. \n\n"
+    "✔ Вы можете посмотреть,удалить свои выставленные объявления в пункте меню "
+    "«Список моих предложений». Там же вы можете получить или продлить Premium-статус."
+)
+put_up_for_sale_massage = (
+    "🖊Заполните анкету🖊\n\n"
+    "Ответьте на пару вопросов, для того чтобы сформировать объяввление. \n\n"
+    "⚡ Стоимость размещения объявления: <b> {regular_price} </b> \n"
+    "⚡ Стоимость размещения объявления: с Premium-статусом <b> {vip_price} </b> \n"
+)
 project_name_question = "Напишите название вашего проекта:"
 name_so_big_question = (
     "Ваше имя слишком длинное. Напишите название вашего проекта до 50 символов! "
@@ -34,23 +49,34 @@ comment_question = "Добавьте комментарий к обьявлен�
 comment_so_big_question = (
     "Комментарий слишком длинный! Напишите комментарий не превышая 1000 символов!"
 )
-status_question = "Хотите ли получить VIP-статус?"
-status_yes_question = "Ура, теперь вы счталивый обладатель VIP-статуса!!!💦"
+status_question = (
+    "Хотите ли получить 💎 Premium-статус 💎? \n\n"
+    "Для лучшего продвижения продажи своих проектов вы можете получить Premium-статус, "
+    "он действителен 7 дней. \n"
+    "Вы получаете:\n"
+    "  🌟 Ваш проект находится в топах списка у покупателей; \n"
+    "  🌟 Быстрая модерация; \n"
+    "  🌟 Возможность редактирования цены проекта; \n\n"
+    "Стоимость Premium-статуса на неделю:  ⚡ <b> {vip_price}₽ </b> ⚡"
+)
+status_yes_question = "Ура, теперь вы счталивый обладатель 👑 Premium-статуса 👑!!!"
 confirm_question = (
     "Данные введены верно? Если да, то перейдите к оплате. "
     "При нажатии кнопки 'Отмена' Вы вернётесь в главное меню.\n\n"
-    '<b>Название:</b> <a href = "{link}"> {name}</a>\n<b>Статус:</b> {status}\n<b>Тематика:</b> {themes}\n'
-    "<b>Подписчиков:</b> {subs}\n<b>Доход в месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n"
-    "\n<b>Продавец:</b> @{seller}\n\n<b>Цена:</b> {price}"
+    + PROJECT_INFO["sell"]
 )
-payment_message = "Начинается процесс оплаты"
+payment_message = "Начинается процесс оплаты ⏳"
 
 cancellation_question = "Отмена"
-save_project_question = "Ваше обьявление сохранено!"
+save_project_question = "🎉 Ваше обьявление сохранено! 🎉"
 
 get_list_of_projects_message = "🗄 Выставленные на продажу предложения 🗄"
 
-buy_menu_message = "💰 Поиск предложений 💰"
+buy_menu_message = (
+    "✔ Здесь можно посмотреть список проектов на бирже \n\n"
+    "✔ Воспользовавшись параметрами поиска, вы можете отсортировать все проекты"
+    " по цене и тематикам."
+)
 chose_themes_message = "Выберите интересные тематики"
 question_theme_message = "Хотите выбрать тематику?"
 themes_list_message = "Список тематик"
@@ -60,7 +86,7 @@ chose_price_from_message = "Введите цену от: "
 chose_price_up_to_message = "Введите цену до: "
 show_all_projects_message = "Показать все предложения"
 all_projects_message = "Все предложения"
-not_recognized_message = "Сообщение не распознано. Попробуйте еще раз!"
+not_recognized_message = "Сообщение не распознано☹. Попробуйте еще раз!"
 error_not_digit_price_from_message = (
     "Ответ должен быть положительным числом! Введите цену от: "
 )
@@ -73,43 +99,76 @@ error_upto_bigger_then_from_message = (
 list_is_empty_message = "Проектов по вашему запросу не найдено"
 
 
-vip_payment_label = "Установить VIP татус проекту!"
+vip_payment_label = "Установить Premium cтатус проекту!"
 sell_payment_label = "Разместить объявление!"
 sell_payment_title = "Оплата"
 sell_payment_description = "Оплата за размещение объявления"
+vip_payment_description = "Оплата Premium-статуса"
 successful_payment_message = "Оплата произведена успешно!"
 
-show_project_message = (
-    '<b>Название:</b> <a href = "{link}"> {name}</a>\n<b>Статус:</b> {status}\n'
-    "<b>Тематика:</b> {theme}\n<b>Подписчиков:</b> {subs}\n"
-    "<b>Доход в месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> @{"
-    "seller}\n\n<b>Цена:</b> {price}\n\nГарантируем 100% безопасность при сделках в "
-    "Telegram.\n<b>Гарант:</b> {guarantee} "
-)
-deleted_project_message = "Объявление удалено!"
-not_deleted_project_message = "Объявление не удалено"
+show_my_project_message = PROJECT_INFO["my"]
+show_verified_project_message = PROJECT_INFO["buy_verified"]
+show_not_verified_project_message = PROJECT_INFO["buy_not_verified"]
+deleted_project_message = "Объявление удалено! 📍"
+not_deleted_project_message = "Объявление не удалено 🛑"
 confirm_deleting_message = "Вы действительно хотите удалить объявление?"
-empty_projects_message = "У вас не выставлено ни одного объявления."
+empty_projects_message = "У вас не выставлено ни одного объявления.🤔"
 projects_none_message = "Проектов не найдено"
 
-command_error_message = "Сообщение не распознано ☹️"
+command_error_message = "Сообщение не распознано ☹"
 
 moderation_message = "Ожидайте. Ваша заявка на модерации!"
 moderator_confirm_message = (
     "Новая заявка на размещение объявления ждёт подтверждения!\n\n"
-    '<b>Название:</b> <a href = "{link}">  {name}</a>\n<b>Статус:</b> {status}\n<b>Тематика:</b> {themes}\n'
-    "<b>Подписчиков:</b> {subs}\n<b>Доход в месяц:</b> {income}\n\n<b>Комментарий:</b> {comm}\n\n<b>Продавец:</b> "
-    "@{seller}\n\n<b>Цена:</b> {price}"
+    + PROJECT_INFO["sell"]
 )
 rejected_project_message = "К сожалению, ваш проект '%s' не прошёл модерацию! ☹"
 empty_username_message = "У вас не задано имя пользователя в телеграме! Измените настройки и возвращайтесь! 😊"
 already_in_moderation_message = "Ваш проект находится на модерации! Ожидайте ответа!"
 
-vip_project = "VIP 👑"
-regular_project = "Обычный 🗿"
+change_price_message = price_question
+price_changing_success_message = "Цена проекта успешно изменена!"
+price_changing_confirm_message = "Вы уверены, что хотите изменить цену?"
+
+vip_project = "Premium 👑"
+regular_project = "Обычное 🗿"
+free_payment_message = "Бесплатно!"
+
+verified = "Проверено ✅"
+not_verified = "Идёт проверка..."
+
+need_promo_code_message = "Ваш проект прошёл проверку! Воспользоваться промокодом?"
+input_promo_code_message = "Введите промокод:"
+wrong_promo_code_message = "Неверный промокод! Попробовать ещё раз?"
+
+vip_need_promo_code_message = "Воспользоваться промокодом?"
+
+settings_message = "🛠️ Настройки бота 🛠️"
+moderators_message = "Модераторы:"
+change_guarantee_message = "Введите новое имя гаранта"
+confirm_change_guarantee_message = "Имя гаранта введено верно?"
+id_add_moderator_message = "Введите ID нового модератора"
+name_add_moderator_message = "Введите ник нового модератора"
+id_check_message = "ID должен быть числом! Введите ID нового модератора"
+confirm_add_moderator_message = "Имя модератора и ID введено верно?"
+update_save_message = "Обновления сохранены!"
+change_payment_message = (
+    "Выберите какую цену вы хотите поменять:\n"
+    "⚡ Стоимость размещения объявления: <b> {regular_price}₽ </b> \n"
+    "⚡ Стоимость Premium-статуса: <b> {vip_price}₽ </b> \n"
+)
+new_payment_message = "Напишите новую цену"
+payment_check_message = "Цена должна быть числом! Напишите цену заново"
+confirm_change_payment_message = "Цена введена верно?"
+delete_promo_message = "Вы действительно хотите удалить промокод: <b> {code} </b>"
+
+switch_payment_confirm_message = (
+    "Сейчас оплата <b>{need_payment}</b>\n" "Уверены, что хотите переключить оплату?"
+)
 
 MESSAGES = {
     "start": start_message,
+    "inform_url": inform_url,
     "information": information_message,
     "sell_menu": sell_menu_message,
     "put_up_for_sale": put_up_for_sale_massage,
@@ -148,8 +207,11 @@ MESSAGES = {
     "sell_payment": sell_payment_label,
     "sell_payment_title": sell_payment_title,
     "sell_payment_description": sell_payment_description,
+    "vip_payment_description": vip_payment_description,
     "successful_payment": successful_payment_message,
-    "show_project": show_project_message,
+    "show_my_project": show_my_project_message,
+    "show_verified_project": show_verified_project_message,
+    "show_not_verified_project": show_not_verified_project_message,
     "deleted_project": deleted_project_message,
     "not_deleted_project": not_deleted_project_message,
     "confirm_deleting": confirm_deleting_message,
@@ -174,4 +236,29 @@ MESSAGES = {
     "already_in_moderation": already_in_moderation_message,
     "vip_project": vip_project,
     "regular_project": regular_project,
+    "verified": verified,
+    "not_verified": not_verified,
+    "change_price": change_price_message,
+    "price_changing_success": price_changing_success_message,
+    "price_changing_confirm": price_changing_confirm_message,
+    "need_promo_code": need_promo_code_message,
+    "input_promo_code": input_promo_code_message,
+    "wrong_promo_code": wrong_promo_code_message,
+    "vip_need_promo_code": vip_need_promo_code_message,
+    "free_payment": free_payment_message,
+    "settings": settings_message,
+    "moderators": moderators_message,
+    "change_guarantee": change_guarantee_message,
+    "confirm_change_guarantee": confirm_change_guarantee_message,
+    "id_add_moderator": id_add_moderator_message,
+    "name_add_moderator": name_add_moderator_message,
+    "id_check": id_check_message,
+    "confirm_add_moderator": confirm_add_moderator_message,
+    "update_save": update_save_message,
+    "change_payment": change_payment_message,
+    "new_payment": new_payment_message,
+    "payment_check": payment_check_message,
+    "confirm_change_payment": confirm_change_payment_message,
+    "delete_promo": delete_promo_message,
+    "switch_payment_confirm": switch_payment_confirm_message,
 }

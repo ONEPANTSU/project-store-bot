@@ -59,6 +59,18 @@ def get_projects_list_by_seller_name(seller_name):
     return get_parsed_project_list(projects_info)
 
 
+def get_moderator_all_project_list():
+    """
+    This function creates SELECT query for getting all Project class's objects.
+
+    :return: list of the Project class's objects
+    :rtype: :list::class:`data_base.project.Project`
+    """
+    projects_id = db_manager.get_moderator_all_projects_id()
+    projects_info = create_all_projects_info(projects_id)
+    return get_parsed_project_list(projects_info)
+
+
 def get_all_project_list():
     """
     This function creates SELECT query for getting all Project class's objects.
@@ -173,6 +185,7 @@ def to_parse_project_list(projects_info):
         new_project.status = project_info[0][9]
         new_project.vip_ending = project_info[0][12]
         new_project.link = project_info[0][13]
+        new_project.is_verified = project_info[0][14]
         for i in range(len(project_info)):
             new_project.themes_id.append(project_info[i][10])
             new_project.themes_names.append(project_info[i][11])
@@ -201,9 +214,9 @@ def get_guarantee_name():
     return db_manager.get_settings_info()[1]
 
 
-def get_guarantee_reviews():
+def get_admin_id():
     """
-    This function returns telegram channel name with reviews of the guarantee from `settings` table.
+    This function returns telegram channel id of admin from `settings` table.
 
     :return: telegram channel name with reviews
     :rtype: :obj:`str`
@@ -239,3 +252,57 @@ def get_vip_sell_price():
     :rtype: :obj:`int`
     """
     return db_manager.get_settings_info()[5]
+
+
+def get_moderators_info():
+    return db_manager.get_all_moderators_info()
+
+
+def set_current_moderator(moderator_id):
+    db_manager.update_current_moderator(moderator_id)
+
+
+def set_guarantee(guarantee):
+    db_manager.update_guarantee(guarantee)
+
+
+def delete_moderator(moderator_id):
+    db_manager.delete_moderator(moderator_id)
+
+
+def add_moderator(moderator_id, moderator_name):
+    db_manager.insert_new_moderator(moderator_id, moderator_name)
+
+
+def get_all_promo_codes():
+    discounts = db_manager.get_discounts()
+    promo_list = list()
+    for index in range(len(discounts)):
+        if discounts[index][1] == 0:
+            discount_value = str(discounts[index][2]) + "%"
+        else:
+            discount_value = str(int(discounts[index][2] / 100)) + "₽"
+        promo_list.append(discounts[index][0] + "\t~\t" + discount_value)
+    return promo_list
+
+
+def add_promo_code(new_code, new_discount, new_type):
+    if new_type == 1:
+        new_discount *= 100
+    db_manager.insert_new_promo_code(new_code, new_discount, new_type)
+
+
+def delete_promo_code(code):
+    db_manager.delete_promo_code(code)
+
+
+def save_regular_price(price):
+    db_manager.update_regular_price(price)
+
+
+def save_vip_price(price):
+    db_manager.update_vip_price(price)
+
+
+def save_need_payment(need_payment):
+    db_manager.update_need_payment(need_payment)

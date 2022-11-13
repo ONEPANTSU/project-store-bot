@@ -1,33 +1,53 @@
-back_button = "Вернуться в главное меню"
+back_button = "↩ Вернуться в главное меню ↩"
 
-information_button = "Информация"
+information_button = "📎 Информация 📎"
 
-moderate_button = "Управление проектами"
+moderate_button = "⚙ Управление проектами ⚙"
+setting_button = "🛠️ Изменение настроек 🛠️"
+
+moderators_button = "👤 Модераторы 👤"
+guarantee_button = "🤞 Гарант 🤞"
+promo_button = "🤖 Промокоды 🤖"
+payment_button = "💰 Оплата 💰"
+
+add_moderator_button = "➕ Добавить модератора ➕"
+delete_moderator_button = "❌ Удалить модератора ❌"
+chose_moderator_button = "📌 Выбрать модератора 📌"
+current_moderator_button = "✅ Текущий модератор ✅"
 
 sell_menu_button = "🗄 Мои предложения 🗄"
-sell_project_button = "Выставить проект на продажу"
-sell_list_button = "Список моих предложений"
+sell_project_button = "💸 Выставить проект на продажу 💸"
+sell_list_button = "📋 Список моих предложений 📋"
 
-buy_menu_button = "💰 Поиск предложений 💰"
-buy_chose_themes_button = "Выбрать тематику"
-buy_price_range_button = "Выбрать ценовой диапазон"
+buy_menu_button = "🔍 Поиск предложений 🔎"
+buy_chose_themes_button = "🔮 Выбрать тематику 🔮"
+buy_price_range_button = "🧷 Выбрать ценовой диапазон 🧷"
 
 yes_button = "Да"
 no_button = "Нет"
-chose_search_params_button = "Выбрать параметры поиска"
+chose_search_params_button = "⚙ Выбрать параметры поиска ⚙"
 
-back_to_sell_menu_button = "Вернуться в меню"
-back_to_buy_menu_button = "Вернуться в меню"
-cancel_button = "⏪ Предыдущий вопрос"
+back_to_sell_menu_button = "↩ Вернуться в меню ↩"
+back_to_buy_menu_button = "↩ Вернуться ↩"
+cancel_button = "⏪ Предыдущий вопрос ⏪"
 
-confirm_button = "Подтвердить"
-reject_button = "Отклонить"
-cancellation_button = "Отмена"
+confirm_button = "✔ Подтвердить ✔"
+reject_button = "❌ Отклонить ❌"
+cancellation_button = "⭕ Отмена ⭕"
 
-delete_button = "Удалить объявление"
+delete_button = "🗑 Удалить объявление 🗑"
 prev_button = "⏪ Назад"
 next_button = "Вперёд ⏩"
-vip_project_button = "Установить VIP статус 👑"
+vip_project_button = "👑 Установить Premium статус 👑"
+price_changing_project_button = "💰 Изменить стоимость проекта 💰"
+verify_button = "Проверено ✅"
+add_promo_button = "➕ Добавить промокод ➕"
+delete_promo_button = "❌ Удалить промокод ❌"
+
+change_regular_price_button = "🗿 Стоимость объявления 🗿"
+change_vip_price_button = "👑 Premium-статус 👑"
+switch_payment_button = "🔂Вкл./Выкл. оплаты🔂"
+
 
 BUTTONS = {
     "back": back_button,
@@ -49,7 +69,23 @@ BUTTONS = {
     "prev": prev_button,
     "next": next_button,
     "vip_project": vip_project_button,
+    "price_changing_project": price_changing_project_button,
+    "verify": verify_button,
     "chose_search_params": chose_search_params_button,
     "moderate": moderate_button,
+    "settings": setting_button,
+    "moderators": moderators_button,
+    "add_moderator": add_moderator_button,
+    "delete_moderator": delete_moderator_button,
+    "chose_moderator": chose_moderator_button,
+    "current_moderator": current_moderator_button,
+    "promo": promo_button,
+    "payment": payment_button,
+    "guarantee": guarantee_button,
     "information": information_button,
+    "add_promo": add_promo_button,
+    "delete_promo": delete_promo_button,
+    "change_regular_price": change_regular_price_button,
+    "change_vip_price": change_vip_price_button,
+    "switch_payment": switch_payment_button,
 }

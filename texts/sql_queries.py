@@ -1,6 +1,7 @@
 insert_project_query = """
         INSERT INTO 
-        `project` (`seller_id`, `name`, `price`, `status_id`, `subscribers`, `income`, `comment`, `vip_ending`, `link`) 
+        `project` (`seller_id`, `name`, `price`, `status_id`, `subscribers`, 
+        `income`, `comment`, `vip_ending`, `link`, `is_verified`) 
         VALUES (%s);
         """
 insert_status_query = """
@@ -27,14 +28,37 @@ insert_seller_query = """
         VALUES
         (%s);
         """
+insert_moderator_query = """
+        INSERT INTO
+        `moderator` (`moderator_id`, `name`)
+        VALUES
+        (%s);
+        """
+insert_promo_code_query = """
+        INSERT INTO
+        `promocode` (`code`, `discount`, `type`)
+        VALUES
+        (%s);
 
-select_vip_projects_id_query = "SELECT id FROM `project` WHERE `status_id` = 1;"
+"""
+
+select_all_moderators_info = "SELECT * FROM `moderator`"
+select_discounts_query = "SELECT * FROM `promocode`"
+select_vip_projects_id_query = "SELECT id FROM `project` " "WHERE `status_id` = 1;"
 select_all_projects_id_query = (
-    "SELECT id FROM `project` ORDER BY `status_id` DESC, `vip_ending` DESC;"
+    "SELECT id FROM `project` "
+    "ORDER BY `status_id` DESC, `vip_ending` DESC, `is_verified` DESC;"
 )
-select_projects_id_by_prices_query = "SELECT id FROM `project` WHERE price >= '%s' AND price <= '%s'  ORDER BY `status_id`, `vip_ending` DESC;"
+select_moderator_all_projects_id_query = (
+    "SELECT id FROM `project`" "ORDER BY `is_verified` ASC;"
+)
+select_projects_id_by_prices_query = (
+    "SELECT id FROM `project` WHERE price >= '%s' AND price <= '%s'  "
+    "ORDER BY `status_id` DESC, `vip_ending` DESC, `is_verified` DESC;"
+)
 select_project_by_id_query = (
-    "SELECT * FROM `project` WHERE `id` = '%s' ORDER BY `status_id`, `vip_ending` DESC;"
+    "SELECT * FROM `project` WHERE `id` = '%s' "
+    "ORDER BY `status_id` DESC, `vip_ending` DESC, `is_verified` DESC;"
 )
 select_seller_name_by_seller_id_query = (
     "SELECT `telegram_name` FROM `seller` WHERE `id` = '%s';"
@@ -45,26 +69,30 @@ select_seller_id_by_project_id_query = (
 select_seller_id_by_seller_name_query = (
     "SELECT `id` FROM `seller` WHERE `telegram_name` = '%s';"
 )
-select_project_by_seller_id_query = "SELECT * FROM `project` WHERE `seller_id` = '%s' ORDER BY `status_id`, `vip_ending` DESC;"
+select_project_by_seller_id_query = (
+    "SELECT * FROM `project` WHERE `seller_id` = '%s' "
+    "ORDER BY `status_id` DESC, `vip_ending` DESC, `is_verified` DESC;"
+)
 select_project_by_seller_name_query = (
     "SELECT project.id FROM `project` "
     "INNER JOIN `seller` ON project.seller_id = seller.id  "
-    "WHERE `telegram_name` = '%s' ORDER BY project.`status_id`, `vip_ending` DESC;"
+    "WHERE `telegram_name` = '%s' "
+    "ORDER BY project.`status_id` DESC, `vip_ending` DESC, `is_verified` DESC;"
 )
 select_projects_id_by_theme_id_query = (
-    "SELECT `project_id` FROM `project_theme` WHERE `theme_id` = '%s';"
+    "SELECT `project_id` FROM `project_theme` " "WHERE `theme_id` = '%s';"
 )
 select_all_project_info_by_id_query = (
     "SELECT project.id, project.seller_id, project.name, project.price, "
     "project.status_id, project.subscribers, project.income, project.comment, "
     "seller.telegram_name, status.status_name, theme.id "
-    "AS theme_id, theme.theme_name, project.vip_ending, project.link "
+    "AS theme_id, theme.theme_name, project.vip_ending, project.link, project.is_verified "
     "FROM `project` "
     "INNER JOIN `seller` ON project.seller_id = seller.id "
     "INNER JOIN `project_theme` ON project.id = project_theme.project_id "
     "INNER JOIN `theme` ON project_theme.theme_id = theme.id "
     "INNER JOIN `status` ON project.status_id = status.id "
-    "WHERE project.id = '%s' ORDER BY `status_id`, `vip_ending` DESC;"
+    "WHERE project.id = '%s' ORDER BY `status_id` DESC, `vip_ending` DESC, `is_verified` DESC;"
 )
 select_theme_name_by_theme_id_query = (
     "SELECT `theme_name` FROM `theme` WHERE `id` = '%s';"
@@ -89,17 +117,49 @@ select_all_settings_info_query = "SELECT * FROM `settings`;"
 update_project_query = """
         UPDATE
         `project`
-        SET `seller_id` = '%s', `name` = '%s', `price` = '%s', `status_id` = '%s', 
-        `subscribers` = '%s', `income` = '%s', `comment` = '%s', `vip_ending` = '%s', `link` = '%s'
+        SET `seller_id` = '%s', `name` = '%s', `price` = '%s', `status_id` = '%s', `subscribers` = '%s', 
+        `income` = '%s', `comment` = '%s', `vip_ending` = '%s', `link` = '%s', `is_verified` = '%s'
         WHERE `id` = '%s';
         """
 update_seller_query = """
         UPDATE
-        `seller` ()
+        `seller`
         SET `telegram_name` = '%s'
         WHERE `id` = '%s';
         """
+update_current_moderator_query = """
+        UPDATE
+        `settings`
+        SET `moderator_id` = '%s'
+        WHERE `admin_id` = '944830799';
+"""
+update_guarantee_query = """
+        UPDATE
+        `settings`
+        SET `guarantee` = '%s'
+        WHERE `admin_id` = '944830799';
+"""
+update_regular_query = """
+        UPDATE
+        `settings`
+        SET `regular_sell_price` = '%s'
+        WHERE `admin_id` = '944830799';
+"""
+update_vip_query = """
+        UPDATE
+        `settings`
+        SET `vip_sell_price` = '%s'
+        WHERE `admin_id` = '944830799';
+"""
+update_need_payment_query = """
+        UPDATE
+        `settings`
+        SET `need_payment` = '%s'
+        WHERE `admin_id` = '944830799';
+"""
 
+delete_moderator_query = "DELETE FROM `moderator` WHERE `moderator_id` = '%s'"
+delete_promo_query = "DELETE FROM `promocode` WHERE `code` = '%s'"
 delete_project_query = "DELETE FROM `project` WHERE `id` = '%s';"
 delete_seller_query = "DELETE FROM `seller` WHERE `id` = '%s';"
 delete_project_theme_query = "DELETE FROM `project_theme` WHERE `project_id` = '%s';"
@@ -110,8 +170,13 @@ QUERIES = {
     "insert_theme": insert_theme_query,
     "insert_project_theme": insert_project_theme_query,
     "insert_seller": insert_seller_query,
+    "insert_moderator": insert_moderator_query,
+    "insert_promo_code": insert_promo_code_query,
+    "select_all_moderators_info": select_all_moderators_info,
+    "select_discounts": select_discounts_query,
     "select_vip_projects_id": select_vip_projects_id_query,
     "select_all_projects_id": select_all_projects_id_query,
+    "select_moderator_all_projects_id": select_moderator_all_projects_id_query,
     "select_projects_id_by_prices": select_projects_id_by_prices_query,
     "select_project_by_id": select_project_by_id_query,
     "select_seller_name_by_seller_id": select_seller_name_by_seller_id_query,
@@ -130,6 +195,13 @@ QUERIES = {
     "select_all_settings_info": select_all_settings_info_query,
     "update_project": update_project_query,
     "update_seller": update_seller_query,
+    "update_current_moderator": update_current_moderator_query,
+    "update_guarantee": update_guarantee_query,
+    "update_regular": update_regular_query,
+    "update_vip": update_vip_query,
+    "update_need_payment": update_need_payment_query,
+    "delete_moderator": delete_moderator_query,
+    "delete_promo": delete_promo_query,
     "delete_project": delete_project_query,
     "delete_seller": delete_seller_query,
     "delete_project_theme": delete_project_theme_query,

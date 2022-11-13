@@ -1,9 +1,9 @@
 from aiogram import Dispatcher
 from aiogram.types import Message
 
+from handlers.information.information_functions import help_inform
 from texts.buttons import BUTTONS
 from texts.commands import COMMANDS
-from texts.messages import MESSAGES
 
 
 async def information_handler(message: Message):
@@ -12,10 +12,6 @@ async def information_handler(message: Message):
 
 async def help_command(message: Message):
     await help_inform(message)
-
-
-async def help_inform(message: Message):
-    await message.answer(text=MESSAGES["information"])
 
 
 def register_information_handlers(dp: Dispatcher):
