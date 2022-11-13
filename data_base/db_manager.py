@@ -1,5 +1,5 @@
-import mysql.connector
-from mysql.connector import Error
+import sqlite3
+from sqlite3 import Error
 
 from config import *
 from texts.sql_queries import QUERIES
@@ -18,21 +18,12 @@ class DBManager:
         :return: Instance of the class
         :rtype: :class:`data_base.db_manager.DBManager`
         """
-        self.connection = self.create_connection(HOST, USER, PASSWORD, DATA_BASE)
+        self.connection = self.create_connection(DATA_BASE)
 
     @staticmethod
-    def create_connection(host_name, user_name, user_password, data_base):
+    def create_connection(data_base):
         """
         This function creates connection to the data base.
-
-        :param host_name: host name of data base's server
-        :type host_name: :obj: `str`
-
-        :param user_name: user name of data base's server
-        :type user_name: :obj: `str`
-
-        :param user_password: user's password of data base's server
-        :type user_password: :obj: `str`
 
         :param data_base: data base's name
         :type data_base: :obj: `str`
@@ -42,14 +33,10 @@ class DBManager:
         """
         connection = None
         try:
-            connection = mysql.connector.connect(
-                host=host_name,
-                user=user_name,
-                passwd=user_password,
+            connection = sqlite3.connect(
                 database=data_base,
-                charset="utf8mb4",
             )
-            print("Connection to MySQL DB successful")
+            print("Connection to SqLite DB successful")
         except Error as e:
             print(f"The error '{e}' occurred")
         return connection
