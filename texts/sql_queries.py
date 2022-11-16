@@ -50,7 +50,8 @@ select_all_projects_id_query = (
     "ORDER BY `status_id` DESC, `vip_ending` DESC, `is_verified` DESC;"
 )
 select_moderator_all_projects_id_query = (
-    "SELECT id FROM `project`" "ORDER BY `is_verified` ASC;"
+    "SELECT id FROM `project`" 
+    "ORDER BY `is_verified` ASC;"
 )
 select_projects_id_by_prices_query = (
     "SELECT id FROM `project` WHERE price >= '%s' AND price <= '%s'  "
@@ -103,7 +104,10 @@ select_theme_id_by_theme_name_query = (
 select_themes_id_by_project_id_query = (
     "SELECT `theme_id` FROM `project_theme` WHERE `project_id` = '%s';"
 )
-select_all_themes_query = "SELECT * FROM `theme`;"
+select_all_themes_query = (
+    "SELECT * FROM `theme`"
+    "ORDER BY `theme_name` ASC;"
+)
 select_filled_themes_query = (
     "SELECT theme.id, theme.theme_name FROM `project_theme` "
     "INNER JOIN `theme` ON theme.id = project_theme.theme_id "
