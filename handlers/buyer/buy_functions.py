@@ -7,14 +7,15 @@ from aiogram.types import (
 )
 
 from data_base.db_functions import get_guarantee_name, get_project_list_by_filter
-from handlers.buyer.buy_callbacks import buy_project_callback, themes_callback
+from handlers.buyer.buy_callbacks import buy_project_callback, themes_callback, chose_search_params_callback, \
+    search_by_price_params_callback, search_by_theme_params_callback
 from texts.buttons import BUTTONS
 from texts.messages import MESSAGES
 from useful.instruments import bot, db_manager
 
 
-async def show_main_buy_keyboard(message: Message):
-    await message.answer(text=MESSAGES["buy_menu"], reply_markup=buy_menu())
+async def show_all_projects(message: Message):
+    await message.answer(text=MESSAGES["buy_menu"])
     await buy_project_index(
         chat_id=message.chat.id, theme_id="None", price_from="None", price_up_to="None"
     )
@@ -22,24 +23,24 @@ async def show_main_buy_keyboard(message: Message):
 
 def buy_menu():
     markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    chose_search_params = KeyboardButton(BUTTONS["chose_search_params"])
     back_button = KeyboardButton(BUTTONS["back"])
-    markup.add(chose_search_params, back_button)
+    markup.add(back_button)
     return markup
 
 
-async def buy_project_index(chat_id, theme_id, price_from, price_up_to):
+async def buy_project_index(chat_id, theme_id, price_from, price_up_to, status: int = 0):
     project_list = get_project_list_by_filter(
         theme_id=theme_id, price_from=price_from, price_up_to=price_up_to
     )
     if len(project_list) != 0:
         project_data = project_list[0]
         project_info = get_project_info(project_data=project_data)
-        keyboard = get_buy_projects_price_keyboard(
+        keyboard = get_buy_projects_keyboard(
             project_list=project_list,
             theme_id=theme_id,
             price_from=price_from,
             price_up_to=price_up_to,
+            status=status,
         )
         await bot.send_message(
             chat_id=chat_id,
@@ -71,8 +72,8 @@ def chose_themes_keyboard(price_from="None", price_up_to="None"):
 
 
 # Клавиатура для карусели по листу проектов
-def get_buy_projects_price_keyboard(
-    project_list, theme_id, price_from, price_up_to, page: int = 0
+def get_buy_projects_keyboard(
+    project_list, theme_id, price_from, price_up_to, status, page: int = 0
 ) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup(row_width=2)
 
@@ -82,6 +83,36 @@ def get_buy_projects_price_keyboard(
         text=f"{page + 1} / {len(project_list)}", callback_data="dont_click_me"
     )
 
+    keyboard.row(page_num_button)
+
+    if status == 0:
+        params_button = InlineKeyboardButton(
+            text=BUTTONS["chose_search_params"],
+            callback_data=chose_search_params_callback.new(
+                page=page,
+                theme_id=theme_id,
+                price_from=price_from,
+                price_up_to=price_up_to,
+            )
+        )
+        keyboard.row(params_button)
+
+    elif status == 1:
+        price_button = InlineKeyboardButton(
+            text="Цена ₽",
+            callback_data=search_by_price_params_callback.new(
+                theme_id=theme_id
+            )
+        )
+        theme_button = InlineKeyboardButton(
+            text="Тематика #",
+            callback_data=search_by_theme_params_callback.new(
+                price_from=price_from,
+                price_up_to=price_up_to
+            )
+        )
+        keyboard.row(price_button, theme_button)
+
     back_button = InlineKeyboardButton(
         text=BUTTONS["prev"],
         callback_data=buy_project_callback.new(
@@ -89,6 +120,7 @@ def get_buy_projects_price_keyboard(
             theme_id=theme_id,
             price_from=price_from,
             price_up_to=price_up_to,
+            status=status
         ),
     )
 
@@ -99,10 +131,9 @@ def get_buy_projects_price_keyboard(
             theme_id=theme_id,
             price_from=price_from,
             price_up_to=price_up_to,
+            status=status
         ),
     )
-
-    keyboard.row(page_num_button)
 
     if page != 0:
         if has_next_page:

@@ -1,6 +1,6 @@
 from aiogram.types import ReplyKeyboardRemove
 
-from handlers.buyer.buy_functions import show_main_buy_keyboard
+from handlers.buyer.buy_functions import show_all_projects
 from handlers.information.information_functions import help_inform
 from handlers.main.main_functions import main_menu
 from handlers.seller.handlers.my_projects_functions import my_project_index_handler
@@ -25,6 +25,6 @@ async def commands_handler(message):
     elif answer == COMMANDS["my_projects"]:
         await my_project_index_handler(message)
     elif answer == COMMANDS["search_project"]:
-        await show_main_buy_keyboard(message)
+        await show_all_projects(message)
     elif answer == COMMANDS["back"]:
         await main_menu(message, message_text=MESSAGES["main_menu"])
