@@ -73,7 +73,7 @@ async def vip_need_promo_state(message: Message, state: FSMContext):
             reply_markup=ReplyKeyboardRemove(),
         )
         await VipDiscountStates.code.set()
-    else:
+    elif answer == BUTTONS["no"] or answer.lstrip("/") in COMMANDS.values():
         data = await state.get_data()
         project_id = data["project_id"]
         project = Project()
@@ -100,6 +100,17 @@ async def vip_need_promo_state(message: Message, state: FSMContext):
         await state.finish()
         if answer.lstrip("/") in COMMANDS.values():
             await commands_handler(message)
+    else:
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=MESSAGES["command_error"],
+        )
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=MESSAGES["vip_need_promo_code"],
+            reply_markup=yes_or_no_keyboard(),
+        )
+        await state.set_state(VipDiscountStates.is_need)
 
 
 async def vip_input_promo_state(message: Message, state: FSMContext):
@@ -114,6 +125,11 @@ async def vip_input_promo_state(message: Message, state: FSMContext):
         await state.finish()
         price_amount = discounted_price
         prices = [LabeledPrice(label=MESSAGES["sell_payment"], amount=price_amount)]
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=MESSAGES["vip_payment_description"],
+            reply_markup=get_main_sell_keyboard(),
+        )
         await bot.send_invoice(
             message.chat.id,
             title=MESSAGES["sell_payment_title"],
