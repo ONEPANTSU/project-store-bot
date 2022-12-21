@@ -48,6 +48,7 @@ change_regular_price_button = "Стоимость объявления 🗿"
 change_vip_price_button = "Premium-статус 👑"
 switch_payment_button = "Вкл./Выкл. оплаты 🔂"
 
+sending_messages_button = "Рассылка 📝"
 
 BUTTONS = {
     "back": back_button,
@@ -88,4 +89,5 @@ BUTTONS = {
     "change_regular_price": change_regular_price_button,
     "change_vip_price": change_vip_price_button,
     "switch_payment": switch_payment_button,
+    "sending_messages": sending_messages_button
 }

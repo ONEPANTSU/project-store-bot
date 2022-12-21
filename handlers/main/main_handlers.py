@@ -6,8 +6,15 @@ from texts.buttons import BUTTONS
 from texts.commands import COMMANDS
 from texts.messages import MESSAGES
 
+from useful.instruments import joinedUsers
+
 
 async def start_command(message: Message):
+    if not str(message.chat.id) in joinedUsers:
+        joinedFile = open("joined.txt", "a")
+        joinedFile.write(str(message.chat.id) + "\n")
+        joinedFile.close()
+        joinedUsers.add(message.chat.id)
     await main_menu(message, message_text=MESSAGES["start"].format(message.from_user))
 
 

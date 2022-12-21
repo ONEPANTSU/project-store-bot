@@ -131,7 +131,7 @@ price_changing_success_message = "Цена проекта успешно изм�
 price_changing_confirm_message = "Вы уверены, что хотите изменить цену?"
 
 vip_project = "Premium 👑"
-regular_project = "Обычное 🗿"
+regular_project = "Обычное"
 free_payment_message = "Бесплатно!"
 
 verified = "Проверено ✅"
@@ -165,6 +165,9 @@ delete_promo_message = "Вы действительно хотите удали�
 switch_payment_confirm_message = (
     "Сейчас оплата <b>{need_payment}</b>\n" "Уверены, что хотите переключить оплату?"
 )
+
+send_message_message = "Введите сообщение для рассылки:"
+is_message_correct_message = "Сообщение введено верно?"
 
 MESSAGES = {
     "start": start_message,
@@ -261,4 +264,6 @@ MESSAGES = {
     "confirm_change_payment": confirm_change_payment_message,
     "delete_promo": delete_promo_message,
     "switch_payment_confirm": switch_payment_confirm_message,
+    "send_message": send_message_message,
+    "is_message_correct": is_message_correct_message,
 }

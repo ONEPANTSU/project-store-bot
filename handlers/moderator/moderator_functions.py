@@ -11,6 +11,12 @@ from handlers.moderator.moderator_callback import (
     delete_promo_callback,
 )
 from texts.buttons import BUTTONS
+from useful.instruments import joinedUsers, bot
+
+
+def send_message_to_joined(sending_message):
+    for user in joinedUsers:
+        bot.send_message(user, sending_message)
 
 
 def check_is_moderator(user_id):

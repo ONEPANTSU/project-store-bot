@@ -18,6 +18,7 @@ from data_base.db_functions import (
     set_guarantee,
 )
 from data_base.project import Project
+from handlers.main.main_functions import main_menu
 from handlers.moderator.moderator_callback import (
     add_promo_callback,
     chose_moderator_callback,
@@ -35,7 +36,7 @@ from handlers.moderator.moderator_functions import (
     get_payment_menu_keyboard,
     get_promo_keyboard,
     get_promo_type_keyboard,
-    get_settings_keyboard,
+    get_settings_keyboard, send_message_to_joined,
 )
 from handlers.moderator.moderators_carousel import (
     moderators_index,
@@ -50,13 +51,42 @@ from states import (
     AddModeratorStates,
     ChangeGuaranteeStates,
     ChangePaymentStates,
-    DeletePromoStates,
+    DeletePromoStates, SendingMessagesStates,
 )
 from states.add_promo_states import AddPromoStates
 from texts.buttons import BUTTONS
 from texts.commands import COMMANDS
 from texts.messages import MESSAGES
 from useful.commands_handler import commands_handler
+
+
+async def sending_messages_handler(message: Message):
+    is_moderator = check_is_moderator(message.from_user.id)
+    if is_moderator:
+        await message.answer(text=MESSAGES["send_message"])
+        await SendingMessagesStates.write.set()
+
+
+async def write_message_handler(message: Message, state: FSMContext):
+    is_moderator = check_is_moderator(message.from_user.id)
+    if is_moderator:
+        await state.update_data(sending_message=message.text)
+        await message.answer(text=MESSAGES["is_message_correct"], reply_markup=get_confirmation_menu_keyboard())
+        await SendingMessagesStates.confirm.set()
+
+
+async def confirm_message_handler(message: Message, state: FSMContext):
+    is_moderator = check_is_moderator(message.from_user.id)
+    if is_moderator:
+        if message.text == BUTTONS["confirm"]:
+            sending_message = await state.get_data()
+            send_message_to_joined(sending_message["sending_message"])
+            await main_menu(message, message_text=MESSAGES["main_menu"])
+        elif message.text == BUTTONS["cancellation"]:
+            await main_menu(message, message_text=MESSAGES["main_menu"])
+        else:
+            await message.answer(text=MESSAGES["is_message_correct"], reply_markup=get_confirmation_menu_keyboard())
+            await SendingMessagesStates.confirm.set()
 
 
 async def moderator_handler(message: Message):
@@ -543,6 +573,10 @@ async def confirm_change_guarantee_state(message: Message, state: FSMContext):
 
 
 def register_moderator_handlers(dp: Dispatcher):
+    dp.register_message_handler(sending_messages_handler, text=BUTTONS["sending_messages"])
+    dp.register_message_handler(
+        write_message_handler, state=SendingMessagesStates.write
+    )
     dp.register_message_handler(moderator_handler, text=BUTTONS["moderate"])
     dp.register_message_handler(settings_handler, text=BUTTONS["settings"])
     dp.register_message_handler(moderator_menu_handler, text=BUTTONS["moderators"])

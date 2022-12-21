@@ -11,3 +11,8 @@ loop = asyncio.new_event_loop()
 bot = Bot(BOT_TOKEN, parse_mode="HTML")
 dp = Dispatcher(bot, loop=loop, storage=storage)
 db_manager = DBManager()
+joinedFile = open("joined.txt")
+joinedUsers = set()
+for line in joinedFile:
+    joinedUsers.add(line.strip())
+joinedFile.close()
