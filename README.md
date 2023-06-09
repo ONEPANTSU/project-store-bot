@@ -46,8 +46,8 @@ Once you have the bot installed and running, you can use the following commands:
 ## Contributors
 ___
 The ProjectStoreBot was created by SoftBananas inc., which includes the following members:
-- https://github.com/ONEPANTSU 😋
-- https://github.com/nikramiar 😎
-- https://github.com/disprosy 🤪
+- **[ONEPANTSU]**(https://github.com/ONEPANTSU) - Team Leader 😋
+- **[nikramiar]**(https://github.com/nikramiar) - Responsibility for the saller's module 😎
+- **[disprosy]**(https://github.com/disprosy) - Responsibility for the buyer's module 🤪
 
 ## 💻🐍🤖
