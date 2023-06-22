@@ -1,4 +1,4 @@
-# ProjectStoreBot
+# ![ProjectStore Bot](https://github.com/ONEPANTSU/ProjectStoreBot/blob/main/psbot.svg)
 ___
 🚀 ProjectStoreBot is a Telegram bot for a marketplace of Telegram channels, built using aiogram. With the bot, you can post announcements about your channel's sale and browse through a list of other channels available for sale.
 
@@ -51,3 +51,5 @@ The ProjectStoreBot was created by SoftBananas inc., which includes the followin
 - **[disprosy](https://github.com/disprosy)** - Responsibility for the buyer's module 🤪
 
 ## 💻🐍🤖
+
+![SoftBannas inc.](https://github.com/ONEPANTSU/ProjectStoreBot/blob/main/dark%20logo.svg)
