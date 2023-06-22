@@ -1,16 +1,15 @@
-# ![ProjectStore Bot](https://github.com/ONEPANTSU/ProjectStoreBot/blob/main/psbot.svg)
+![ProjectStore Bot](https://github.com/ONEPANTSU/ProjectStoreBot/blob/main/psbot.svg)
 ___
 🚀 ProjectStoreBot is a Telegram bot for a marketplace of Telegram channels, built using aiogram. With the bot, you can post announcements about your channel's sale and browse through a list of other channels available for sale.
 
 ## Features
-___
+
 - [X] Post announcements about your channel for sale 🔥
 - [X] Browse through a list of channels available for sale 👀
 - [X] User-friendly interface 💡
 - [X] Easy to use commands 💪
 
 ## Installation
-___
 1. Clone the repository: 
 ```
 git clone https://github.com/ONEPANTSU/ProjectStoreBot.git
@@ -34,7 +33,6 @@ python main.py
 ``` 
 
 ## Usage
-___
 Once you have the bot installed and running, you can use the following commands:
 - /start: start command
 - /help: help command
@@ -44,12 +42,10 @@ Once you have the bot installed and running, you can use the following commands:
 - /search_project: command for showing all projects to sell 
 
 ## Contributors
-___
 The ProjectStoreBot was created by SoftBananas inc., which includes the following members:
 - **[ONEPANTSU](https://github.com/ONEPANTSU)** - Team Leader 😋
 - **[nikramiar](https://github.com/nikramiar)** - Responsibility for the saller's module 😎
 - **[disprosy](https://github.com/disprosy)** - Responsibility for the buyer's module 🤪
 
-## 💻🐍🤖
 
 ![SoftBannas inc.](https://github.com/ONEPANTSU/ProjectStoreBot/blob/main/dark%20logo.svg)
