@@ -47,5 +47,4 @@ The ProjectStoreBot was created by SoftBananas inc., which includes the followin
 - **[nikramiar](https://github.com/nikramiar)** - Responsibility for the saller's module 😎
 - **[disprosy](https://github.com/disprosy)** - Responsibility for the buyer's module 🤪
 
-
-![by SoftBannas inc.](https://github.com/ONEPANTSU/ProjectStoreBot/blob/main/dark%20logo.svg)
+![by SoftBannas inc.](https://github.com/ONEPANTSU/ONEPANTSU/blob/main/sbi_logo.svg)
